@@ -2,18 +2,54 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {# Run `composer require symfony/webpack-encore-bundle`
-           and uncomment the following Encore helpers to start using Symfony UX #}
+        <title>{% block title %}Manage Social Media{% endblock %}</title>
+         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         {% block stylesheets %}
-            {#{{ encore_entry_link_tags('app') }}#}
-        {% endblock %}
-
-        {% block javascripts %}
-            {#{{ encore_entry_script_tags('app') }}#}
+            {{ encore_entry_link_tags('app') }}
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% block body %}
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+            <div class="container-fluid">
+
+                <a href="{{ path('home')}}" class="navbar-brand">
+                
+                <img src="{{ asset('build/images/logo.svg') }}" width="150" alt="Logo" class=" d-inline-block align-middle mr-2 radiusImage">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                        <a class="nav-link"  href="{{ path('home')}}"><!--<i class="fa fa-home">--></i>Home</a>
+                        </li>
+                        {% if app.user %}
+                            <li class="nav-item">
+                                <a class="nav-link"  href="{{ path('app_logout')}}"><!--<i class="fa fa-sign-out-alt">--></i>Log out</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"  href="{{ path('posts')}}"><!--<i class="fa fa-sign-out-alt">--></i>Log out</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link "  href="{{ path('login')}}"><!--<i class="fa fa-sign-in-alt">--></i>Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"  href="{{ path('register')}}"><!--<i class="fa fa-plus-circle">--></i>Register</a>
+                            </li>
+                        {% endif %}
+                        
+                      
+                    </ul>
+                    
+                </div>
+            </div>
+        </nav>
+        {% endblock %}
+        {% block javascripts %}{{ encore_entry_script_tags('app') }}{% endblock %}
     </body>
 </html>
