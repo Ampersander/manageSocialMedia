@@ -13,21 +13,21 @@ import './bootstrap';
 
 $(async function () {
     // Short-lived User Access Token, obtenu avec le graph explorer tool
-    let shortLivedToken = 'EAABZCHn2BZAjMBAFpwt6b20mCfuA3avSl3kAUST8WLGqOFGp93LLZBeHO2I9XKLhTayaV1NiiVrjBpDiO56UiJ32lENKB8NVHDU3yTyJ5GeZCxO6npIZAZALobEUQhtBZB4XgwLTA8tiN3RoFErO9ZCY6mxYWvZAsPbKr06pcOH29rdo2aX0TRbzCy015SLe8cjBCSSoIZCqYpRitSVeznU6Mv';
-    let pageId = '102213561957064';
+    // let shortLivedToken = 'EAABZCHn2BZAjMBAIikWDnwbjOZAiP36h0KUYJDYWKAXEqZCKdMOYrSzLYeZBsQbl4uz4uZAX1deJgjv08VzkyelfeibHWMhuktirA0k722DelW4TeCjZBEKHAMKmpRFrQUVIQzZCGxNruCdiUZBerM9lFInoiCTMWwigVjZCrmPuXZCMlk5U8qK6jhyZArSQSXRxZArtVdDoftT81SEeExYkbZBUZBr';
+    // let pageId = '102213561957064';
 
-    try {
-        const longLivedToken = await getLongLivedUserToken(shortLivedToken);
-        console.log('Long lived access token : ' + longLivedToken);
+    // try {
+    //     const longLivedToken = await getLongLivedUserToken(shortLivedToken);
+    //     console.log('Long lived access token : ' + longLivedToken);
 
-        const pageAccessToken = await getPageAccessToken(longLivedToken, pageId);
-        console.log('Page access token : ' + pageAccessToken);
+    //     const pageAccessToken = await getPageAccessToken(longLivedToken, pageId);
+    //     console.log('Page access token : ' + pageAccessToken);
 
-        const messagePostResult = await postMessageOnPage(pageAccessToken, pageId, 'Mission complete');
-        console.log(messagePostResult);
-    } catch (error) {
-        console.log(error);
-    }
+    //     const messagePostResult = await postMessageOnPage(pageAccessToken, pageId, 'Mission complete');
+    //     console.log(messagePostResult);
+    // } catch (error) {
+    //     console.log(error);
+    // }
 
 });
 
