@@ -44,13 +44,14 @@ class User implements UserInterface
     private $posts;
 
     /**
-     * @ORM\Column(type="json", nullable=true)
+     * @ORM\OneToMany(targetEntity=SocialMediaAccount::class, mappedBy="user", orphanRemoval=true)
      */
-    private $user_account_page_social_media = [];
+    private $socialMediaAccounts;
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
+        $this->socialMediaAccounts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -164,15 +165,32 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getUserAccountPageSocialMedia(): ?array
+    /**
+     * @return Collection|SocialMediaAccount[]
+     */
+    public function getSocialMediaAccounts(): Collection
     {
-        $user_account_page_social_media = $this->user_account_page_social_media;
-        return array_unique($user_account_page_social_media);
+        return $this->socialMediaAccounts;
     }
 
-    public function setUserAccountPageSocialMedia(?array $user_account_page_social_media): self
+    public function addSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
     {
-        $this->user_account_page_social_media = $user_account_page_social_media;
+        if (!$this->socialMediaAccounts->contains($socialMediaAccount)) {
+            $this->socialMediaAccounts[] = $socialMediaAccount;
+            $socialMediaAccount->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
+    {
+        if ($this->socialMediaAccounts->removeElement($socialMediaAccount)) {
+            // set the owning side to null (unless already changed)
+            if ($socialMediaAccount->getUser() === $this) {
+                $socialMediaAccount->setUser(null);
+            }
+        }
 
         return $this;
     }

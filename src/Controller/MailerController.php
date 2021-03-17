@@ -17,9 +17,12 @@ class MailerController extends AbstractController
      */
     public function sendEmail(MailerInterface $mailer)
     {
+        
+            
         $email = (new Email())
         ->from(Address::fromString('Fabien Potencier <fabien@example.com>'))
         ->to('you@example.com')
+        ->subject('Forget password?')
         //->cc('cc@example.com')
         //->bcc('bcc@example.com')
         //->replyTo('fabien@example.com')
@@ -27,9 +30,12 @@ class MailerController extends AbstractController
         ->subject('Time for Symfony Mailer!')
         ->text('Sending emails is fun again!')
         ->html('<p>See Twig integration for better HTML integration!</p>');
-
-        $mailer->send($email);
-
+        try {
+            $mailer->send($email);
+        } catch (TransportExceptionInterface $e) {
+        // some error prevented the email sending; display an
+        // error message or try to resend the message
+        }
         // …
       return new Response(
           'Email was sent'

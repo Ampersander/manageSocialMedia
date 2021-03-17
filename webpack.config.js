@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('customScss', './assets/app.js')
+    .addEntry('manageAccountSocialMedia', './assets/js/manageAccountSocialMedia')
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
 
@@ -69,13 +70,18 @@ Encore
     //.enableIntegrityHashes(Encore.isProduction())
 
     // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
+    .autoProvidejQuery()
     //Function to copy your images on the public directory to allow asset() to access those files
     .copyFiles({
         from: './assets/images',
         to: 'images/[path][name].[ext]',
         pattern: /\.(png|jpg|jpeg|svg)$/
     })
+    .copyFiles({
+      from: './assets/fav',
+      to: '[path][name].[ext]',
+      pattern: /\.(png|xml|json|txt|svg|manifest)$/
+  })
 ;
 
 module.exports = Encore.getWebpackConfig();
