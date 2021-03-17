@@ -33,9 +33,9 @@ class Posts
     private $description;
 
     /**
-     * @ORM\Column(type="array")
+     * @ORM\Column(type="string")
      */
-    private $account_page_social_media = [];
+    private $account_page_social_media;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
@@ -86,12 +86,12 @@ class Posts
         return $this;
     }
 
-    public function getAccountPageSocialMedia(): ?array
+    public function getAccountPageSocialMedia(): ?string
     {
         return $this->account_page_social_media;
     }
 
-    public function setAccountPageSocialMedia(array $account_page_social_media): self
+    public function setAccountPageSocialMedia(string $account_page_social_media): self
     {
         $this->account_page_social_media = $account_page_social_media;
 
