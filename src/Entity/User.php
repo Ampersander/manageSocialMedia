@@ -44,7 +44,7 @@ class User implements UserInterface
     private $posts;
 
     /**
-     * @ORM\Column(type="array", nullable=true)
+     * @ORM\Column(type="json", nullable=true)
      */
     private $user_account_page_social_media = [];
 
@@ -166,7 +166,8 @@ class User implements UserInterface
 
     public function getUserAccountPageSocialMedia(): ?array
     {
-        return $this->user_account_page_social_media;
+        $user_account_page_social_media = $this->user_account_page_social_media;
+        return array_unique($user_account_page_social_media);
     }
 
     public function setUserAccountPageSocialMedia(?array $user_account_page_social_media): self
