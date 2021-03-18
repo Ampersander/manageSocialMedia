@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\PostsRepository;
+use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=PostsRepository::class)
+ * @ORM\Entity(repositoryClass=PostRepository::class)
  */
-class Posts
+class Post
 {
     /**
      * @ORM\Id
@@ -18,9 +18,9 @@ class Posts
     private $id;
 
     /**
-     * @ORM\Column(type="array", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
-    private $image = [];
+    private $image;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -35,7 +35,7 @@ class Posts
     /**
      * @ORM\Column(type="string")
      */
-    private $account_page_social_media;
+    private $socialMediaAccounts;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
@@ -50,12 +50,12 @@ class Posts
         return $this->id;
     }
 
-    public function getImage(): ?array
+    public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function setImage(?array $image): self
+    public function setImage(?string $image): self
     {
         $this->image = $image;
 
@@ -86,14 +86,14 @@ class Posts
         return $this;
     }
 
-    public function getAccountPageSocialMedia(): ?string
+    public function getSocialMediaAccounts(): ?string
     {
-        return $this->account_page_social_media;
+        return $this->socialMediaAccounts;
     }
 
-    public function setAccountPageSocialMedia(string $account_page_social_media): self
+    public function setSocialMediaAccounts(string $socialMediaAccounts): self
     {
-        $this->account_page_social_media = $account_page_social_media;
+        $this->socialMediaAccounts = $socialMediaAccounts;
 
         return $this;
     }

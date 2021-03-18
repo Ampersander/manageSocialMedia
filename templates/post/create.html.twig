@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{{ parent() }}
+<h1>Création d'un article</h1>
+{{ form_start(formPost) }}
+{{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article"}}) }}
+{{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie"}}) }}
+{{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image"}}) }}
+<button type="submit" class="btn btn-primary">
+{% if editMode %}
+Eregistrer
+{% else %}
+Publier le post
+{% endif %}
+</button>
+{{ form_end(formPost) }}
+{% endblock %}
