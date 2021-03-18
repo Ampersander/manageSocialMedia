@@ -60,61 +60,41 @@
 					{% for account in accounts %}
 						<tr>
                             <form method="post" action="{{ path('profil.SocialMediaAccount.edit', {id: account.id}) }}">
-							<td><input type='text' value="{{ account.name }}"></input></td>	
+							<td><input type='text' value="{{ account.name }}" name="accountName{{account.id}}"></input></td>	
                             <td>
-                                <select id="manage_account_social_media_form_social_media" name="manage_account_social_media_form[social_media]">
+                                <select id="manage_account_social_media_form_social_media" name="manage_account_social_media_form{{account.id}}">
                                     {% if account.socialMedia == 'twitter' %}
-                                        <option value="twitter" selected>
-                                            <i class="fab fa-twitter-square"></i>
-                                            Twitter</option>
+                                        <option value="twitter" selected><i class="fab fa-twitter-square"></i>Twitter</option>
                                     {% else %}
-                                        <option value="twitter">
-                                            <i class="fab fa-twitter-square"></i>
-                                            Twitter</option>
+                                        <option value="twitter"><i class="fab fa-twitter-square"></i>Twitter</option>
                                     {% endif %}
 
                                     {% if account.socialMedia == 'facebook_account' %}
-                                        <option value="facebook_account" selected>
-                                            <i class="fab fa-facebook-square"></i>
-                                            Facebook compte</option>
+                                        <option value="facebook_account" selected><i class="fab fa-facebook-square"></i>Facebook compte</option>
                                     {% else %}
-                                        <option value="facebook_account">
-                                            <i class="fab fa-facebook-square"></i>
-                                            Facebook compte</option>
+                                        <option value="facebook_account"><i class="fab fa-facebook-square"></i>Facebook compte</option>
                                     {% endif %}
 
                                     {% if account.socialMedia == 'facebook_page' %}
-                                        <option value="facebook_page" selected>
-                                            <i class="fab fa-facebook-square"></i>
-                                            Facebook Page</option>
+                                        <option value="facebook_page" selected><i class="fab fa-facebook-square"></i>Facebook Page</option>
                                     {% else %}
-                                        <option value="facebook_page">
-                                            <i class="fab fa-facebook-square"></i>
-                                            Facebook Page</option>
+                                        <option value="facebook_page"><i class="fab fa-facebook-square"></i>Facebook Page</option>
                                     {% endif %}
 
                                     {% if account.socialMedia == 'instagram' %}
-                                        <option value="instagram" selected>
-                                            <i class="fab fa-instagram"></i>
-                                            Instagram</option>
+                                        <option value="instagram" selected><i class="fab fa-instagram"></i>Instagram</option>
                                     {% else %}
-                                        <option value="instagram">
-                                            <i class="fab fa-instagram"></i>
-                                            Instagram</option>
+                                        <option value="instagram"><i class="fab fa-instagram"></i>Instagram</option>
                                     {% endif %}
 
                                     {% if account.socialMedia == 'linkedin' %}
-                                        <option value="linkedin" selected>
-                                            <i class="fab fa-linkedin"></i>
-                                            LinkedIn</option>
+                                        <option value="linkedin" selected><i class="fab fa-linkedin"></i>LinkedIn</option>
                                     {% else %}
-                                        <option value="linkedin">
-                                            <i class="fab fa-linkedin"></i>
-                                            LinkedIn</option>
+                                        <option value="linkedin"><i class="fab fa-linkedin"></i>LinkedIn</option>
                                     {% endif %}
                                 </select>
                             </td>
-                            <td><input type='text' value="{{ account.apiKey }}"></input></td>	
+                            <td><input type='text' value="{{ account.apiKey }}" name="accountApiKey{{account.id}}"></input></td>	
                             <td>
                             <button type="submit" class="btn btn-success">
                                             <input type="hidden" name="_method" value="POST">

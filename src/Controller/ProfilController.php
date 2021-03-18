@@ -58,10 +58,17 @@ class ProfilController extends AbstractController
      */
     public function edit(SocialMediaAccount $SocialMediaAccount, Request $request)
     {
-        
         if ($this->isCsrfTokenValid('edit' . $SocialMediaAccount->getId(), $request->get('_token'))) {
-            $this->getDoctrine()->getManager()->remove($SocialMediaAccount);
-            $this->getDoctrine()->getManager()->flush();
+            $name = $request->get('accountName'.$SocialMediaAccount->getId());
+            $social_media = $request->get('manage_account_social_media_form'.$SocialMediaAccount->getId());
+            var_dump($social_media);
+            $apiKey = $request->get('accountApiKey'.$SocialMediaAccount->getId());
+            $SocialMediaAccount->setSocialMedia($social_media);
+            $SocialMediaAccount->setApikey($apiKey);
+            $SocialMediaAccount->setName($name);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($SocialMediaAccount);
+            $entityManager->flush();
             $this->addFlash('success', 'La ligne a bien été modifié!');
         }
  
