@@ -16,16 +16,16 @@ class FacebookAPI
     }
 
     // Publie un statut avec un lien éventuel sur la page Facebook
-    public function postMessageOnPage($pageAccessToken, $pageId, $message, $link = false)
+    public function postMessageOnPage($shortLivedToken, $accountId, $clientSecret, $pageId, $message, $link = false)
     {
         $url = 'https://graph.facebook.com/' . $pageId . '/feed/';
         try {
             $params = [
                 'message' => $message,
-                'access_token' => $pageAccessToken
+                'access_token' => $this->getPageAccessToken($pageId, $shortLivedToken, $accountId, $clientSecret)
             ];
             if ($link != false) {
-                $headers['link'] = $link;
+                $params['link'] = $link;
             }
             $response = $this->client->request('POST', $url, [
                 'query' => $params,
@@ -45,13 +45,13 @@ class FacebookAPI
     }
 
     // Publie un statut avec un lien éventuel sur la page Facebook
-    public function postPhotoOnPage($pageAccessToken, $pageId, $photoPath)
+    public function postPhotoOnPage($shortLivedToken, $accountId, $clientSecret, $pageId, $photoPath)
     {
         $url = 'https://graph.facebook.com/' . $pageId . '/photos/';
         try {
             $params = [
                 'url' => $photoPath,
-                'access_token' => $pageAccessToken
+                'access_token' => $this->getPageAccessToken($pageId, $shortLivedToken, $accountId, $clientSecret)
             ];
             $response = $this->client->request('GET', $url, [
                 'query' => $params,
@@ -71,13 +71,13 @@ class FacebookAPI
     }
 
     // Renvoie le Page Access Token
-    public function getPageAccessToken($longLivedToken, $pageId)
+    public function getPageAccessToken($pageId, $shortLivedToken, $accountId, $clientSecret)
     {
         $url = 'https://graph.facebook.com/' . $pageId;
         try {
             $params = [
                 'fields' => 'access_token',
-                'access_token' => $longLivedToken
+                'access_token' => $this->getLongLivedUserToken($shortLivedToken, $accountId, $clientSecret)
             ];
             $response = $this->client->request('GET', $url, [
                 'query' => $params,

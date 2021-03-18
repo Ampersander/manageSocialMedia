@@ -30,11 +30,16 @@ class TestApiController extends AbstractController{
             $pageId = '102213561957064';
             $accountId = '139768931378739';
             $clientSecret = 'ac660241b09b4640889456be63f3f7da';
-            $shortLivedToken = 'EAABZCHn2BZAjMBAI2WdvbjJcAaxcCqzRAoE8DWIzRrEr2aQ3Mef8g0lIl1VCMCNZCnlG5ZAVXpZAYS3dQUX1143sDsD9u7sPUwouih72yP4dcfhlW7PlEsLJoPVta2Ri42ZABv0ZATCMHkGZAt8ZAEz0S0s9icX7qZCA9ZCDQJRJsan2Qyi3J3nwRHQ3ZAoj0JTRGz6hHhyHZBGjpjdVfZAK4MT65C';
+            $shortLivedToken = 'EAABZCHn2BZAjMBAH1ao9eOHgKQcLhy2CFK10NKPqbt8i9QAg2y54hsvZCRquf6zuRTKPAF1iVdGnWpf8XqWZBpHAZAJnHrHzTJRAkvBeTZBgxwghqI4w53YhgO3KoWBzVfq31MCO86FyWoeiYZBOWgKeYK6tqDpYSSFKO1eksOTCj2khrKk0qDOPZCGumGgzVOVZC9SeC9HZCFyBFIMUk5XER5La2AVEFC7B1J6lBgzoVjdxYZBL9bEdvzt5Fp7VTyCuj8ZD';
 
-            $longLivedToken = $this->FbAPI->getLongLivedUserToken($shortLivedToken, $accountId, $clientSecret);
-            $pageAccessToken = $this->FbAPI->getPageAccessToken($longLivedToken, $pageId);
-            $postId = $this->FbAPI->postMessageOnPage($pageAccessToken, $pageId, "TESTTTTT");
+            $postId = $this->FbAPI->postMessageOnPage(
+                $shortLivedToken,
+                $accountId,
+                $clientSecret,
+                $pageId,
+                'TEST',
+                'https://www.instagram.com/'
+            );
 
             return $this->render('test-api.html.twig',['postId'=>$postId]);
         } catch (\Throwable $th) {
