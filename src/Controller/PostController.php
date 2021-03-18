@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\SocialMediaAccount;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -80,7 +81,8 @@ class PostController extends AbstractController
      */
     public function watch(Post $post, Request $request, EntityManagerInterface $manager)
     {
-
+        
+        $repository = $this->getDoctrine()->getRepository(SocialMediaAccount::class);
         $image= $post->getImage();
         $date= $post->getDate();
         $description= $post->getDescription();
@@ -89,43 +91,40 @@ class PostController extends AbstractController
         $facebook = $request->request->get('facebook');
         $insta = $request->request->get('insta');
         $twitter = $request->request->get('twitter');
+        $social_medias = $repository->findByUser($user);
 
-        if($facebook != '' || $insta != '' || $twitter != ''){
-        if($facebook == "facebook"){
-            $postFB = new Post();
-            $postFB->setUser($user);
-            $postFB->setDescription($description);
-            $postFB->setDate($date);
-            $postFB->setImage($image);
-            $postFB->setSocialMediaAccounts('facebook');
-            $manager->persist($postFB);
-            $manager->flush();
-        }
-        if($insta == "insta"){
-            $postInst = new Post();
-            $postInst->setUser($user);
-            $postInst->setDescription($description);
-            $postInst->setDate($date);
-            $postInst->setImage($image);
-            $postInst->setSocialMediaAccounts('instagram');
-            $manager->persist($postInst);
-            $manager->flush();
-        }
-        if($twitter == "twitter"){
-            $postTwitter = new Post();
-            $postTwitter->setUser($user);
-            $postTwitter->setDescription($description);
-            $postTwitter->setDate($date);
-            $postTwitter->setImage($image);
-            $postTwitter->setSocialMediaAccounts('twitter');
-            $manager->persist($postTwitter);
-            $manager->flush();
-        }
+        if($facebook != null || $insta != null || $twitter != null){
+        
+            foreach($social_medias as $e)
+            {             
+                $checkboxValue = $request->request->get('checkbox'.$e->getId());
+                if($checkboxValue != NULL){
+                    $post = new Post();
+                    $post->setUser($user);
+                    $post->setDescription($description);
+                    $post->setDate($date);
+                    $post->setImage($image);
+                    $post->setSocialMediaAccounts($e->getSocialMedia());
+                    $manager->persist($post);
+                    $manager->flush();
+                }
+            }
         return $this->redirectToRoute('posts');
     }
+    
+    $socialMediaAccountsInstagram = $repository->findByUserAndSocialMedia($user,'instagram');
+    $socialMediaAccountsTwitter = $repository->findByUserAndSocialMedia($user,'twitter');
+    $socialMediaAccountsFacebook = $repository->findByUserAndSocialMedia($user,'facebook_account');
+    $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user,'facebook_page');
+   
+    
 
         return $this->render('post/watch.html.twig', [
             'post' => $post,
+            'socialMediaAccountsInstagram' => $socialMediaAccountsInstagram,
+            'socialMediaAccountsTwitter' => $socialMediaAccountsTwitter,
+            'socialMediaAccountsFacebook' => $socialMediaAccountsFacebook,
+            'socialMediaPagesFacebook' => $socialMediaPagesFacebook,
         ]);
     }
 }

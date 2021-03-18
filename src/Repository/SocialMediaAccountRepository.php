@@ -33,6 +33,23 @@ class SocialMediaAccountRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+    /**
+      * @return SocialMediaAccount[] Returns an array of SocialMediaAccount objects
+        */
+    
+        public function findByUserAndSocialMedia($user,$socialMediaAccount)
+        {
+            return $this->createQueryBuilder('s')
+                ->where('s.socialMedia = :socialMedia')
+                ->setParameter('socialMedia', $socialMediaAccount)
+                ->andWhere('s.user = :user')
+                ->setParameter('user', $user)
+                ->orderBy('s.id', 'ASC')
+                ->getQuery()
+                ->getResult()
+            ;
+        }
+
     
 
     /*

@@ -265,8 +265,9 @@ label img {
 </article>
 
 </article>
-<article class="w-100 text-center">
 <form method="post">
+<article class="w-100 text-center">
+
 <ul class="w-100 d-flex justify-content-around">
   <li><input type="checkbox" id="cb1" name="facebook" value="facebook"/>
     <label for="cb1"><img src="https://1000logos.net/wp-content/uploads/2016/11/Facebook-logo.png" width=100%/></label>
@@ -281,7 +282,127 @@ label img {
   </li>
 </ul>
     <input class="btn btn-primary mb-5" type="submit" value="Valider l'envoie">
-</form>
+
 
 </article>
+
+<!-- Modal -->
+<div class="modal" id="instagramModal" tabindex="-1" aria-labelledby="instagramModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Instagram account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+      <table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Name</th>
+							<th scope="col">Réseaux</th>
+							<th scope="col">Sélection</th>
+					</thead>
+          
+					 {% for socialMediaAccountInstagram in socialMediaAccountsInstagram %}
+						<tr>
+							<td>{{socialMediaAccountInstagram.name}}</td>
+              <td>{{socialMediaAccountInstagram.socialMedia}}</td>	
+              <td><input type="checkbox" name="checkbox{{socialMediaAccountInstagram.id}}" class='instagram' value='1'></input></td> 
+			      </tr>
+          {% endfor %}
+         
+    </table>  
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary saveInst">Save changes</button>
+      </div>
+      	
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal" id="twitterModal" tabindex="-1" aria-labelledby="twitterModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="twitterModalLabel">Twitter account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Name</th>
+							<th scope="col">Réseaux</th>
+							<th scope="col">Sélection</th>
+					</thead>
+         
+					 {% for socialMediaAccountTwitter in socialMediaAccountsTwitter %}
+						<tr>
+							<td>{{socialMediaAccountTwitter.name}}</td>
+              <td>{{socialMediaAccountTwitter.socialMedia}}</td>	
+               <td><input type="checkbox" name="checkbox{{socialMediaAccountTwitter.id}}" class='twitter' value='1'></input></td>	
+			      </tr>
+          {% endfor %}
+          
+    </table>  
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary saveTw">Save changes</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Modal -->
+<div class="modal" id="facebookModal" tabindex="-1" aria-labelledby="facebookModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="facebookModalLabel">Facebook account and Pages</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+       
+      <div class="modal-body">
+      <table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Name</th>
+							<th scope="col">Réseaux</th>
+							<th scope="col">Sélection</th>
+					</thead>
+          
+					 {% for socialMediaAccountFacebook in socialMediaAccountsFacebook %}
+						<tr>
+							<td>{{socialMediaAccountFacebook.name}}</td>
+              <td>{{socialMediaAccountFacebook.socialMedia}}</td>	
+             <td><input type="checkbox" name="checkbox{{socialMediaAccountFacebook.id}}" class='facebook' value='1'></input></td>	
+			      </tr>
+          {% endfor %}
+          {% for socialMediaPageFacebook in socialMediaPagesFacebook %}
+						<tr>
+							<td>{{socialMediaPageFacebook.name}}</td>
+              <td>{{socialMediaPageFacebook.socialMedia}}</td>	
+              <td><input type="checkbox" name="checkbox{{socialMediaPageFacebook.id}}" class='facebook' value='1'></input></td>	
+			      </tr>
+          {% endfor %}
+          
+    </table>  
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary saveFb">Save changes</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+</form>
 {% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('manageCreatePost') }}{% endblock %}
