@@ -4,11 +4,10 @@ namespace App\Utility;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class InstagramAPI
+class TwitterAPI
 {
 
     private $client;
-    // private $pageId = '102213561957064'; //Page id test
 
     public function __construct(HttpClientInterface $client)
     {

@@ -8,7 +8,6 @@ class FacebookAPI
 {
 
     private $client;
-    // private $pageId = '102213561957064'; //Page id test
 
     public function __construct(HttpClientInterface $client)
     {
@@ -16,13 +15,13 @@ class FacebookAPI
     }
 
     // Publie un statut avec un lien éventuel sur la page Facebook
-    public function postMessageOnPage($shortLivedToken, $accountId, $clientSecret, $pageId, $message, $link = false)
+    public function postMessageOnPage($pageAccessToken, $pageId, $message, $link = false)
     {
-        $url = 'https://graph.facebook.com/' . $pageId . '/feed/';
+        $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/feed/';
         try {
             $params = [
                 'message' => $message,
-                'access_token' => $this->getPageAccessToken($pageId, $shortLivedToken, $accountId, $clientSecret),
+                'access_token' => $pageAccessToken
             ];
             if ($link != false) {
                 $params['link'] = $link;
@@ -45,13 +44,13 @@ class FacebookAPI
     }
 
     // Publie une photo avec un message éventuel sur la page Facebook
-    public function postPhotoOnPage($shortLivedToken, $accountId, $clientSecret, $pageId, $photoPath, $message = false, $published = true)
+    public function postPhotoOnPage($pageAccessToken, $pageId, $photoPath, $message = false, $published = true)
     {
         $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/photos/';
         try {
             $params = [
                 'url' => $photoPath,
-                'access_token' => $this->getPageAccessToken($pageId, $shortLivedToken, $accountId, $clientSecret)
+                'access_token' => $pageAccessToken
             ];
             // Message éventuel
             if ($message != false) {
@@ -78,16 +77,16 @@ class FacebookAPI
         }
     }
 
-    // Publie des photos avec un lien éventuel sur la page Facebook
-    public function postPhotosOnPage($shortLivedToken, $accountId, $clientSecret, $pageId, $photoPaths, $message = false)
+    // Publie plusieurs photos en un post avec un message éventuel sur la page Facebook
+    public function postPhotosOnPage($pageAccessToken, $pageId, $photoPaths, $message = false)
     {
-        $pageAccessToken = $this->getPageAccessToken($pageId, $shortLivedToken, $accountId, $clientSecret);
+        $pageAccessToken = $pageAccessToken;
         $unpublishedPhotoIds = [];
 
         try {
             // Upload des photos sans les publier
             foreach ($photoPaths as $path) {
-                $unpublishedPhotoIds[] = $this->postPhotoOnPage($shortLivedToken, $accountId, $clientSecret, $pageId, $path, false, false);
+                $unpublishedPhotoIds[] = $this->postPhotoOnPage($pageAccessToken, $pageId, $path, false, false);
             }
             $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/feed/';
             $params = [
@@ -110,7 +109,6 @@ class FacebookAPI
                 $content = $response->toArray(false);
                 $message = $content['error']['message'];
                 throw new \Exception('Echec de l\'envoi des photos sur Facebook : ' . $message);
-                // return var_dump($unpublishedPhotoIds);
             } else {
                 $content = $response->toArray();
                 return $content['id'];
@@ -121,13 +119,13 @@ class FacebookAPI
     }
 
     // Renvoie le Page Access Token
-    public function getPageAccessToken($pageId, $shortLivedToken, $accountId, $clientSecret)
+    public function getPageAccessToken($longLivedUserToken, $pageId)
     {
-        $url = 'https://graph.facebook.com/' . $pageId;
+        $url = 'https://graph.facebook.com/v10.0/' . $pageId;
         try {
             $params = [
                 'fields' => 'access_token',
-                'access_token' => $this->getLongLivedUserToken($shortLivedToken, $accountId, $clientSecret)
+                'access_token' => $longLivedUserToken
             ];
             $response = $this->client->request('GET', $url, [
                 'query' => $params,
