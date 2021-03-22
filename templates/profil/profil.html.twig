@@ -4,116 +4,173 @@
 {% endblock %}
 
 {% block body %}
-	{{ parent() }}
-	<div class="container">
-		<main>
-			<div class="row m-5">
-				<div class="col-6 offset-3">
-					<div class="card">
-						<div class='card-header'>
-							<h1 class="h3 mb-3 font-weight-normal text-center">New account</h1>
-						</div>
-						<div class="card-body bg-light">
-							{{ form_start(ManageAccountSocialMedia) }}
-							<div class="form-group">
-								{{ form_row(ManageAccountSocialMedia.social_media, {
-                        label: 'Réseaux'
-                    }) }}
-							</div>
+{{ parent() }}
+<div class="container">
+    <main>
+        <div class="row m-5">
+            <div class="col-6 offset-3">
+                <div class="card">
+                    <div class='card-header'>
+                        <h1 class="h3 mb-3 font-weight-normal text-center">New account</h1>
+                    </div>
+                    <div class="card-body bg-light">
+                        {{ form_start(ManageAccountSocialMedia) }}
+                        <div class="form-group">
+                            {{ form_row(ManageAccountSocialMedia.social_media, {
+                            label: 'Réseaux'
+                            }) }}
+                        </div>
 
-							{{ form_start(ManageAccountSocialMedia) }}
-							<div class="form-group">
-								{{ form_row(ManageAccountSocialMedia.name, {
-                        label: 'Nom compte'
-                    }) }}
-							</div>
-							<div class="form-group">
-								{{ form_row(ManageAccountSocialMedia.apiKey, {
-                        label: 'Clé API'
-                    }) }}
-							</div>
-							<div class='d-flex flex-column'>
-								<button type="submit" class="btn btn-primary btn-block btn-lg">Ajout</button>
-							</div>
+                        {{ form_start(ManageAccountSocialMedia) }}
+                        <div class="form-group">
+                            {{ form_row(ManageAccountSocialMedia.name, {
+                            label: 'Nom compte'
+                            }) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_row(ManageAccountSocialMedia.apiKey, {
+                            label: 'Clé API'
+                            }) }}
+                        </div>
+                        <div class='d-flex flex-column'>
+                            <button type="submit" class="btn btn-primary btn-block btn-lg">Ajout</button>
+                        </div>
 
-							{{ form_end(ManageAccountSocialMedia) }}
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="card m-5">
-			<div class='card-header'>
-				<h1 class="h3 mb-3 font-weight-normal text-center">Key API</h1>
-			</div>
-			<div class="card-body bg-light">
-				<table class="table">
-					<thead>
-						<tr>
-							<th scope="col">Name</th>
-							<th scope="col">Réseaux</th>
-							<th scope="col">Api Key</th>
-							<th scope="col"></th>
+                        {{ form_end(ManageAccountSocialMedia) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<div class="card m-5">
+    <div class='card-header'>
+        <h1 class="h3 mb-3 font-weight-normal text-center">Facebook API</h1>
+    </div>
+    <div class="card-body bg-light">
+        <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Réseaux</th>
+                    <th scope="col">Short Lived Token</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            {% for account in accounts %}
+            {% if account.socialMedia != 'twitter' %}
+                <tr>
+                    <form method="post" action="{{ path('profil.SocialMediaAccount.edit', {id: account.id}) }}">
+                    <td><input type='text' value="{{ account.name }}" name="accountName{{account.id}}"></input></td>
+                    
+                    <td>
+                    
+                    <select id="manage_account_social_media_form_social_media"
+                        name="manage_account_social_media_form{{account.id}}">
+                        {% if account.socialMedia == 'twitter' %}
+                        <option value="twitter" selected>
+                            <i class="fab fa-twitter-square"></i>Twitter
+                        </option>
+                        {% else %}
+                        <option value="twitter">
+                            <i class="fab fa-twitter-square"></i>Twitter
+                        </option>
+                        {% endif %}
+
+                        {% if account.socialMedia == 'facebook_account' %}
+                        <option value="facebook_account" selected>
+                            <i class="fab fa-facebook-square"></i>Facebook compte
+                        </option>
+                        {% else %}
+                        <option value="facebook_account">
+                            <i class="fab fa-facebook-square"></i>Facebook compte
+                        </option>
+                        {% endif %}
+                    </select>
+                </td>
+             
+                <td><input type='text' value="{{account.fbAccount.shortlivedtoken}}" name="accountApiKey{{account.id}}">
+                </td>
+                
+                </input></td><td><button type="submit" class="btn btn-success">
+                        <input type="hidden" name="_method" value="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ account.id) }}">
+                        <i class="fa fa-thumbs-up"></i></button></td>
+                </form>
+                <form method="post" action="{{ path('profil.SocialMediaAccount.delete', {id: account.id}) }}"
+                    onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
+                    <td><button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ account.id) }}"></button>
+                    </td>
+                </form>
+                </tr>{% endif %}{% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+    <div class="card m-5">
+        <div class='card-header'>
+            <h1 class="h3 mb-3 font-weight-normal text-center">Twitter API</h1>
+        </div>
+        <div class="card-body bg-light ">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Réseaux</th>
+                            <th scope="col">Consumer Key</th>
+                            <th scope="col">Consumer Secret</th>
+                            <th scope="col">Access Token</th>
+                            <th scope="col">Access Token Secret</th>
                             <th scope="col"></th>
-						</tr>
-					</thead>
-					{% for account in accounts %}
-						<tr>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    {% for account in accounts %}
+                    {% if account.socialMedia == 'twitter' %}
+                        <tr>
                             <form method="post" action="{{ path('profil.SocialMediaAccount.edit', {id: account.id}) }}">
-							<td><input type='text' value="{{ account.name }}" name="accountName{{account.id}}"></input></td>	
-                            <td>
-                                <select id="manage_account_social_media_form_social_media" name="manage_account_social_media_form{{account.id}}">
-                                    {% if account.socialMedia == 'twitter' %}
-                                        <option value="twitter" selected><i class="fab fa-twitter-square"></i>Twitter</option>
-                                    {% else %}
-                                        <option value="twitter"><i class="fab fa-twitter-square"></i>Twitter</option>
-                                    {% endif %}
-
-                                    {% if account.socialMedia == 'facebook_account' %}
-                                        <option value="facebook_account" selected><i class="fab fa-facebook-square"></i>Facebook compte</option>
-                                    {% else %}
-                                        <option value="facebook_account"><i class="fab fa-facebook-square"></i>Facebook compte</option>
-                                    {% endif %}
-
-                                    {% if account.socialMedia == 'facebook_page' %}
-                                        <option value="facebook_page" selected><i class="fab fa-facebook-square"></i>Facebook Page</option>
-                                    {% else %}
-                                        <option value="facebook_page"><i class="fab fa-facebook-square"></i>Facebook Page</option>
-                                    {% endif %}
-
-                                    {% if account.socialMedia == 'instagram' %}
-                                        <option value="instagram" selected><i class="fab fa-instagram"></i>Instagram</option>
-                                    {% else %}
-                                        <option value="instagram"><i class="fab fa-instagram"></i>Instagram</option>
-                                    {% endif %}
-
-                                    {% if account.socialMedia == 'linkedin' %}
-                                        <option value="linkedin" selected><i class="fab fa-linkedin"></i>LinkedIn</option>
-                                    {% else %}
-                                        <option value="linkedin"><i class="fab fa-linkedin"></i>LinkedIn</option>
-                                    {% endif %}
-                                </select>
-                            </td>
-                            <td><input type='text' value="{{ account.apiKey }}" name="accountApiKey{{account.id}}"></input></td>	
-                            <td>
-                            <button type="submit" class="btn btn-success">
-                                            <input type="hidden" name="_method" value="POST">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ account.id) }}">
-                                            <i class="fa fa-thumbs-up"></i>
-                                        </button>
-                            </td>
-                            </form>
-                                <form method="post" action="{{ path('profil.SocialMediaAccount.delete', {id: account.id}) }}" onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
-                                    <td>
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="fa fa-trash"></i>
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ account.id) }}">
-                                        </button>
-                                    </td>
-                                </form>
-
-			</tr>
-		{% endfor %}
-	</table>
-</div></div></main></div>{% endblock %}{% block javascripts %}{{ encore_entry_script_tags('manageAccountSocialMedia') }}{% endblock %}
+                            <td><input type='text' value="{{ account.name }}" name="accountName{{account.id}}"></input></td>
+                        <td>
+                            <select id="manage_account_social_media_form_social_media"
+                            name="manage_account_social_media_form{{account.id}}">{% if account.socialMedia == 'twitter'
+                            %}<option value="twitter" selected>
+                                <i class="fab fa-twitter-square"></i>Twitter
+                            </option>{% else %}<option value="twitter">
+                                <i class="fab fa-twitter-square"></i>Twitter
+                            </option>{% endif %}{% if account.socialMedia == 'facebook_account' %}<option
+                                value="facebook_account" selected>
+                                <i class="fab fa-facebook-square"></i>Facebook compte
+                            </option>{% else %}<option value="facebook_account">
+                                <i class="fab fa-facebook-square"></i>Facebook compte
+                            </option>{% endif %}</select></td>
+                    <td><input type='text' value="{{account.twitterAccount.ConsumerKey}}" name="accountConsumerKey{{account.id}}"></td></input>
+                    </td>
+                    <td><input type='text' value="{{ account.twitterAccount.consumerSecret }}" name="accountConsumerSecret{{account.id}}"></td></input>
+                    </td>
+                    <td><input type='text' value="{{ account.twitterAccount.accessToken }}" name="accountAccessToken{{account.id}}"></td></input>
+                    </td>
+                    <td><input type='text' value="{{ account.twitterAccount.accessTokenSecret }}" name="accountAccessTokenSecret{{account.id}}"> </td>
+                    </input></td>
+                    <td><button type="submit" class="btn btn-success"> <input type="hidden" name="_method" value="POST">
+                            <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ account.id) }}"> <i
+                                class="fa fa-thumbs-up"></i></button></td>
+                    </form>
+                    <form method="post" action="{{ path('profil.SocialMediaAccount.delete', {id: account.id}) }}"
+                        onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
+                        <td><button type="submit" class="btn btn-danger"> <i class="fa fa-trash"></i> <input
+                                    type="hidden" name="_method" value="DELETE"> <input type="hidden" name="_token"
+                                    value="{{ csrf_token('delete' ~ account.id) }}"></button></td>
+                    </form>
+                    </tr>{% endif %}{% endfor %}
+                </table>
+            </div>
+    </div>
+    </main>
+</div>
+{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('manageAccountSocialMedia') }}{% endblock %}

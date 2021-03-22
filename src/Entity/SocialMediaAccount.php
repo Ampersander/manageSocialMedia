@@ -45,6 +45,16 @@ class SocialMediaAccount
      */
     private $posts;
 
+    /**
+     * @ORM\OneToOne(targetEntity=FbAccount::class, cascade={"persist", "remove"})
+     */
+    private $fbAccount;
+
+    /**
+     * @ORM\OneToOne(targetEntity=TwitterAccount::class, cascade={"persist", "remove"})
+     */
+    private $twitterAccount;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -126,6 +136,30 @@ class SocialMediaAccount
         if ($this->posts->removeElement($post)) {
             $post->removeSocialMediaAccount($this);
         }
+
+        return $this;
+    }
+
+    public function getFbAccount(): ?FbAccount
+    {
+        return $this->fbAccount;
+    }
+
+    public function setFbAccount(?FbAccount $fbAccount): self
+    {
+        $this->fbAccount = $fbAccount;
+
+        return $this;
+    }
+
+    public function getTwitterAccount(): ?TwitterAccount
+    {
+        return $this->twitterAccount;
+    }
+
+    public function setTwitterAccount(?TwitterAccount $twitterAccount): self
+    {
+        $this->twitterAccount = $twitterAccount;
 
         return $this;
     }

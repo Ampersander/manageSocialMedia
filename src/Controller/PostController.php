@@ -131,8 +131,7 @@ class PostController extends AbstractController
                                 $clientSecret = 'ac660241b09b4640889456be63f3f7da';
                                 // Mettre ici le token d'entrée (a recup sur API graph tools par ex)
 
-                                $shortLivedToken = $social_media->getApikey();
-                                //$newArrayImage = array($image);
+                                $shortLivedToken = 'EAABZCHn2BZAjMBAOOz2G6xqjKakRvlU64xtvAtaxlQeZBQEirCoUR1h6IDYi9UIpAF4bYehwWu1m94D99o27yW1mYs4X3jLim5ugXQ8dibYPFzbcNhXw93r63E9G0mLquZCAUUIYBBgpORA87hOFOgMxfpEB12W451khazrzN0hiiA4oDewsXppD36K2PkBZARV7P0vTwEdykarIC6gW0bH1hCtUO6gTmxFjNZCyVBfjrIvZB0PidvDbCwsZAXsockkZD';
                                 $getLongLivedUserToken = $this->FbAPI->getLongLivedUserToken($shortLivedToken, $accountId, $clientSecret);
                                 $pageAccessToken = $this->FbAPI->getPageAccessToken($getLongLivedUserToken, $pageId);
                                 $postId = $this->FbAPI->postPhotoOnPage(
@@ -149,7 +148,7 @@ class PostController extends AbstractController
                             try {
                                 $accountId = '17841446705960906';
                                 $photoUrl = $image;
-                                $accessToken = $social_media->getApikey();
+                                $accessToken = 'EAABZCHn2BZAjMBAOOz2G6xqjKakRvlU64xtvAtaxlQeZBQEirCoUR1h6IDYi9UIpAF4bYehwWu1m94D99o27yW1mYs4X3jLim5ugXQ8dibYPFzbcNhXw93r63E9G0mLquZCAUUIYBBgpORA87hOFOgMxfpEB12W451khazrzN0hiiA4oDewsXppD36K2PkBZARV7P0vTwEdykarIC6gW0bH1hCtUO6gTmxFjNZCyVBfjrIvZB0PidvDbCwsZAXsockkZD';
                                 $message = $description;          
                                 $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $accessToken, $message);
                             } catch (\Throwable $th) {
