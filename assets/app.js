@@ -18,8 +18,9 @@ async function sendFacebookToken(appId) {
     FB.login(function (response) {
         if (response.authResponse) {
             console.log('Connecté à Facebook ! Access token : ' + response.authResponse.accessToken);
+            // Afficher l'access token
             $('#access-token').text(response.authResponse.accessToken);
-            // Envoi du short-lived token au serveur
+            // Envoi du short-lived token au serveur pour le traiter
             // let data = {
             //     appId: appId,
             //     token: response.authResponse.accessToken
@@ -36,6 +37,19 @@ async function sendFacebookToken(appId) {
         }
     });
 };
+
+window.fbAsyncInit = function() {
+    console.log("Facebook SDK Loaded");
+    FB.getLoginStatus(function(response) {        
+        if (response.status === 'connected') {
+            console.log('Utilisateur déjà connecté');
+          } else if (response.status === 'not_authorized') {
+            console.log('Utilisateur déjà connecté, pas d autorisation');
+          } else {
+            console.log('Utilisateur non connecté');
+          }
+    });
+}
 
 $(function () {
 
