@@ -2,23 +2,33 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>
+            {% block title %}Welcome!
+            {% endblock %}
+        </title>
         {# Run `composer require symfony/webpack-encore-bundle`
-           and uncomment the following Encore helpers to start using Symfony UX #}
+                   and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
+    </head>
+
+    <body>
+
+        <h1>Log facebook</h1>
+        <label>App Id<label>
+        <input id='fb-app-id' type="number"></input>
+        <button id="fb-log-btn">Log-in FB</button>
+        {# <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button> #}
+
+        {% block body %}{% endblock %}
 
         {% block javascripts %}
+            <script>
+                
+            </script>
+            <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
-    </head>
-    <body>
-    {{postId}}
-        {# {{postId1}}
-        {{postId2}}
-        <br/>
-        {{token}} #}
-        {% block body %}{% endblock %}
     </body>
 </html>

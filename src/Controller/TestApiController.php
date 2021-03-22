@@ -98,6 +98,15 @@ class TestApiController extends AbstractController{
         }
         // return $this->render('test-api.html.twig',['postId'=>'ok']);
     }
+
+    /**
+     * @Route("/logfb", name="logb")
+     */
+    public function logfb()
+    {
+        return $this->render('test-api.html.twig',['postId'=>'ok']);
+    }
+
 }
 
 ?>
