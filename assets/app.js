@@ -12,25 +12,46 @@ import './styles/app.css';
 import './bootstrap';
 
 // Renvoie le user short-lived token à partid du appId, puis déconnecte la session
-async function getShortLivedAccessToken(appId) {
-    console.log('Connexion à Facebook, appId : '+appId);
-    FB.init({appId: appId, status: false, xfbml: false, version: 'v10.0'});
-    let accessToken = FB.login(function (response) {
+async function sendFacebookToken(appId) {
+    console.log('Connexion à Facebook, appId : ' + appId);
+    FB.init({ appId: appId, status: false, xfbml: false, version: 'v10.0' });
+    FB.login(function (response) {
         if (response.authResponse) {
-            console.log('Connecté à FB !');
-            return response.authResponse.accessToken;
+            console.log('Connecté à Facebook ! Access token : ' + response.authResponse.accessToken);
+            $('access-token').text(response.authResponse.accessToken);
+            // Envoi du short-lived token au serveur
+            // let data = {
+            //     appId: appId,
+            //     token: response.authResponse.accessToken
+            // }
+            // fetch('url', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify(data),
+            // });
         } else {
             console.log('Connection échouée');
-            return false;
         }
     });
-    return accessToken;
 }
 
+
+
 $(function () {
+
+    // Déconnecte l'utilisateur pour 
+    FB.getLoginStatus(function (response) {
+        if (response.status === 'connected') {
+            $('access-token').text(response.authResponse.accessToken);
+        } else if (response.status === 'not_authorized') {
+            $('access-token').text(response.authResponse.accessToken);
+        }
+    });
+
     $('#fb-log-btn').on('click', async function () {
         let appId = $('#fb-app-id').val();
-        let shlt = await Fb.getShortLivedAccessToken(appId);
-        console.log('Short lived acces token : '+ shlt);
+        sendFacebookToken(appId);
     });
 });

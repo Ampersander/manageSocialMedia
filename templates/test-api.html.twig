@@ -17,8 +17,9 @@
 
         <h1>Log facebook</h1>
         <label>App Id<label>
-        <input id='fb-app-id' type="number"></input>
+        <input id='fb-app-id' type="number" placeholder="App ID"></input>
         <button id="fb-log-btn">Log-in FB</button>
+        <p>Access token actuel : <span id="access-token"></span><p>
         {# <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button> #}
 
         {% block body %}{% endblock %}

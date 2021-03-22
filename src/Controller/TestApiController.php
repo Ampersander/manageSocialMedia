@@ -22,6 +22,15 @@ class TestApiController extends AbstractController{
     }
 
     /**
+     * Test bouton de log facebook
+     * @Route("/logfb", name="logb")
+     */
+    public function logfb()
+    {
+        return $this->render('test-api.html.twig',['postId'=>'ok']);
+    }
+
+    /**
      * @Route("/fb", name="fb_test")
      */
     public function fb_test()
@@ -97,14 +106,6 @@ class TestApiController extends AbstractController{
             throw $th;
         }
         // return $this->render('test-api.html.twig',['postId'=>'ok']);
-    }
-
-    /**
-     * @Route("/logfb", name="logb")
-     */
-    public function logfb()
-    {
-        return $this->render('test-api.html.twig',['postId'=>'ok']);
     }
 
 }
