@@ -52,7 +52,20 @@ class PostRepository extends ServiceEntityRepository
         ;
     }
 
-
+     /**
+      * @return SocialMediaAccount[] Returns an array of SocialMediaAccount objects
+        */
+    
+        public function findByUser($user)
+        {
+            return $this->createQueryBuilder('s')
+                ->andWhere('s.user = :user')
+                ->setParameter('user', $user)
+                ->orderBy('s.id', 'ASC')
+                ->getQuery()
+                ->getResult()
+            ;
+        }
 
     /*
     public function findOneBySomeField($value): ?Post

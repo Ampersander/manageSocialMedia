@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -33,16 +35,20 @@ class Post
     private $description;
 
     /**
-     * @ORM\Column(type="string")
-     */
-    private $socialMediaAccounts;
-
-    /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=SocialMediaAccount::class, inversedBy="posts")
+     */
+    private $socialMediaAccounts;
+
+    public function __construct()
+    {
+        $this->socialMediaAccounts = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -86,17 +92,6 @@ class Post
         return $this;
     }
 
-    public function getSocialMediaAccounts(): ?string
-    {
-        return $this->socialMediaAccounts;
-    }
-
-    public function setSocialMediaAccounts(string $socialMediaAccounts): self
-    {
-        $this->socialMediaAccounts = $socialMediaAccounts;
-
-        return $this;
-    }
 
     public function getUser(): ?User
     {
@@ -106,6 +101,30 @@ class Post
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SocialMediaAccount[]
+     */
+    public function getSocialMediaAccounts(): Collection
+    {
+        return $this->socialMediaAccounts;
+    }
+
+    public function addSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
+    {
+        if (!$this->socialMediaAccounts->contains($socialMediaAccount)) {
+            $this->socialMediaAccounts[] = $socialMediaAccount;
+        }
+
+        return $this;
+    }
+
+    public function removeSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
+    {
+        $this->socialMediaAccounts->removeElement($socialMediaAccount);
 
         return $this;
     }

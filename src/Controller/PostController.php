@@ -15,17 +15,32 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Abraham\TwitterOAuth\TwitterOAuth;
+use App\Utility\FacebookAPI;
+use App\Utility\InstagramAPI;
 
 class PostController extends AbstractController
 {
+
+    private $FbAPI;
+    private $InstaAPI;
+
+    public function __construct(HttpClientInterface $client)
+    {
+        $this->FbAPI = new FacebookAPI($client);
+        $this->InstaAPI = new InstagramAPI($client);
+    }
+
     /**
      * @Route("/posts", name="posts")
      */
     public function index(): Response
     {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
         $repository = $this->getDoctrine()->getRepository(Post::class);
-        $posts = $repository->findBySocialMediaAccounts('DEFAULT');
+        $posts = $repository->findByUser($user);
 
         return $this->render('post/index.html.twig', [
             'controller_name' => 'PostController',
@@ -48,7 +63,6 @@ class PostController extends AbstractController
             ->add('date')
             ->getForm();
             $post->setUser($user);
-            $post->setSocialMediaAccounts('DEFAULT');
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -95,18 +109,67 @@ class PostController extends AbstractController
 
         if($facebook != null || $insta != null || $twitter != null){
         
-            foreach($social_medias as $e)
+            foreach($social_medias as $social_media)
             {             
-                $checkboxValue = $request->request->get('checkbox'.$e->getId());
+                $checkboxValue = $request->request->get('checkbox'.$social_media->getId());
                 if($checkboxValue != NULL){
-                    $post = new Post();
-                    $post->setUser($user);
-                    $post->setDescription($description);
-                    $post->setDate($date);
-                    $post->setImage($image);
-                    $post->setSocialMediaAccounts($e->getSocialMedia());
+                    $post->addSocialMediaAccount($social_media);
                     $manager->persist($post);
                     $manager->flush();
+                    
+                    $case = $social_media->getSocialMedia();
+                    if($case == 'facebook_account' || $case== 'facebook_page')
+                    {
+                        $case= 'facebook';
+                    }
+                    switch ( $case) {
+                        case 'facebook':
+                            try {
+                                $pageId = '102213561957064';
+                                $accountId = '139768931378739';
+
+                                $clientSecret = 'ac660241b09b4640889456be63f3f7da';
+                                // Mettre ici le token d'entrée (a recup sur API graph tools par ex)
+
+                                $shortLivedToken = $social_media->getApikey();
+                                //$newArrayImage = array($image);
+                                $getLongLivedUserToken = $this->FbAPI->getLongLivedUserToken($shortLivedToken, $accountId, $clientSecret);
+                                $pageAccessToken = $this->FbAPI->getPageAccessToken($getLongLivedUserToken, $pageId);
+                                $postId = $this->FbAPI->postPhotoOnPage(
+                                    $pageAccessToken,
+                                    $pageId,
+                                    $image,
+                                    $description
+                                );
+                            } catch (\Throwable $th) {
+                                throw $th;
+                            }
+                            break;
+                        case 'instagram':
+                            try {
+                                $accountId = '17841446705960906';
+                                $photoUrl = $image;
+                                $accessToken = $social_media->getApikey();
+                                $message = $description;          
+                                $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $accessToken, $message);
+                            } catch (\Throwable $th) {
+                                throw $th;
+                            }
+                            break;
+                        case 'twitter':
+                            $consumer_key = '8zz3WouFDnNW0vJ3r5BpPZfxX';
+                            $consumer_secret = 'yY6PC7CUEJYP2gg1X9uusxEdCfUMmW5UgIIowAWCunOXZDFM1F';
+                            $access_token = '1371453453432655872-PGVA3ttM6nDTcRmfS5TqSEfRxuU48O';
+                            $access_token_secret = 'RdhuU5csqLUhXzFrGrMuGo5Jl4cDG1AQQuWiFGDkhEOcS';
+                
+
+                            $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
+                            $content = $connection->get("account/verify_credentials");
+
+                            $new_status = $connection->post("statuses/update", ['status' => $description]);
+                            $status = $connection->get("statuses/home_timeline", ['count' => 25, "exclde_replies" => true]);
+                            break;
+                    }
                 }
             }
         return $this->redirectToRoute('posts');
