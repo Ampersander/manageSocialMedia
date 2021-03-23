@@ -17,6 +17,13 @@ use Symfony\Component\Security\Core\Security;
 class ProfilController extends AbstractController
 {
 
+ /**
+     * @Route("/test", name="test")
+     */
+    public function test(Request $request): Response
+    {
+        return $this->render('test.html.twig');
+    }
 
     /**
      * @Route("/profil/facebook", name="manageFacebook")

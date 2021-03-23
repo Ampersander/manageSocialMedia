@@ -85,10 +85,7 @@ class FacebookAPI
 
         try {
             // Upload des photos sans les publier
-            var_dump($pageAccessToken);
-            var_dump($pageId);
-            var_dump($photoPaths);
-            var_dump($message);
+            
             foreach ($photoPaths as $path) {
                 $unpublishedPhotoIds[] = $this->postPhotoOnPage($pageAccessToken, $pageId, $path, false, false);
             }

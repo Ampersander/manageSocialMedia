@@ -24,10 +24,6 @@ class SocialMediaAccount
      */
     private $name;
 
-    /**
-     * @ORM\Column(type="string", length=500)
-     */
-    private $apikey;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -73,18 +69,6 @@ class SocialMediaAccount
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getApikey(): ?string
-    {
-        return $this->apikey;
-    }
-
-    public function setApikey(string $apikey): self
-    {
-        $this->apikey = $apikey;
 
         return $this;
     }

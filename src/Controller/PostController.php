@@ -20,6 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
+use App\Utility\TwitterAPI;
 
 class PostController extends AbstractController
 {
@@ -31,6 +32,7 @@ class PostController extends AbstractController
     {
         $this->FbAPI = new FacebookAPI($client);
         $this->InstaAPI = new InstagramAPI($client);
+        $this->TwitterAPI = new TwitterAPI($client);
     }
 
     /**
