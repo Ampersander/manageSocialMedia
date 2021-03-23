@@ -38,7 +38,7 @@ class FbAccount
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $account_id;
+    private $accountId;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -113,12 +113,12 @@ class FbAccount
 
     public function getAccountId(): ?string
     {
-        return $this->account_id;
+        return $this->accountId;
     }
 
-    public function setAccountId(string $account_id): self
+    public function setAccountId(string $accountId): self
     {
-        $this->account_id = $account_id;
+        $this->accountId = $accountId;
 
         return $this;
     }

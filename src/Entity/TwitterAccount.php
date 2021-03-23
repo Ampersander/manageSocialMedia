@@ -17,92 +17,77 @@ class TwitterAccount
      */
     private $id;
 
+    
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $consumerKey;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $consumer_key;
+    private $consumerSecret;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $consumer_secret;
+    private $accessToken;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $access_token;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $access_token_secret;
+    private $accessTokenSecret;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
 
     public function getConsumerKey(): ?string
     {
-        return $this->consumer_key;
+        return $this->consumerKey;
     }
 
-    public function setConsumerKey(?string $consumer_key): self
+    public function setConsumerKey(?string $consumerKey): self
     {
-        $this->consumer_key = $consumer_key;
+        $this->consumerKey = $consumerKey;
 
         return $this;
     }
 
     public function getConsumerSecret(): ?string
     {
-        return $this->consumer_secret;
+        return $this->consumerSecret;
     }
 
-    public function setConsumerSecret(string $consumer_secret): self
+    public function setConsumerSecret(string $consumerSecret): self
     {
-        $this->consumer_secret = $consumer_secret;
+        $this->consumerSecret = $consumerSecret;
 
         return $this;
     }
 
     public function getAccessToken(): ?string
     {
-        return $this->access_token;
+        return $this->accessToken;
     }
 
-    public function setAccessToken(string $access_token): self
+    public function setAccessToken(string $accessToken): self
     {
-        $this->access_token = $access_token;
+        $this->accessToken = $accessToken;
 
         return $this;
     }
 
     public function getAccessTokenSecret(): ?string
     {
-        return $this->access_token_secret;
+        return $this->accessTokenSecret;
     }
 
-    public function setAccessTokenSecret(?string $access_token_secret): self
+    public function setAccessTokenSecret(?string $accessTokenSecret): self
     {
-        $this->access_token_secret = $access_token_secret;
+        $this->accessTokenSecret = $accessTokenSecret;
 
         return $this;
     }

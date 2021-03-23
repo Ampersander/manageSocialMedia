@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!
+{% endblock %}
+
+{% block body %}
+{{ parent() }}
+<div class="container">
+    <main>
+<div class="row m-5">
+    <div class="col-6 offset-3">
+        <div class="card">
+            <div class='card-header'>
+                <h1 class="h3 mb-3 font-weight-normal text-center">New Facebook Account</h1>
+            </div>
+            <div class="card-body bg-light">
+                {{ form_start(FbAccountFormType) }}
+
+              
+                <div class="form-group">
+                    {{ form_row(FbAccountFormType.name, {
+                    label: 'Nom compte'
+                    }) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(FbAccountFormType.accountId, {
+                    label: 'Account ID'
+                    }) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(FbAccountFormType.shortLivedToken, {
+                    label: 'Short Lived Token'
+                    }) }}
+                </div>
+                <div class='d-flex flex-column'>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">Ajout</button>
+                </div>
+
+                {{ form_end(FbAccountFormType) }}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="card m-5">
+    <div class='card-header'>
+        <h1 class="h3 mb-3 font-weight-normal text-center">Facebook API</h1>
+    </div>
+    <div class="card-body bg-light">
+        <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Account ID</th>
+                    <th scope="col">Short Lived Token</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            {% for account in accounts %}
+            {% if account.socialMedia != 'twitter_account' %}
+                <tr>
+                    <form method="post" action="{{ path('profil.SocialMediaAccount.edit', {id: account.id}) }}">
+                    <td><input type='text' value="{{ account.name }}" name="accountName{{account.id}}"></input></td>
+                    
+                <td><input type='text' value="{{account.fbAccount.accountId}}" name="accountId{{account.id}}">
+                </td>
+                <td><input type='text' value="{{account.fbAccount.shortlivedtoken}}" name="shortlivedtoken{{account.id}}">
+                </td>
+                
+                </input></td><td><button type="submit" class="btn btn-success">
+                        <input type="hidden" name="_method" value="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ account.id) }}">
+                        <i class="fa fa-thumbs-up"></i></button></td>
+                </form>
+                <form method="post" action="{{ path('profil.SocialMediaAccount.delete', {id: account.id}) }}"
+                    onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
+                    <td><button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ account.id) }}"></button>
+                    </td>
+                </form>
+                </tr>{% endif %}{% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+    </main>
+</div>
+{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('manageAccountSocialMedia') }}{% endblock %}

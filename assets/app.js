@@ -9,7 +9,9 @@
 import './styles/custom.scss';
  
 // You can specify which plugins you need
-//import { Tooltip, Toast, Popover } from 'bootstrap';
- 
+//import { Dropdown, Navbar } from 'bootstrap';
+//const bootstrap = require('bootstrap');
+//import bootstrap from 'bootstrap';
+
 // start the Stimulus application
 import './bootstrap';
