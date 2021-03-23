@@ -21,6 +21,7 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class TestController extends AbstractController
 {
@@ -29,11 +30,11 @@ class TestController extends AbstractController
     private $InstaAPI;
     private $TwitterAPI;
 
-    public function __construct(HttpClientInterface $client)
+    public function __construct(HttpClientInterface $client, ParameterBagInterface $bag)
     {
-        $this->FbAPI = new FacebookAPI($client);
-        $this->InstaAPI = new InstagramAPI($client);
-        $this->TwitterAPI = new TwitterAPI($client);
+        $this->FbAPI = new FacebookAPI($client, $bag);
+        $this->InstaAPI = new InstagramAPI($client, $bag);
+        $this->TwitterAPI = new TwitterAPI($client, $bag);
     }
 
     /**
@@ -54,7 +55,7 @@ class TestController extends AbstractController
     }
 
     /**
-     *  @Route ("/test2", name="test")
+     *  @Route ("/test2", name="test2")
      */
     public function test2()
     {
@@ -63,11 +64,26 @@ class TestController extends AbstractController
         $access_token = '1371453453432655872-PGVA3ttM6nDTcRmfS5TqSEfRxuU48O';
         $access_token_secret = 'RdhuU5csqLUhXzFrGrMuGo5Jl4cDG1AQQuWiFGDkhEOcS';
         $photoPaths = [
-            '/home/yuyari/Code/Projets/manageSocialMedia/public/images/test.jpg',
-            '/home/yuyari/Code/Projets/manageSocialMedia/public/images/test.jpg'
+            '/home/yuyari/Code/Projets/manageSocialMedia/public/images/canard.jpg'
         ];
 
         $response = $this->TwitterAPI->postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, 'Test API N°2', $photoPaths);
+
+        return $this->render('test.html.twig', [
+            'response' => $response
+        ]);
+    }
+
+    /**
+     *  @Route ("/test3", name="test3")
+     */
+    public function test3()
+    {
+        $accountId = '17841446705960906';
+        $photoUrl = 'https://picsum.photos/100/100';
+        $access_token = 'EAAoDC3xI7SABALcR2x05FteO72YKjv7wZAoXLGlFnLPF3LRURup8FK3GC126OsRgWf45u8QsTjq5j6FSNxiTj257F6CiSGoYwBVDAbdE8ZCibNWx5gDSUpEBwIVzGqPkQmgZBZBPqiYJKVAhA6ADL0IY9KS1ofze9R3cIhyYhRdT9YsVA7pAC9ucvbNXB8usZB6oTuBGCAcooko8RG8tIQt57TwcFdkQZD';
+
+        $response = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $access_token, 'Test API N°3');
 
         return $this->render('test.html.twig', [
             'response' => $response
