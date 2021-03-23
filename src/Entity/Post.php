@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -42,6 +44,16 @@ class Post
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Artistes::class, mappedBy="post")
+     */
+    private $artistes;
+
+    public function __construct()
+    {
+        $this->artistes = new ArrayCollection();
+    }
 
 
 
@@ -106,6 +118,33 @@ class Post
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Artistes[]
+     */
+    public function getArtistes(): Collection
+    {
+        return $this->artistes;
+    }
+
+    public function addArtiste(Artistes $artiste): self
+    {
+        if (!$this->artistes->contains($artiste)) {
+            $this->artistes[] = $artiste;
+            $artiste->addPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArtiste(Artistes $artiste): self
+    {
+        if ($this->artistes->removeElement($artiste)) {
+            $artiste->removePost($this);
+        }
 
         return $this;
     }

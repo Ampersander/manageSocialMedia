@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\Artistes;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -56,6 +57,7 @@ class PostController extends AbstractController
         if (!$post) {
             $post = new Post();
         }
+
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $form = $this->createFormBuilder($post)
             ->add('description', TextareaType::class)
@@ -96,7 +98,6 @@ class PostController extends AbstractController
      */
     public function watch(Post $post, Request $request, EntityManagerInterface $manager)
     {
-
         $image= $post->getImage();
         $date= $post->getDate();
         $description= $post->getDescription();
@@ -122,8 +123,23 @@ class PostController extends AbstractController
                 $accountId = '139768931378739';
                 $clientSecret = 'ac660241b09b4640889456be63f3f7da';
                 // Mettre ici le token d'entrée (a recup sur API graph tools par ex)
-                $shortLivedToken = 'EAABZCHn2BZAjMBAHBwr4byZBXGCRjvyTEqDPT1rZBPKJP9mQdeGyq89xYjZCBeSlZClhZBZBdpT32rsJbsVRIxO9Qtj9QJiYBWwBDR912EwSdwXaFIcYPVu2UFdSKf4hGGpEnFLDBlvEh42gqsNUybuqTpbh4q9cqFNtiDTxdFOxpCAbc4uk3hOA23kEojbLtzacLAjHoqgJTWZAZABzAddM38wt08TRU1e2UtIepf174En7qPuVMn7YxyrItZBtl6kTx8ZD';
-    
+                $shortLivedToken = 'AABZCHn2BZAjMBAOOz2G6xqjKakRvlU64xtvAtaxlQeZBQEirCoUR1h6IDYi9UIpAF4bYehwWu1m94D99o27yW1mYs4X3jLim5ugXQ8dibYPFzbcNhXw93r63E9G0mLquZCAUUIYBBgpORA87hOFOgMxfpEB12W451khazrzN0hiiA4oDewsXppD36K2PkBZARV7P0vTwEdykarIC6gW0bH1hCtUO6gTmxFjNZCyVBfjrIvZB0PidvDbCwsZAXsockkZD';
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => "https://graph.facebook.com/v10.0/search?q=domingo",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 30,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                ));
+                $response = curl_exec($curl);
+                $err = curl_error($curl);
+                var_dump($response);
+                var_dump($err);
+                curl_close($curl);
+                
                 $postId = $this->FbAPI->postPhotosOnPage(
                     $shortLivedToken,
                     $accountId,
@@ -151,7 +167,7 @@ class PostController extends AbstractController
             try {
                 $accountId = '17841446705960906';
                 $photoUrl = $image;
-                $accessToken = 'EAABZCHn2BZAjMBAHBwr4byZBXGCRjvyTEqDPT1rZBPKJP9mQdeGyq89xYjZCBeSlZClhZBZBdpT32rsJbsVRIxO9Qtj9QJiYBWwBDR912EwSdwXaFIcYPVu2UFdSKf4hGGpEnFLDBlvEh42gqsNUybuqTpbh4q9cqFNtiDTxdFOxpCAbc4uk3hOA23kEojbLtzacLAjHoqgJTWZAZABzAddM38wt08TRU1e2UtIepf174En7qPuVMn7YxyrItZBtl6kTx8ZD';
+                $accessToken = 'EAABZCHn2BZAjMBAOOz2G6xqjKakRvlU64xtvAtaxlQeZBQEirCoUR1h6IDYi9UIpAF4bYehwWu1m94D99o27yW1mYs4X3jLim5ugXQ8dibYPFzbcNhXw93r63E9G0mLquZCAUUIYBBgpORA87hOFOgMxfpEB12W451khazrzN0hiiA4oDewsXppD36K2PkBZARV7P0vTwEdykarIC6gW0bH1hCtUO6gTmxFjNZCyVBfjrIvZB0PidvDbCwsZAXsockkZD';
                 $message = $description;          
                 $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $accessToken, $message);
             } catch (\Throwable $th) {
@@ -176,7 +192,11 @@ class PostController extends AbstractController
 
             $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
             $content = $connection->get("account/verify_credentials");
+            //$statuses = $connection->get("users/search", ["q" => "raphael bessonnier"]);
 
+            //$descriptions = $description . " @" . $statuses[0]->screen_name;
+
+            $new_status = $connection->post("statuses/update", ['status' => $description]);
             $new_status = $connection->post("statuses/update", ['status' => $description]);
             $status = $connection->get("statuses/home_timeline", ['count' => 25, "exclde_replies" => true]);
         }
@@ -188,5 +208,18 @@ class PostController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route ("/posts/delete/{id}", name="post_delete")
+     */
+    public function delete(Post $posts, EntityManagerInterface $manager){
+
+        $post = $manager->getRepository(Post::class);
+
+        // Récupération de l'utilisateur (donc automatiquement géré par Doctrine)
+        $user = $post->find($posts);
+        
+        $entityManager->remove($user);
+        $entityManager->flush($user);
+    }
 
 }
