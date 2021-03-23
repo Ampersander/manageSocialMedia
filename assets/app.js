@@ -7,7 +7,7 @@
  
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/custom.scss';
- 
+
 // You can specify which plugins you need
 //import { Dropdown, Navbar } from 'bootstrap';
 //const bootstrap = require('bootstrap');

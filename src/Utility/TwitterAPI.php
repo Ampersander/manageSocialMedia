@@ -15,19 +15,37 @@ class TwitterAPI
         $this->client = $client;
     }
 
-    // Publie un statut avec ou sans photos sur la page Twitter
+    /**
+     * Publie un statut avec ou sans photos sur la page Twitter
+     * @param Array $photoPaths Liste des chemins (absolus) des photos sur le serveur
+     */
     public function postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, $message, $photoPaths = false)
     {
         try {
+            // Verifications
+            // Message trop long
+            if ($message && strlen($message) > 280) {
+                throw new \Exception('Echec de la publication de la photo sur Twitter : message trop long, limite de caractères = 280');
+            };
+            // Trop de photos
+            if ($photoPaths && sizeof($photoPaths) > 4) {
+                throw new \Exception('Echec de l\'envoi du post sur Twitter : trop de photos, maximum = 4');
+            }
+            // Image trop volumineuse
+            foreach ($photoPaths as $imgPath) {
+                $fileSize = filesize($imgPath);
+                if ($fileSize > 10 * (10 ** 6)) {
+                    throw new \Exception('Echec de la publication de la photo sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B');
+                };
+            }
+
+            // Request
             $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
             $parameters = [
                 'status' => $message
             ];
             // Si le tweet contient des photos
             if ($photoPaths != false) {
-                if (sizeof($photoPaths) > 4){
-                    throw new \Exception('Echec de l\'envoi du post sur Twitter : trop de photos, maximum = 4');
-                }
                 $mediaIds = [];
                 foreach ($photoPaths as $path) {
                     $media = $connection->upload('media/upload', ['media' => $path]);
@@ -53,5 +71,4 @@ class TwitterAPI
             throw $e;
         }
     }
-
 }

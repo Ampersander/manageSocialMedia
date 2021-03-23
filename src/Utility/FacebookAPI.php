@@ -19,6 +19,17 @@ class FacebookAPI
     {
         $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/feed/';
         try {
+            // Vérifications
+            // Message vide
+            if (!$message){
+                throw new \Exception('Echec de la publication de la photo sur Facebook : message vide !');
+            };
+            // Taille message
+            if (strlen($message) > 63206){
+                throw new \Exception('Echec de la publication de la photo sur Facebook : message trop long, limite de caractères = 63206');
+            };
+
+            // Params
             $params = [
                 'message' => $message,
                 'access_token' => $pageAccessToken
@@ -26,10 +37,11 @@ class FacebookAPI
             if ($link != false) {
                 $params['link'] = $link;
             }
+
+            // Request
             $response = $this->client->request('POST', $url, [
                 'query' => $params,
             ]);
-
             if (200 !== $response->getStatusCode()) {
                 $content = $response->toArray(false);
                 $message = $content['error']['message'];
@@ -48,6 +60,31 @@ class FacebookAPI
     {
         $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/photos/';
         try {
+            // Vérifications
+            // Message trop long
+            if ($message && strlen($message) > 63206){
+                throw new \Exception('Echec de la publication de la photo sur Facebook : message trop long, limite de caractères = 63206');
+            };
+            // Stockage temporaire de l'image
+            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/image_verification/';
+            $imgPath = $folder . uniqid() . '.jpg';
+            file_put_contents($imgPath, file_get_contents($photoPath));
+            list($width, $height) = getimagesize($imgPath);
+            // Ratio non accepté
+            if ($width/$height < 0.8){
+                throw new \Exception('Echec de l\'envoi du post sur Facebook : photo trop longue, ratio minimum = 4:5');
+            } elseif ($width/$height > 1.91) {
+                throw new \Exception('Echec de l\'envoi du post sur Facebook : photo trop large, ratio maximum = 1.91:1');
+            }
+            // Image trop volumineuse
+            $fileSize = filesize($imgPath);
+            if ($fileSize > 10 * (10 ** 6)) {
+                throw new \Exception('Echec de la publication de la photo sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize. 'B');
+            };
+            // Suppression image temporaire
+            unlink($imgPath);
+
+            // Params
             $params = [
                 'url' => $photoPath,
                 'access_token' => $pageAccessToken
@@ -60,10 +97,11 @@ class FacebookAPI
             if ($published == false) {
                 $params['published'] = 'false';
             }
+
+            // Request
             $response = $this->client->request('POST', $url, [
                 'query' => $params,
             ]);
-
             if (200 !== $response->getStatusCode()) {
                 $content = $response->toArray(false);
                 $message = $content['error']['message'];
