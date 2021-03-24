@@ -42,14 +42,15 @@ class SocialMediaAccount
     private $posts;
 
     /**
-     * @ORM\OneToOne(targetEntity=FbAccount::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=FbAccount::class, mappedBy="socialMediaAccount", cascade={"persist", "remove"})
      */
     private $fbAccount;
 
     /**
-     * @ORM\OneToOne(targetEntity=TwitterAccount::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=TwitterAccount::class, mappedBy="socialMediaAccount", cascade={"persist", "remove"})
      */
     private $twitterAccount;
+
 
     public function __construct()
     {
@@ -129,8 +130,13 @@ class SocialMediaAccount
         return $this->fbAccount;
     }
 
-    public function setFbAccount(?FbAccount $fbAccount): self
+    public function setFbAccount(FbAccount $fbAccount): self
     {
+        // set the owning side of the relation if necessary
+        if ($fbAccount->getSocialMediaAccount() !== $this) {
+            $fbAccount->setSocialMediaAccount($this);
+        }
+
         $this->fbAccount = $fbAccount;
 
         return $this;
@@ -141,10 +147,16 @@ class SocialMediaAccount
         return $this->twitterAccount;
     }
 
-    public function setTwitterAccount(?TwitterAccount $twitterAccount): self
+    public function setTwitterAccount(TwitterAccount $twitterAccount): self
     {
+        // set the owning side of the relation if necessary
+        if ($twitterAccount->getSocialMediaAccount() !== $this) {
+            $twitterAccount->setSocialMediaAccount($this);
+        }
+
         $this->twitterAccount = $twitterAccount;
 
         return $this;
     }
+
 }

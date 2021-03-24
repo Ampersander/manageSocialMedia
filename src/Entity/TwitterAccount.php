@@ -38,6 +38,14 @@ class TwitterAccount
      */
     private $accessTokenSecret;
 
+    /**
+     * @ORM\OneToOne(targetEntity=SocialMediaAccount::class, inversedBy="twitterAccount", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $socialMediaAccount;
+
+  
+
     public function getId(): ?int
     {
         return $this->id;
@@ -91,4 +99,18 @@ class TwitterAccount
 
         return $this;
     }
+
+    public function getSocialMediaAccount(): ?SocialMediaAccount
+    {
+        return $this->socialMediaAccount;
+    }
+
+    public function setSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
+    {
+        $this->socialMediaAccount = $socialMediaAccount;
+
+        return $this;
+    }
+
+
 }

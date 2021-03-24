@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\FbPageAndInsta;
+use App\Entity\FbPage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method FbPageAndInsta|null find($id, $lockMode = null, $lockVersion = null)
- * @method FbPageAndInsta|null findOneBy(array $criteria, array $orderBy = null)
- * @method FbPageAndInsta[]    findAll()
- * @method FbPageAndInsta[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method FbPage|null find($id, $lockMode = null, $lockVersion = null)
+ * @method FbPage|null findOneBy(array $criteria, array $orderBy = null)
+ * @method FbPage[]    findAll()
+ * @method FbPage[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class FbPageAndInstaRepository extends ServiceEntityRepository
+class FbPageRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, FbPageAndInsta::class);
+        parent::__construct($registry, FbPage::class);
     }
 
     // /**
-    //  * @return FbPageAndInsta[] Returns an array of FbPageAndInsta objects
+    //  * @return FbPage[] Returns an array of FbPage objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class FbPageAndInstaRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?FbPageAndInsta
+    public function findOneBySomeField($value): ?FbPage
     {
         return $this->createQueryBuilder('f')
             ->andWhere('f.exampleField = :val')

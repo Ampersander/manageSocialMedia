@@ -51,6 +51,21 @@ class SocialMediaAccountRepository extends ServiceEntityRepository
         }
 
     
+  /**
+     * @return FbAccount Return FbAccount objects
+     */
+    
+    public function findById($id)
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.id = :id')
+            ->setParameter('id', $id)
+            ->orderBy('f.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    
 
     /*
     public function findOneBySomeField($value): ?SocialMediaAccount

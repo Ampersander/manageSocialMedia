@@ -22,6 +22,12 @@
                     type:"number"
                     }) }}
                 </div>
+                 <div class="form-group">
+                    {{ form_row(FbAccountFormType.clientSecret, {
+                    label: 'Client secret',
+                    id:'fb-client-secret',
+                    }) }}
+                </div>
                 
                 <div class="form-group invisible">
                     {{ form_row(FbAccountFormType.name, {
@@ -62,21 +68,23 @@
             <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Account ID</th>
-                    <th scope="col">Short Lived Token</th>
+                    <th scope="col">App ID</th>
+                    <th scope="col">Client Secret</th>
                     <th scope="col"></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             {% for account in accounts %}
-            {% if account.socialMedia != 'twitter_account' %}
+            
+            
+            {% if account.socialMediaAccount.socialMedia == 'facebook_account' %}
                 <tr>
-                    <form method="post" action="{{ path('profil.SocialMediaAccount.edit', {id: account.id}) }}">
-                    <td><input type='text' value="{{ account.name }}" name="accountName{{account.id}}"></input></td>
+                    <form method="post" action="{{ path('profil.FbAccount.edit', {id: account.id}) }}">
+                    <td><input type='text' value="{{ account.socialMediaAccount.name }}" name="accountName{{account.id}}"></input></td>
                     
-                <td><input type='text' value="{{account.fbAccount.accountId}}" name="accountId{{account.id}}">
+                <td><input type='text' value="{{account.accountId}}" name="accountId{{account.id}}">
                 </td>
-                <td><input type='text' value="{{account.fbAccount.shortlivedtoken}}" name="shortlivedtoken{{account.id}}">
+                <td><input type='text' value="{{account.clientSecret}}" name="clientsecret{{account.id}}">
                 </td>
                 
                 </input></td><td><button type="submit" class="btn btn-success">
@@ -84,7 +92,9 @@
                         <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ account.id) }}">
                         <i class="fa fa-thumbs-up"></i></button></td>
                 </form>
-                <form method="post" action="{{ path('profil.SocialMediaAccount.delete', {id: account.id}) }}"
+
+                {{account.id}}
+                <form method="post" action="{{ path('profil.FbAccount.delete', {id: account.id}) }}"
                     onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
                     <td><button type="submit" class="btn btn-danger">
                             <i class="fa fa-trash"></i>

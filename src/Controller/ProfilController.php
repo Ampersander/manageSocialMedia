@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\SocialMediaAccount;
 use App\Entity\FbAccount;
 use App\Entity\TwitterAccount;
+use App\Entity\FbPage;
+use App\Entity\InstaAccount;
 use App\Form\FbAccountFormType;
 use App\Form\TwitterAccountFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,17 +14,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
-
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Utility\FacebookAPI;
+use App\Utility\InstagramAPI;
+use App\Utility\TwitterAPI;
 
 class ProfilController extends AbstractController
 {
 
- /**
-     * @Route("/test", name="test")
-     */
-    public function test(Request $request): Response
+
+    private $FbAPI;
+
+    public function __construct(HttpClientInterface $client)
     {
-        return $this->render('test.html.twig');
+        $this->FbAPI = new FacebookAPI($client);
     }
 
     /**
@@ -31,9 +36,10 @@ class ProfilController extends AbstractController
     public function manageFB(Request $request): Response
     {
         $user = $this->get('security.token_storage')->getToken()->getUser();
-        $repository = $this->getDoctrine()->getRepository(SocialMediaAccount::class);
-
-        $socialMediaAccount = new SocialMediaAccount();
+        $repository = $this->getDoctrine()->getRepository(FbAccount::class);
+        $entityManager = $this->getDoctrine()->getManager();
+        
+        
 
         $fbAccount = new FbAccount();
         $form1 = $this->createForm(FbAccountFormType::class,$fbAccount);
@@ -41,24 +47,65 @@ class ProfilController extends AbstractController
 
         if ($form1->isSubmitted() && $form1->isValid()) {
 
+            $accountId= $form1->get('accountId')->getData();
+            $shortLivedToken= $form1->get('shortLivedToken')->getData();
+            $clientSecret= $form1->get('clientSecret')->getData();
+            $getLongLivedUserToken = $this->FbAPI->getLongLivedUserToken($shortLivedToken, $accountId, $clientSecret);
+                
             $name= $form1->get('name')->getData();
-            $social_media = 'facebook_account';
+            $socialMediaAccount = new SocialMediaAccount();
             $socialMediaAccount->setName( $name);
-            $socialMediaAccount->setSocialMedia($social_media);
+            $socialMediaAccount->setSocialMedia('facebook_account');
             $socialMediaAccount->setUser($user);
 
             $accountId= $form1->get('accountId')->getData();
             $shortLivedToken= $form1->get('shortLivedToken')->getData();
             $fbAccount->setAccountId( $accountId);
             $fbAccount->setShortLivedToken($shortLivedToken);
+            $fbAccount->setLonglivedtoken($getLongLivedUserToken);
+            $fbAccount->setSocialMediaAccount($socialMediaAccount);
 
-            $socialMediaAccount->setFbAccount($fbAccount);
-
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($fbAccount);
             $entityManager->persist($socialMediaAccount);
+            $pagesAccountsData= $this->FbAPI->getPages($shortLivedToken);
+            $pagesAccounts=  $pagesAccountsData['data'];
+            foreach($pagesAccounts as $page){
+                $socialMediaAccount1 = new SocialMediaAccount();
+
+                $FbPage = new FbPage();
+                $pageName = $page['name'];
+                $pageId=$page['id'];
+                $pageAccessToken = $this->FbAPI->getPageAccessToken($getLongLivedUserToken, $pageId);
+                $socialMediaAccount1->setName( $pageName);
+                $socialMediaAccount1->setSocialMedia('fb_page');
+                $socialMediaAccount1->setUser($user);
+                $idInsta = $this->FbAPI->getIdInstagram($shortLivedToken, $pageId);
+                if($idInsta != null){
+                    $InstaAccount = new InstaAccount();
+                    $instaName = $this->FbAPI->getName($shortLivedToken, $idInsta);
+                    $InstaAccount->setIdAccount($idInsta);
+                    $InstaAccount->setFbPage($FbPage);
+                    $InstaAccount->setName($instaName);
+                    $socialMediaAccount2 = new SocialMediaAccount();
+                    $socialMediaAccount2->setName( $instaName);
+                    $socialMediaAccount2->setSocialMedia('instagram_account');
+                    $socialMediaAccount2->setUser($user);
+                    $InstaAccount->setSocialMediaAccount( $socialMediaAccount2);
+                    
+                    $entityManager->persist($InstaAccount);
+                    $entityManager->persist($socialMediaAccount2);
+                }
+                    
+                $FbPage->setPageID($pageId);
+                $FbPage->setNamePage($pageName);
+                $FbPage->setPageAccessToken($pageAccessToken);
+                $FbPage->setFbAccount( $fbAccount);
+                $FbPage->setSocialMediaAccount($socialMediaAccount1);
+                $entityManager->persist($FbPage);
+                $entityManager->persist($socialMediaAccount1);
+            }
             $entityManager->flush();
-                 
+  
         }
 
         return $this->render('profil/manageFbAccount.html.twig', [
@@ -75,7 +122,7 @@ class ProfilController extends AbstractController
     public function manageTwitter(Request $request): Response
     {
         $user = $this->get('security.token_storage')->getToken()->getUser();
-        $repository = $this->getDoctrine()->getRepository(SocialMediaAccount::class);
+        $repository = $this->getDoctrine()->getRepository(TwitterAccount::class);
 
         $socialMediaAccount = new SocialMediaAccount();
         
@@ -84,11 +131,9 @@ class ProfilController extends AbstractController
 
         $form2->handleRequest($request);
         if ($form2->isSubmitted() && $form2->isValid()) {
-            var_dump('yes');
             $name= $form2->get('name')->getData();
-            $social_media = 'twitter_account';
             $socialMediaAccount->setName( $name);
-            $socialMediaAccount->setSocialMedia($social_media);
+            $socialMediaAccount->setSocialMedia('twitter_account');
             $socialMediaAccount->setUser($user);
 
             $consumerKey= $form2->get('consumerKey')->getData();
@@ -100,7 +145,7 @@ class ProfilController extends AbstractController
             $twitterAccount->setAccessToken( $accessToken);
             $twitterAccount->setAccessTokenSecret($accessTokenSecret);
 
-            $socialMediaAccount->setTwitterAccount($twitterAccount);
+            $twitterAccount->setSocialMediaAccount($socialMediaAccount);
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($twitterAccount);
@@ -112,76 +157,92 @@ class ProfilController extends AbstractController
 
         return $this->render('profil/manageTwitterAccount.html.twig', [
             'TwitterAccountFormType'=>$form2->createView(),
-            'accounts' => $repository->findByUserAndSocialMedia($user,'twitter_account'),     
+            'accounts' => $repository->findByUser($user),     
         ]);
     }
 
 /**
-     * @Route("/profil/SocialMediaAccount/{id}", name="profil.SocialMediaAccount.edit", methods="GET|POST")
+     * @Route("/profil/FbAccount/{id}", name="profil.FbAccount.edit", methods="GET|POST")
      */
-    public function edit(SocialMediaAccount $SocialMediaAccount, Request $request)
+    public function editFbAccount(FbAccount $FbAccount, Request $request)
     {
-
-        $returnFB = false;
-        if($SocialMediaAccount->getFbAccount() == null)
-        $returnFB= true;
-        if ($this->isCsrfTokenValid('edit' . $SocialMediaAccount->getId(), $request->get('_token'))) {
-            $name = $request->get('accountName'.$SocialMediaAccount->getId());
-            $SocialMediaAccount->setName($name);
-            $entityManager = $this->getDoctrine()->getManager();
-
-            if($returnFB == false){
-                $accountId = $request->get('accountId'.$SocialMediaAccount->getId());
-                $shortlivedtoken = $request->get('shortlivedtoken'.$SocialMediaAccount->getId());
-                $FbAccount = $SocialMediaAccount->getFbAccount();
-                $FbAccount->setAccountId( $accountId);
-                $FbAccount->setShortlivedtoken( $shortlivedtoken);
-                $entityManager->persist($FbAccount);
-            }else{
-                $accountConsumerKey = $request->get('accountConsumerKey'.$SocialMediaAccount->getId());
-                $accountConsumerSecret = $request->get('accountConsumerSecret'.$SocialMediaAccount->getId());
-                $accountAccessToken = $request->get('accountAccessToken'.$SocialMediaAccount->getId());
-                $accountAccessTokenSecret = $request->get('accountAccessTokenSecret'.$SocialMediaAccount->getId());
-                $TwitterAccount = $SocialMediaAccount->getTwitterAccount();
-                $TwitterAccount->setConsumerKey( $accountConsumerKey);
-                $TwitterAccount->setConsumerSecret( $accountConsumerSecret);
-                $TwitterAccount->setAccessToken( $accountAccessToken);
-                $TwitterAccount->setAccessTokenSecret( $accountAccessTokenSecret);
-                $entityManager->persist($TwitterAccount);
-            }
-
-
-            $entityManager->persist($SocialMediaAccount);
+        if ($this->isCsrfTokenValid('edit' . $FbAccount->getId(), $request->get('_token'))) {
+            $name = $request->get('accountName'.$FbAccount->getId());
+            $FbAccount->getSocialMediaAccount()->setName($name);
+            $entityManager = $this->getDoctrine()->getManager(); 
+            $accountId = $request->get('accountId'.$FbAccount->getId());
+            $clientsecret = $request->get('clientsecret'.$FbAccount->getId());
+            $FbAccount->setAccountId( $accountId);
+            $FbAccount->setClientSecret($clientsecret);
+            $entityManager->persist($FbAccount);
             $entityManager->flush();
             $this->addFlash('success', 'La ligne a bien été modifié!');
         }
-        
-        if($returnFB == false){
-            return $this->redirectToRoute('manageFacebook');
-        }else{
+            return $this->redirectToRoute('manageFacebook'); 
+    }
+
+    /**
+     * @Route("/profil/TwitterAccount/{id}", name="profil.TwitterAccount.edit", methods="GET|POST")
+     */
+    public function editTwitterAccount(TwitterAccount $TwitterAccount, Request $request)
+    {
+
+        if ($this->isCsrfTokenValid('edit' . $TwitterAccount->getId(), $request->get('_token'))) {
+            $name = $request->get('accountName'.$TwitterAccount->getId());
+            $TwitterAccount->getSocialMediaAccount()->setName($name);
+            $entityManager = $this->getDoctrine()->getManager();
+            $accountConsumerKey = $request->get('accountConsumerKey'.$TwitterAccount->getId());
+            $accountConsumerSecret = $request->get('accountConsumerSecret'.$TwitterAccount->getId());
+            $accountAccessToken = $request->get('accountAccessToken'.$TwitterAccount->getId());
+            $accountAccessTokenSecret = $request->get('accountAccessTokenSecret'.$TwitterAccount->getId());
+            $TwitterAccount->setConsumerKey( $accountConsumerKey);
+            $TwitterAccount->getConsumerSecret( $accountConsumerSecret);
+            $TwitterAccount->setAccessToken( $accountAccessToken);
+            $TwitterAccount->setAccessTokenSecret( $accountAccessTokenSecret);
+            $entityManager->persist($TwitterAccount);
+            $entityManager->flush();
+            $this->addFlash('success', 'La ligne a bien été modifié!');
+            }  
             return $this->redirectToRoute('manageTwitter');
-        }
+        
     }
  
     /**
-     *@Route("/profil/SocialMediaAccount/{id}", name= "profil.SocialMediaAccount.delete", methods="DELETE")
+     *@Route("/profil/FbAccount/{id}", name= "profil.FbAccount.delete", methods="DELETE")
      */
-    public function delete(SocialMediaAccount $SocialMediaAccount, Request $request)
+    public function deleteFbAccount(FbAccount $FbAccount, Request $request)
     {
-        $returnFB = false;
-        if($SocialMediaAccount->getFbAccount() == null)
-            $returnFB= true;
-        if ($this->isCsrfTokenValid('delete' . $SocialMediaAccount->getId(), $request->get('_token'))) {
-            $this->getDoctrine()->getManager()->remove($SocialMediaAccount);
+        
+           
+        if ($this->isCsrfTokenValid('delete' . $FbAccount->getId(), $request->get('_token'))) {
+            $this->getDoctrine()->getManager()->remove($FbAccount);
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash('success', 'La ligne a bien été supprimé!');
         }
  
-        if($returnFB == false){
+       
             return $this->redirectToRoute('manageFacebook');
-        }else{
-            return $this->redirectToRoute('manageTwitter');
+       
+    }
+
+
+
+/**
+     *@Route("/profil/TwitterAccount/{id}", name= "profil.TwitterAccount.delete", methods="DELETE")
+     */
+    public function deleteTwitterAccount(TwitterAccount $TwitterAccount, Request $request)
+    {
+        
+           
+        if ($this->isCsrfTokenValid('delete' . $TwitterAccount->getId(), $request->get('_token'))) {
+            $this->getDoctrine()->getManager()->remove($TwitterAccount);
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('success', 'La ligne a bien été supprimé!');
         }
+ 
+       
+            return $this->redirectToRoute('manageTwitter');
+       
     }
 
 }

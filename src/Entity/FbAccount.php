@@ -28,12 +28,12 @@ class FbAccount
     /**
      * @ORM\Column(type="string", length=500, nullable=true)
      */
-    private $pageAccessToken;
+    private $longlivedtoken;
 
     /**
-     * @ORM\OneToMany(targetEntity=FbPageAndInsta::class, mappedBy="fbAccount", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=FbPage::class, mappedBy="fbAccount", orphanRemoval=true)
      */
-    private $FbPageAndInsta;
+    private $FbPage;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -45,9 +45,16 @@ class FbAccount
      */
     private $clientSecret;
 
+    /**
+     * @ORM\OneToOne(targetEntity=SocialMediaAccount::class, inversedBy="fbAccount", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $socialMediaAccount;
+
+   
     public function __construct()
     {
-        $this->FbPageAndInsta = new ArrayCollection();
+        $this->FbPage = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,42 +76,42 @@ class FbAccount
         return $this;
     }
 
-    public function getPageAccessToken(): ?string
+    public function getLonglivedtoken(): ?string
     {
-        return $this->pageAccessToken;
+        return $this->longlivedtoken;
     }
 
-    public function setPageAccessToken(?string $pageAccessToken): self
+    public function setLonglivedtoken(?string $longlivedtoken): self
     {
-        $this->pageAccessToken = $pageAccessToken;
+        $this->longlivedtoken = $longlivedtoken;
 
         return $this;
     }
 
     /**
-     * @return Collection|FbPageAndInsta[]
+     * @return Collection|FbPage[]
      */
-    public function getFbPageAndInsta(): Collection
+    public function getFbPage(): Collection
     {
-        return $this->FbPageAndInsta;
+        return $this->FbPage;
     }
 
-    public function addFbPageAndInstum(FbPageAndInsta $fbPageAndInstum): self
+    public function addFbPage(FbPage $FbPage): self
     {
-        if (!$this->FbPageAndInsta->contains($fbPageAndInstum)) {
-            $this->FbPageAndInsta[] = $fbPageAndInstum;
-            $fbPageAndInstum->setFbAccount($this);
+        if (!$this->FbPage->contains($FbPage)) {
+            $this->FbPage[] = $FbPage;
+            $FbPage->setFbAccount($this);
         }
 
         return $this;
     }
 
-    public function removeFbPageAndInstum(FbPageAndInsta $fbPageAndInstum): self
+    public function removeFbPage(FbPage $FbPage): self
     {
-        if ($this->FbPageAndInsta->removeElement($fbPageAndInstum)) {
+        if ($this->FbPage->removeElement($FbPage)) {
             // set the owning side to null (unless already changed)
-            if ($fbPageAndInstum->getFbAccount() === $this) {
-                $fbPageAndInstum->setFbAccount(null);
+            if ($FbPage->getFbAccount() === $this) {
+                $FbPage->setFbAccount(null);
             }
         }
 
@@ -134,4 +141,18 @@ class FbAccount
 
         return $this;
     }
+
+    public function getSocialMediaAccount(): ?SocialMediaAccount
+    {
+        return $this->socialMediaAccount;
+    }
+
+    public function setSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
+    {
+        $this->socialMediaAccount = $socialMediaAccount;
+
+        return $this;
+    }
+
+   
 }

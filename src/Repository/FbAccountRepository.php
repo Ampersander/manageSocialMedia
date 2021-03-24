@@ -19,22 +19,43 @@ class FbAccountRepository extends ServiceEntityRepository
         parent::__construct($registry, FbAccount::class);
     }
 
-    // /**
-    //  * @return FbAccount[] Returns an array of FbAccount objects
-    //  */
-    /*
-    public function findByExampleField($value)
+/*
+    public function findByUser($user)
+    {
+        return $this->createQueryBuilder('e')
+        ->addSelect('r') 
+        ->leftJoin('e.socialMediaAccount', 'r')
+        ->where('r.user = :parameter')
+        ->setParameter('parameter', $user)
+        ->getQuery();
+        ;
+    }*/
+
+    public function findByUser($user)
+    {
+        return $this->createQueryBuilder('od')
+        ->join('od.socialMediaAccount', 'o')
+        ->addSelect('o')
+        ->where('o.user = :user')
+        ->setParameter('user', $user)
+        ->getQuery()->getResult();
+    }
+  
+
+/**
+     * @return FbAccount Return FbAccount objects
+     */
+    
+    public function findById($id)
     {
         return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('f.id = :id')
+            ->setParameter('id', $id)
             ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?FbAccount

@@ -22,6 +22,12 @@ class FbAccountFormType extends AbstractType
             
                 
         ])
+        ->add('clientSecret', TextType::class, [
+            'attr'   =>  array(
+                'class'   => 'm-2'),
+            'constraints' => new NotBlank(),          
+        ])
+        
         ->add('accountId', TextType::class, [
             'attr'   =>  array(
                 'class'   => 'm-2'),

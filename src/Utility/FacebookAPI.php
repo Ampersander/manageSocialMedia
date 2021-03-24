@@ -172,4 +172,91 @@ class FacebookAPI
             throw $e;
         }
     }
+
+     // Renvoie les pages liées aux comptes
+     public function getPages($shortLivedToken)
+     {
+         $url = 'https://graph.facebook.com/me';
+         try {
+             $params = [
+                 'fields' => 'id,name,accounts',
+                 'access_token' => $shortLivedToken
+             ];
+             $response = $this->client->request('GET', $url, [
+                 'query' => $params,
+             ]);
+ 
+             if (200 !== $response->getStatusCode()) {
+                 $content = $response->toArray(false);
+                 $message = $content['error']['message'];
+                 throw new \Exception('Echec obtention Pages Facebook : ' . $message);
+             } else {
+                 $content = $response->toArray();
+                 return $content['accounts'];
+             }
+         } catch (\Exception $e) {
+             throw $e;
+         }
+     }
+
+     // Renvoie l'id instagram lié à la page
+     public function getIdInstagram($shortLivedToken,$id_page_fb)
+     {
+         $url = 'https://graph.facebook.com/v10.0/'.$id_page_fb;
+         try {
+             $params = [
+                 'fields' => 'instagram_business_account',
+                 'access_token' => $shortLivedToken,
+             ];
+             $response = $this->client->request('GET', $url, [
+                 'query' => $params,
+             ]);
+ 
+             if (200 !== $response->getStatusCode()) {
+                 $content = $response->toArray(false);
+                 $message = $content['error']['message'];
+                 throw new \Exception('Echec obtention Id Account Instagram : ' . $message);
+             } else {
+                 $content = $response->toArray();
+                 $idInsta = null;
+                 if(isset($content['instagram_business_account'])){
+                    $idInstaContent = $content['instagram_business_account'];
+                    $idInsta =  $idInstaContent['id'];
+                }
+                    return $idInsta;
+                
+             }
+         } catch (\Exception $e) {
+             throw $e;
+         }
+     }
+     
+// Renvoie le nom de la page/compteFb/CompteInstagram
+public function getName($shortLivedToken,$id)
+{
+    $url = 'https://graph.facebook.com/v10.0/'.$id;
+    try {
+        $params = [
+            'fields' => 'name',
+            'access_token' => $shortLivedToken,
+        ];
+        $response = $this->client->request('GET', $url, [
+            'query' => $params,
+        ]);
+
+        if (200 !== $response->getStatusCode()) {
+            $content = $response->toArray(false);
+            $message = $content['error']['message'];
+            throw new \Exception('Echec obtention Id Account Instagram : ' . $message);
+        } else {
+            $content = $response->toArray();
+          
+               return $content['name'];
+           
+        }
+    } catch (\Exception $e) {
+        throw $e;
+    }
+}
+
 }

@@ -27,7 +27,7 @@ class PostController extends AbstractController
 
     private $FbAPI;
     private $InstaAPI;
-
+    private $TwitterAPI;
     public function __construct(HttpClientInterface $client)
     {
         $this->FbAPI = new FacebookAPI($client);
@@ -120,7 +120,7 @@ class PostController extends AbstractController
                     $manager->flush();
                     
                     $case = $social_media->getSocialMedia();
-                    if($case == 'facebook_account' || $case== 'facebook_page')
+                    if($case == 'facebook_account' || $case== 'fb_page')
                     {
                         $case= 'facebook';
                     }
@@ -146,7 +146,7 @@ class PostController extends AbstractController
                                 throw $th;
                             }
                             break;
-                        case 'instagram':
+                        case 'instagram_account':
                             try {
                                 $accountId = '17841446705960906';
                                 $photoUrl = $image;
@@ -157,7 +157,7 @@ class PostController extends AbstractController
                                 throw $th;
                             }
                             break;
-                        case 'twitter':
+                        case 'twitter_account':
                             $consumer_key = '8zz3WouFDnNW0vJ3r5BpPZfxX';
                             $consumer_secret = 'yY6PC7CUEJYP2gg1X9uusxEdCfUMmW5UgIIowAWCunOXZDFM1F';
                             $access_token = '1371453453432655872-PGVA3ttM6nDTcRmfS5TqSEfRxuU48O';
@@ -176,10 +176,10 @@ class PostController extends AbstractController
         return $this->redirectToRoute('posts');
     }
     
-    $socialMediaAccountsInstagram = $repository->findByUserAndSocialMedia($user,'instagram');
-    $socialMediaAccountsTwitter = $repository->findByUserAndSocialMedia($user,'twitter');
+    $socialMediaAccountsInstagram = $repository->findByUserAndSocialMedia($user,'instagram_account');
+    $socialMediaAccountsTwitter = $repository->findByUserAndSocialMedia($user,'twitter_account');
     $socialMediaAccountsFacebook = $repository->findByUserAndSocialMedia($user,'facebook_account');
-    $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user,'facebook_page');
+    $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user,'fb_page');
    
     
 

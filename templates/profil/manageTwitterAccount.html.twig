@@ -74,23 +74,23 @@
                         </tr>
                     </thead>
                     {% for account in accounts %}
-                    {% if (account.socialMedia == 'twitter_account') and  (account.twitterAccount != null) %}
+                    {% if account.SocialMediaAccount.socialMedia == 'twitter_account' %}
                         <tr>
-                            <form method="post" action="{{ path('profil.SocialMediaAccount.edit', {id: account.id}) }}">
-                            <td><input type='text' value="{{ account.name }}" name="accountName{{account.id}}"></input></td>
-                    <td><input type='text' value="{{account.twitterAccount.ConsumerKey}}" name="accountConsumerKey{{account.id}}"></td></input>
+                            <form method="post" action="{{ path('profil.TwitterAccount.edit', {id: account.id}) }}">
+                            <td><input type='text' value="{{ account.socialMediaAccount.name }}" name="accountName{{account.id}}"></input></td>
+                    <td><input type='text' value="{{account.ConsumerKey}}" name="accountConsumerKey{{account.id}}"></td></input>
                     </td>
-                    <td><input type='text' value="{{ account.twitterAccount.consumerSecret }}" name="accountConsumerSecret{{account.id}}"></td></input>
+                    <td><input type='text' value="{{ account.consumerSecret }}" name="accountConsumerSecret{{account.id}}"></td></input>
                     </td>
-                    <td><input type='text' value="{{ account.twitterAccount.accessToken }}" name="accountAccessToken{{account.id}}"></td></input>
+                    <td><input type='text' value="{{ account.accessToken }}" name="accountAccessToken{{account.id}}"></td></input>
                     </td>
-                    <td><input type='text' value="{{ account.twitterAccount.accessTokenSecret }}" name="accountAccessTokenSecret{{account.id}}"> </td>
+                    <td><input type='text' value="{{ account.accessTokenSecret }}" name="accountAccessTokenSecret{{account.id}}"> </td>
                     </input></td>
                     <td><button type="submit" class="btn btn-success"> <input type="hidden" name="_method" value="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ account.id) }}"> <i
                                 class="fa fa-thumbs-up"></i></button></td>
                     </form>
-                    <form method="post" action="{{ path('profil.SocialMediaAccount.delete', {id: account.id}) }}"
+                    <form method="post" action="{{ path('profil.TwitterAccount.delete', {id: account.id}) }}"
                         onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
                         <td><button type="submit" class="btn btn-danger"> <i class="fa fa-trash"></i> <input
                                     type="hidden" name="_method" value="DELETE"> <input type="hidden" name="_token"

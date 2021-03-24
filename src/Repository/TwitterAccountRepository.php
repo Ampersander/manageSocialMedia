@@ -18,7 +18,20 @@ class TwitterAccountRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, TwitterAccount::class);
     }
-
+/**
+     * @return TwitterAccount Return FbAccount objects
+     */
+    
+    public function findByUser($user)
+    {
+        return $this->createQueryBuilder('od')
+        ->join('od.socialMediaAccount', 'o')
+        ->addSelect('o')
+        ->where('o.user = :user')
+        ->setParameter('user', $user)
+        ->getQuery()->getResult();
+    }
+  
     // /**
     //  * @return TwitterAccount[] Returns an array of TwitterAccount objects
     //  */
