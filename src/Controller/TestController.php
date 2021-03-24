@@ -21,6 +21,7 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
+use App\Utility\ImgbbAPI;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class TestController extends AbstractController
@@ -29,12 +30,14 @@ class TestController extends AbstractController
     private $FbAPI;
     private $InstaAPI;
     private $TwitterAPI;
+    private $ImgbbAPI;
 
     public function __construct(HttpClientInterface $client, ParameterBagInterface $bag)
     {
         $this->FbAPI = new FacebookAPI($client, $bag);
         $this->InstaAPI = new InstagramAPI($client, $bag);
         $this->TwitterAPI = new TwitterAPI($client, $bag);
+        $this->ImgbbAPI = new ImgbbAPI($client, $bag);
     }
 
     /**
@@ -89,4 +92,19 @@ class TestController extends AbstractController
             'response' => $response
         ]);
     }
+
+    /**
+     *  @Route ("/test4", name="test4")
+     */
+    public function test4()
+    {
+        $image = file_get_contents('/home/yuyari/Code/Projets/manageSocialMedia/public/images/test.jpg');
+        $image = base64_encode($image);
+        $response = $this->ImgbbAPI->uploadImage($image);
+
+        return $this->render('test.html.twig', [
+            'response' => $response
+        ]);
+    }
+
 }

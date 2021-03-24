@@ -17,6 +17,52 @@ class InstagramAPI
         $this->parameterBag = $parameterBag;
     }
 
+    /**
+     * Upload des photos sur un hébergeur et stockage local en vue d'une publication sur Instagram
+     * @param $image Image à stocker et heberger (envoyer $form->getData())
+     * @return array Retourne une array sous forme [nom,url]
+     */
+    public function stockAndHostImage($image)
+    {
+        try {
+            // Vérif ext image
+            $ext = $image->guessExtension();
+            if ($ext != 'jpg' && $ext != 'jpeg') {
+                throw new \Exception('Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . 'non supporté, formats acceptés = JPEG / JPG');
+            };
+            // Stockage en local
+            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/instagram/';
+            $imgName = uniqid() . $ext;
+            $imgPath = $folder . $imgName;
+            $image->move($folder, $imgPath);
+            list($width, $height) = getimagesize($imgPath);
+            // Vérif ratio image
+            if ($width / $height < 0.8) {
+                unlink($imgPath);
+                throw new \Exception('Echec de l\'envoi du post sur Instagram : photo trop longue, ratio minimum = 4:5');
+            } elseif ($width / $height > 1.91) {
+                unlink($imgPath);
+                throw new \Exception('Echec de l\'envoi du post sur Instagram : photo trop large, ratio maximum = 1.91:1');
+            }
+            // Vérif poids image
+            $fileSize = filesize($imgPath);
+            if ($fileSize > 8 * (2 ** 20)) {
+                unlink($imgPath);
+                throw new \Exception('Echec de la publication de la photo sur Instagram : image trop volumineuse, limite de taille = 8MiB, taille de l\'image = ' . $fileSize . 'B');
+            };
+            // Envoi de la photo sur le site de l'hébergeur
+            $image = base64_encode($image);
+            $url = $this->ImgbbAPI->uploadImage($image);
+            $imgInfos = [
+                'name' => $imgName,
+                'url' => $$url
+            ];
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $url;
+    }
+
     // Publie une photo sur Instagram, des tags peuvent être ajoutés
     public function publishPhotoOnPage($accountId, $photoUrl, $access_token, $message = false)
     {
@@ -69,7 +115,7 @@ class InstagramAPI
             // Image trop volumineuse
             $fileSize = filesize($imgPath);
             if ($fileSize > 8 * (2 ** 20)) {
-                throw new \Exception('Echec de la publication de la photo sur Instagram : image trop volumineuse, limite de taille = 8MiB, taille de l\'image = ' . $fileSize. 'B');
+                throw new \Exception('Echec de la publication de la photo sur Instagram : image trop volumineuse, limite de taille = 8MiB, taille de l\'image = ' . $fileSize . 'B');
             };
             // Suppression image temporaire
             unlink($imgPath);
