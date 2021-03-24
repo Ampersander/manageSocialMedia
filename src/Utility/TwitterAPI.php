@@ -17,9 +17,9 @@ class TwitterAPI
 
     /**
      * Publie un statut avec ou sans photos sur la page Twitter
-     * @param Array $photoPaths Liste des chemins (absolus) des photos sur le serveur
+     * @param array $imagePaths Liste des chemins (absolus) des images, ne rien mettre si pas d'images
      */
-    public function postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, $message, $photoPaths = false)
+    public function postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, $message = false, $imagePaths = false)
     {
         try {
             // Verifications
@@ -28,14 +28,14 @@ class TwitterAPI
                 throw new \Exception('Echec de la publication de la photo sur Twitter : message trop long, limite de caractères = 280');
             };
             // Trop de photos
-            if ($photoPaths && sizeof($photoPaths) > 4) {
-                throw new \Exception('Echec de l\'envoi du post sur Twitter : trop de photos, maximum = 4');
+            if ($imagePaths && sizeof($imagePaths) > 4) {
+                throw new \Exception('Echec de l\'envoi du post sur Twitter : trop d\'images, maximum = 4');
             }
             // Image trop volumineuse
-            foreach ($photoPaths as $imgPath) {
+            foreach ($imagePaths as $imgPath) {
                 $fileSize = filesize($imgPath);
                 if ($fileSize > 10 * (10 ** 6)) {
-                    throw new \Exception('Echec de la publication de la photo sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B');
+                    throw new \Exception('Echec de la publication de l\'image sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B');
                 };
             }
 
@@ -45,9 +45,9 @@ class TwitterAPI
                 'status' => $message
             ];
             // Si le tweet contient des photos
-            if ($photoPaths != false) {
+            if ($imagePaths != false) {
                 $mediaIds = [];
-                foreach ($photoPaths as $path) {
+                foreach ($imagePaths as $path) {
                     $media = $connection->upload('media/upload', ['media' => $path]);
                     $mediaIds[] = $media->media_id_string;
                 }

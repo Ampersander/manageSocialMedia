@@ -51,10 +51,6 @@ class InstagramAPI
         $url = 'https://graph.facebook.com/v10.0/' . $accountId . '/media';
         try {
             // Vérifications
-            // Message vide
-            if (!$message){
-                throw new \Exception('Echec de la publication de la photo sur Instagram : message vide !');
-            };
             // Message trop long
             if ($message && strlen($message) > 2200) {
                 throw new \Exception('Echec de la publication de la photo sur Instagram : message trop long, limite de caractères = 2200');
@@ -83,7 +79,7 @@ class InstagramAPI
                 'image_url' => $photoUrl,
                 'access_token' => $access_token
             ];
-            if ($message != false) $params['caption'] = $message;
+            if ($message) $params['caption'] = $message;
 
             // Request
             $response = $this->client->request('POST', $url, [

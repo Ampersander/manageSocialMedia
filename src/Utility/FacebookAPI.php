@@ -14,18 +14,46 @@ class FacebookAPI
         $this->client = $client;
     }
 
-    // Publie un statut avec un lien éventuel sur la page Facebook
+    /**
+     * Upload des photos sur un hébergeur en vue d'une publication sur Facebook
+     * @param array $images Liste des images (data des images)
+     */
+    public function stockAndHostImage($images)
+    {
+        try {
+            foreach ($images as $image) {
+                // Vérifications
+                $ext = $image->guessExtension();
+                if ($ext != 'jpg' || $ext != 'jpeg' || $ext != 'png') {
+                    throw new \Exception('Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . 'non supporté, formats acceptés = JPEG ou PNG');
+                };
+                // Stockage en local
+                $folder = $this->parameterBag->get('kernel.project_dir') . '/public/image_verification/';
+                $imgPath = $folder . uniqid() . '.jpg';
+                $image->move($folder, $imgPath);
+                // Envoi de la photo sur le site de l'hébergeur
+                $url = '';
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $url;
+    }
+
+    /**
+     * Publie un statut avec un lien éventuel sur la page Facebook
+     */
     public function postMessageOnPage($pageAccessToken, $pageId, $message, $link = false)
     {
         $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/feed/';
         try {
             // Vérifications
             // Message vide
-            if (!$message){
+            if (!$message) {
                 throw new \Exception('Echec de la publication de la photo sur Facebook : message vide !');
             };
             // Taille message
-            if (strlen($message) > 63206){
+            if (strlen($message) > 63206) {
                 throw new \Exception('Echec de la publication de la photo sur Facebook : message trop long, limite de caractères = 63206');
             };
 
@@ -34,7 +62,7 @@ class FacebookAPI
                 'message' => $message,
                 'access_token' => $pageAccessToken
             ];
-            if ($link != false) {
+            if ($link) {
                 $params['link'] = $link;
             }
 
@@ -55,14 +83,17 @@ class FacebookAPI
         }
     }
 
-    // Publie une photo avec un message éventuel sur la page Facebook
-    public function postPhotoOnPage($pageAccessToken, $pageId, $photoPath, $message = false, $published = true)
+    /**
+     * Envoie une photo avec un message éventuel sur la page Facebook
+     * @param bool $publish Définir sur true pour publier la photo, false pour l'upload seulement
+     */
+    public function postPhotoOnPage($pageAccessToken, $pageId, $photoPath, $message = false, $publish = true)
     {
         $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/photos/';
         try {
             // Vérifications
             // Message trop long
-            if ($message && strlen($message) > 63206){
+            if ($message && strlen($message) > 63206) {
                 throw new \Exception('Echec de la publication de la photo sur Facebook : message trop long, limite de caractères = 63206');
             };
             // Stockage temporaire de l'image
@@ -71,15 +102,15 @@ class FacebookAPI
             file_put_contents($imgPath, file_get_contents($photoPath));
             list($width, $height) = getimagesize($imgPath);
             // Ratio non accepté
-            if ($width/$height < 0.8){
+            if ($width / $height < 0.8) {
                 throw new \Exception('Echec de l\'envoi du post sur Facebook : photo trop longue, ratio minimum = 4:5');
-            } elseif ($width/$height > 1.91) {
+            } elseif ($width / $height > 1.91) {
                 throw new \Exception('Echec de l\'envoi du post sur Facebook : photo trop large, ratio maximum = 1.91:1');
             }
             // Image trop volumineuse
             $fileSize = filesize($imgPath);
             if ($fileSize > 10 * (10 ** 6)) {
-                throw new \Exception('Echec de la publication de la photo sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize. 'B');
+                throw new \Exception('Echec de la publication de la photo sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B');
             };
             // Suppression image temporaire
             unlink($imgPath);
@@ -94,7 +125,7 @@ class FacebookAPI
                 $params['message'] = $message;
             }
             // Publier la photo ou upload seulement ?
-            if ($published == false) {
+            if (!$publish) {
                 $params['published'] = 'false';
             }
 
@@ -115,35 +146,34 @@ class FacebookAPI
         }
     }
 
-    // Publie plusieurs photos en un post avec un message éventuel sur la page Facebook
+    /**
+     * Publie plusieurs photos en un post avec un message éventuel sur la page Facebook
+     * @param array $photoPath Liste des url de photo à publier dans le post
+     */
     public function postPhotosOnPage($pageAccessToken, $pageId, $photoPaths, $message = false)
     {
-        $pageAccessToken = $pageAccessToken;
-        $unpublishedPhotoIds = [];
-
+        $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/feed/';
         try {
             // Upload des photos sans les publier
-            var_dump($pageAccessToken);
-            var_dump($pageId);
-            var_dump($photoPaths);
-            var_dump($message);
+            $unpublishedPhotoIds = [];
             foreach ($photoPaths as $path) {
                 $unpublishedPhotoIds[] = $this->postPhotoOnPage($pageAccessToken, $pageId, $path, false, false);
             }
-            $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/feed/';
+
+            // Params
             $params = [
                 'access_token' => $pageAccessToken
             ];
-            // Ajout d'un éventuel message
             if ($message != false) {
                 $params['message'] = $message;
             }
             // Inclue chaque id de photo a publier
             foreach ($unpublishedPhotoIds as $key => $photoId) {
-                // Ex : attached_media[0]={"media_fbid":"1002088839996"}
-                $params['attached_media' . '[' . $key . ']'] = '{"media_fbid":"'.$photoId.'"}';
+                // Format du param : attached_media[0]={"media_fbid":"1002088839996"}
+                $params['attached_media' . '[' . $key . ']'] = '{"media_fbid":"' . $photoId . '"}';
             }
 
+            // Request
             $response = $this->client->request('POST', $url, [
                 'query' => $params,
             ]);
