@@ -41,14 +41,17 @@ class FbPage
     private $fbAccount;
 
     /**
-     * @ORM\OneToOne(targetEntity=SocialMediaAccount::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=SocialMediaAccount::class, inversedBy="fbPage", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
+    
     private $socialMediaAccount;
 
     /**
      * @ORM\OneToOne(targetEntity=InstaAccount::class, mappedBy="fbPage", cascade={"persist", "remove"})
      */
+
+     
     private $instaAccount;
 
     public function getId(): ?int

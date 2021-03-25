@@ -51,6 +51,16 @@ class SocialMediaAccount
      */
     private $twitterAccount;
 
+    /**
+     * @ORM\OneToOne(targetEntity=FbPage::class, mappedBy="socialMediaAccount", cascade={"persist", "remove"})
+     */
+    private $fbPage;
+
+    /**
+     * @ORM\OneToOne(targetEntity=InstaAccount::class, mappedBy="socialMediaAccount", cascade={"persist", "remove"})
+     */
+    private $instaAccount;
+
 
     public function __construct()
     {
@@ -159,4 +169,40 @@ class SocialMediaAccount
         return $this;
     }
 
+    public function getFbPage(): ?FbPage
+    {
+        return $this->fbPage;
+    }
+
+    public function setFbPage(FbPage $fbPage): self
+    {
+        // set the owning side of the relation if necessary
+        if ($fbPage->getSocialMediaAccount() !== $this) {
+            $fbPage->setSocialMediaAccount($this);
+        }
+
+        $this->fbPage = $fbPage;
+
+        return $this;
+    }
+
+
+    public function getInstaAccount(): ?InstaAccount
+    {
+        return $this->instaAccount;
+    }
+
+    public function setInstaAccount(InstaAccount $instaAccount): self
+    {
+        // set the owning side of the relation if necessary
+        if ($instaAccount->getSocialMediaAccount() !== $this) {
+            $instaAccount->setSocialMediaAccount($this);
+        }
+
+        $this->fbPage = $instaAccount;
+
+        return $this;
+    }
+    
+    
 }

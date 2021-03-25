@@ -21,6 +21,7 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PostController extends AbstractController
 {
@@ -60,7 +61,12 @@ class PostController extends AbstractController
         }
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $form = $this->createFormBuilder($post)
-            ->add('description', TextareaType::class)
+            ->add('description', TextareaType::class, [
+                'attr'   =>  array(
+                    'class'   => 'm-2'),
+                'constraints' => new NotBlank(),
+                    
+            ])
             ->add('image', TextType::class)
             ->add('date')
             ->getForm();
@@ -120,22 +126,22 @@ class PostController extends AbstractController
                     $manager->flush();
                     
                     $case = $social_media->getSocialMedia();
-                    if($case == 'facebook_account' || $case== 'fb_page')
-                    {
-                        $case= 'facebook';
-                    }
+                    
                     switch ( $case) {
-                        case 'facebook':
+                        case 'facebook_account':
                             try {
-                                $pageId = '102213561957064';
-                                $accountId = '139768931378739';
-
-                                $clientSecret = 'ac660241b09b4640889456be63f3f7da';
-                                // Mettre ici le token d'entrée (a recup sur API graph tools par ex)
-
-                                $shortLivedToken = 'EAABZCHn2BZAjMBAOOz2G6xqjKakRvlU64xtvAtaxlQeZBQEirCoUR1h6IDYi9UIpAF4bYehwWu1m94D99o27yW1mYs4X3jLim5ugXQ8dibYPFzbcNhXw93r63E9G0mLquZCAUUIYBBgpORA87hOFOgMxfpEB12W451khazrzN0hiiA4oDewsXppD36K2PkBZARV7P0vTwEdykarIC6gW0bH1hCtUO6gTmxFjNZCyVBfjrIvZB0PidvDbCwsZAXsockkZD';
-                                $getLongLivedUserToken = $this->FbAPI->getLongLivedUserToken($shortLivedToken, $accountId, $clientSecret);
-                                $pageAccessToken = $this->FbAPI->getPageAccessToken($getLongLivedUserToken, $pageId);
+                                $FbAccount = $social_media->getFbAccount();
+                                $accountId = $FbAccount->getAccountId(); 
+                            } catch (\Throwable $th) {
+                                throw $th;
+                            }
+                            break;
+                        case 'fb_page':
+                            try {
+                                $FbPage = $social_media->getFbPage();
+                                $pageId = $FbPage->getPageID();
+                                $pageAccessToken = $FbPage->getPageAccessToken();
+                                 
                                 $postId = $this->FbAPI->postPhotoOnPage(
                                     $pageAccessToken,
                                     $pageId,
@@ -148,9 +154,11 @@ class PostController extends AbstractController
                             break;
                         case 'instagram_account':
                             try {
-                                $accountId = '17841446705960906';
+                                $InstaAccount = $social_media->getInstaAccount();
+                                $accountId = $InstaAccount->getIdAccount();
+                                $FbAccount = $InstaAccount->getFbPage()->getFbAccount();
+                                $accessToken = $FbAccount->getLonglivedtoken();
                                 $photoUrl = $image;
-                                $accessToken = 'EAABZCHn2BZAjMBAOOz2G6xqjKakRvlU64xtvAtaxlQeZBQEirCoUR1h6IDYi9UIpAF4bYehwWu1m94D99o27yW1mYs4X3jLim5ugXQ8dibYPFzbcNhXw93r63E9G0mLquZCAUUIYBBgpORA87hOFOgMxfpEB12W451khazrzN0hiiA4oDewsXppD36K2PkBZARV7P0vTwEdykarIC6gW0bH1hCtUO6gTmxFjNZCyVBfjrIvZB0PidvDbCwsZAXsockkZD';
                                 $message = $description;          
                                 $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $accessToken, $message);
                             } catch (\Throwable $th) {
@@ -158,17 +166,25 @@ class PostController extends AbstractController
                             }
                             break;
                         case 'twitter_account':
-                            $consumer_key = '8zz3WouFDnNW0vJ3r5BpPZfxX';
-                            $consumer_secret = 'yY6PC7CUEJYP2gg1X9uusxEdCfUMmW5UgIIowAWCunOXZDFM1F';
-                            $access_token = '1371453453432655872-PGVA3ttM6nDTcRmfS5TqSEfRxuU48O';
-                            $access_token_secret = 'RdhuU5csqLUhXzFrGrMuGo5Jl4cDG1AQQuWiFGDkhEOcS';
-                
+
+                            $TwitterAccount = $social_media->getTwitterAccount();
+
+                            $consumer_key = $TwitterAccount->getConsumerKey();
+                            $consumer_secret = $TwitterAccount->getConsumerSecret();
+                            $access_token = $TwitterAccount->getAccessToken();
+                            $access_token_secret = $TwitterAccount->getAccessTokenSecret();
+                            
 
                             $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
-                            $content = $connection->get("account/verify_credentials");
-
-                            $new_status = $connection->post("statuses/update", ['status' => $description]);
-                            $status = $connection->get("statuses/home_timeline", ['count' => 25, "exclde_replies" => true]);
+                            $photoPaths = [
+                                'C:\Users\romai\OneDrive\Documents\LP\SocialMedia\manageSocialMedia\assets\images\canard.jpg'
+                            ];
+                    
+                            $response = $this->TwitterAPI->postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, 'Test API N°2', $photoPaths);
+                            
+                            //$content = $connection->get("account/verify_credentials");
+                            //$new_status = $connection->post("statuses/update", ['status' => $description]);
+                            //$status = $connection->get("statuses/home_timeline", ['count' => 25, "exclde_replies" => true]);
                             break;
                     }
                 }

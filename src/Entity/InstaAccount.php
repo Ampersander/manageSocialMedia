@@ -29,7 +29,7 @@ class InstaAccount
 
 
     /**
-     * @ORM\OneToOne(targetEntity=SocialMediaAccount::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=SocialMediaAccount::class, inversedBy="instaAccount", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $socialMediaAccount;
@@ -39,6 +39,7 @@ class InstaAccount
      * @ORM\JoinColumn(nullable=false)
      */
     private $fbPage;
+
 
     public function getId(): ?int
     {
