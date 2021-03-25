@@ -19,8 +19,10 @@ class InstagramAPI
 
     /**
      * Upload des photos sur un hébergeur et stockage local en vue d'une publication sur Instagram
-     * @param $image Image à stocker et heberger (envoyer $form->getData())
-     * @return array Retourne une array sous forme [nom,url]
+     * @param $image Image à stocker et heberger (donner $form->get('images')->getData())
+     * @return array Retourne une array, à utiliser comme suit :
+     * $nomImage = array['name']
+     * $urlImage = array['url']
      */
     public function stockAndHostImage($image)
     {
@@ -80,8 +82,8 @@ class InstagramAPI
             ]);
             if (200 !== $response->getStatusCode()) {
                 $content = $response->toArray(false);
-                $message = $content['error']['message'];
-                throw new \Exception('Echec de la publication de la photo sur Instagram : ' . $message);
+                $error = $content['error']['message'];
+                throw new \Exception('Echec de la publication de la photo sur Instagram : ' . $error);
             } else {
                 $content = $response->toArray();
                 return $content['id'];
@@ -98,7 +100,7 @@ class InstagramAPI
         try {
             // Vérifications
             // Message trop long
-            if ($message && strlen($message) > 2200) {
+            if ($message !== false && strlen($message) > 2200) {
                 throw new \Exception('Echec de la publication de la photo sur Instagram : message trop long, limite de caractères = 2200');
             };
             // Stockage temporaire de l'image
@@ -133,8 +135,8 @@ class InstagramAPI
             ]);
             if (200 !== $response->getStatusCode()) {
                 $content = $response->toArray(false);
-                $message = $content['error']['message'];
-                throw new \Exception('Echec de l\'envoi du post sur Instagram : ' . $message);
+                $error = $content['error']['message'];
+                throw new \Exception('Echec de l\'envoi du post sur Instagram : ' . $error);
             } else {
                 $content = $response->toArray();
                 return $content['id'];
