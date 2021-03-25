@@ -19,16 +19,17 @@ class FacebookAPI
 
     /**
      * Upload des photos sur un hébergeur et stockage local en vue d'une publication sur Facebook
-     * @param array $images Liste d'images à stocker et heberger (envoyer $form->getData())
+     * @param array $images Liste d'images à stocker et heberger (donner $form->get('images'))
      * @return array[array] $hostedImages Retourne une liste de listes, à utiliser comme suit :
      * $nomImage1 = array[0]['name']
      * $urlImage2 = array[1]['url']
      */
     public function stockAndHostImages($images)
     {
-        $hostedImages = [];
         try {
+            $hostedImages = [];
             foreach ($images as $image) {
+                $image = $image->getData();
                 $ext = $image->guessExtension();
                 // Stockage en local
                 $folder = $this->parameterBag->get('kernel.project_dir') . '/public/facebook/';
@@ -104,7 +105,7 @@ class FacebookAPI
                 'message' => $message,
                 'access_token' => $pageAccessToken
             ];
-            if ($link) {
+            if ($link !== false) {
                 $params['link'] = $link;
             }
 
@@ -145,7 +146,7 @@ class FacebookAPI
                 'access_token' => $pageAccessToken
             ];
             // Message éventuel
-            if ($message != false) {
+            if ($message !== false) {
                 $params['message'] = $message;
             }
             // Publier la photo ou upload seulement ?
@@ -188,7 +189,7 @@ class FacebookAPI
             $params = [
                 'access_token' => $pageAccessToken
             ];
-            if ($message != false) {
+            if ($message !== false) {
                 $params['message'] = $message;
             }
             // Inclue chaque id de photo a publier

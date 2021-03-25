@@ -2,31 +2,22 @@
 
 namespace App\Utility;
 
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Abraham\TwitterOAuth\TwitterOAuth;
 
 class TwitterAPI
 {
-
-    private $client;
-
-    public function __construct(HttpClientInterface $client)
-    {
-        $this->client = $client;
-    }
-
     /**
      * Upload des photos sur un hébergeur et stockage local en vue d'une publication sur Twitter
-     * @param array $images Liste d'images à stocker et heberger (envoyer $form->getData())
-     * @return array $names Retourne la liste du nom des images stockées localement
+     * @param array $images Liste d'images à stocker et heberger (donner $form->get('images'))
+     * @return array $names Retourne la liste des noms des images stockées localement
      */
     public function stockImages($images)
     {
-        $names = [];
         try {
+            $names = [];
             // Vérif nombres d'images
             if (sizeof($images) > 4) throw new \Exception('Echec de l\'envoi du post sur Twitter, 4 images maximum autorisées');
-            
+
             foreach ($images as $image) {
                 $ext = $image->guessExtension();
                 // Stockage en local
@@ -67,17 +58,19 @@ class TwitterAPI
     public function postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, $message = false, $imagePaths = false)
     {
         try {
+            $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
             // Verifications
             // Message trop long
             if ($message && strlen($message) > 280) {
                 throw new \Exception('Echec de la publication de la photo sur Twitter : message trop long, limite de caractères = 280');
             };
 
-            // Request
-            $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
-            $parameters = [
-                'status' => $message
-            ];
+            // Params            
+            if ($message !== false) {
+                $parameters = [
+                    'status' => $message
+                ];
+            }
             // Si le tweet contient des photos
             if ($imagePaths != false) {
                 $mediaIds = [];
@@ -87,8 +80,9 @@ class TwitterAPI
                 }
                 $parameters['media_ids'] = implode(',', $mediaIds);
             }
-            $result = $connection->post('statuses/update', $parameters);
 
+            // Request
+            $result = $connection->post('statuses/update', $parameters);
             if ($connection->getLastHttpCode() != 200) {
                 $body = $connection->getLastBody();
                 $body = json_decode(json_encode($body), true);
