@@ -2,8 +2,11 @@
 {% block body %}
 {{ parent() }}
 <h1>Création d'un article</h1>
+
 {{ form_start(formPost) }}
+<div>
 {{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article"}}) }}
+</div>
 {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie"}}) }}
 {{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image"}}) }}
 <button type="submit" class="btn btn-primary">
@@ -14,5 +17,7 @@ Publier le post
 {% endif %}
 </button>
 {{ form_end(formPost) }}
-{% block javascripts %}{{ encore_entry_script_tags('manageArtiste') }}{% endblock %}
+{% block javascripts %}
+{{ encore_entry_script_tags('manageArtistes') }}
+{% endblock %}
 {% endblock %}

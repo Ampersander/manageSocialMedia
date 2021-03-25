@@ -23,7 +23,9 @@ Encore
 .addEntry('app', './assets/app.js')
     .addEntry('customScss', './assets/app.js')
     .addEntry('manageAccountSocialMedia', './assets/js/manageAccountSocialMedia')
-    .addEntry('manageArtistes', './assets/js/managaArtistes.js')
+    .addEntry('manageArtistes', './assets/js/manageArtistes.js')
+    //.addEntry('autocomplete', './assets/js/autocomplete.js')
+    //.addEntry('requireAuto', './assets/js/require.js')
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
 

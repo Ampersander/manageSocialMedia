@@ -42,7 +42,6 @@ class PostController extends AbstractController
     {
         $repository = $this->getDoctrine()->getRepository(Post::class);
         $posts = $repository->findBySocialMediaAccounts('DEFAULT');
-
         return $this->render('post/index.html.twig', [
             'controller_name' => 'PostController',
             'posts' => $posts,
@@ -76,10 +75,14 @@ class PostController extends AbstractController
                 'id' => $post->getId(),
             ]);
         }
-
+        $repository = $this->getDoctrine()->getRepository(Artistes::class);
+        $artiste = $repository->findAll();
+        $res = $artiste[0];
+        //return Json(testlist, JsonRequestBehavior.AllowGet);    
         return $this->render('post/create.html.twig', [
             'formPost' => $form->createView(),
             'editMode' => $post->getId() !== null,
+            'res' => $artiste,
         ]);
     }
 
