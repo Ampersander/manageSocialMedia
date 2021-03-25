@@ -107,4 +107,12 @@ class TestController extends AbstractController
         ]);
     }
 
+    /**
+     *  @Route ("/test5", name="test5")
+     */
+    public function test5()
+    {
+        return $this->render('test2.html.twig');
+    }
+
 }
