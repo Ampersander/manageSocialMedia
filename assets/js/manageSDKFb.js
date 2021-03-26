@@ -1,3 +1,5 @@
+
+
 // Renvoie le user short-lived token à partid du appId, puis déconnecte la session
 async function sendFacebookToken(appId) {
     console.log('Connexion à Facebook, appId : ' + appId);
@@ -58,3 +60,4 @@ $(function () {
         sendFacebookToken(appId);
     });
 });
+

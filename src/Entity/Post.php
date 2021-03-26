@@ -45,18 +45,17 @@ class Post
      */
     private $socialMediaAccounts;
 
-
-     /**
-     * @ORM\ManyToMany(targetEntity=artiste::class, mappedBy="post")
+    /**
+     * @ORM\ManyToMany(targetEntity=Artiste::class, mappedBy="post")
      */
-    private $artiste;
+    private $artistes;
 
-    
 
     public function __construct()
     {
         $this->socialMediaAccounts = new ArrayCollection();
         $this->artiste = new ArrayCollection();
+        $this->artistes = new ArrayCollection();
     }
 
 
@@ -138,18 +137,18 @@ class Post
         return $this;
     }
 
-     /**
+    /**
      * @return Collection|Artiste[]
      */
-    public function getartiste(): Collection
+    public function getArtistes(): Collection
     {
-        return $this->artiste;
+        return $this->artistes;
     }
 
     public function addArtiste(Artiste $artiste): self
     {
-        if (!$this->artiste->contains($artiste)) {
-            $this->artiste[] = $artiste;
+        if (!$this->artistes->contains($artiste)) {
+            $this->artistes[] = $artiste;
             $artiste->addPost($this);
         }
 
@@ -158,10 +157,14 @@ class Post
 
     public function removeArtiste(Artiste $artiste): self
     {
-        if ($this->artiste->removeElement($artiste)) {
+        if ($this->artistes->removeElement($artiste)) {
             $artiste->removePost($this);
         }
 
         return $this;
     }
+
+   
+
+   
 }

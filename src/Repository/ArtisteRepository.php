@@ -47,15 +47,4 @@ class ArtisteRepository extends ServiceEntityRepository
         ;
     }
     */
-    public function findByName($value)
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.nom like :query')
-            ->setParameter('query', "%". $value ."%")
-            // ->orderBy('c.id', 'ASC')
-            // ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
 }

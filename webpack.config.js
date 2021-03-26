@@ -25,7 +25,7 @@ Encore
     .addEntry('manageAccountSocialMedia', './assets/js/manageAccountSocialMedia')
     .addEntry('manageCreatePost', './assets/js/manageCreatePost')
     .addEntry('manageSDKFb', './assets/js/manageSDKFb')
-    
+    .addEntry('manageArtiste', './assets/js/manageArtiste')
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
 

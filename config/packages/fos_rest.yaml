@@ -21,4 +21,5 @@ fos_rest:
         serialize_null: true
     format_listener:
         rules:
-            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json ] }
+            - { path: ^/api, priorities: ['json'], fallback_format: json, prefer_extension: true }
+            - { path: ^/, priorities: ['html'], fallback_format: html, prefer_extension: true }

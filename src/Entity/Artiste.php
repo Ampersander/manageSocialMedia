@@ -27,20 +27,20 @@ class Artiste
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name_facebook;
+    private $nameFacebook;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name_twitter;
+    private $nameTwitter;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name_insta;
+    private $nameInsta;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Post::class, inversedBy="artiste")
+     * @ORM\ManyToMany(targetEntity=Post::class, inversedBy="artistes")
      */
     private $post;
 
@@ -68,36 +68,36 @@ class Artiste
 
     public function getNameFacebook(): ?string
     {
-        return $this->name_facebook;
+        return $this->nameFacebook;
     }
 
-    public function setNameFacebook(string $name_facebook): self
+    public function setNameFacebook(string $nameFacebook): self
     {
-        $this->name_facebook = $name_facebook;
+        $this->nameFacebook = $nameFacebook;
 
         return $this;
     }
 
     public function getNameTwitter(): ?string
     {
-        return $this->name_twitter;
+        return $this->nameTwitter;
     }
 
-    public function setNameTwitter(string $name_twitter): self
+    public function setNameTwitter(string $nameTwitter): self
     {
-        $this->name_twitter = $name_twitter;
+        $this->nameTwitter = $nameTwitter;
 
         return $this;
     }
 
     public function getNameInsta(): ?string
     {
-        return $this->name_insta;
+        return $this->nameInsta;
     }
 
-    public function setNameInsta(string $name_insta): self
+    public function setNameInsta(string $nameInsta): self
     {
-        $this->name_insta = $name_insta;
+        $this->nameInsta = $nameInsta;
 
         return $this;
     }
