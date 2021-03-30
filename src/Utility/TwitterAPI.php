@@ -76,7 +76,6 @@ class TwitterAPI
                 $mediaIds = [];
                 foreach ($imagePaths as $path) {
                     $media = $connection->upload('media/upload', ['media' => $path]);
-                    
                     $mediaIds[] = $media->media_id_string;
                 }
                 $parameters['media_ids'] = implode(',', $mediaIds);

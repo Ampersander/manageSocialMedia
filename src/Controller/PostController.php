@@ -22,6 +22,7 @@ use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class PostController extends AbstractController
 {
@@ -29,11 +30,11 @@ class PostController extends AbstractController
     private $FbAPI;
     private $InstaAPI;
     private $TwitterAPI;
-    public function __construct(HttpClientInterface $client)
+    public function __construct(HttpClientInterface $client, ParameterBagInterface $parmeterBag)
     {
-        $this->FbAPI = new FacebookAPI($client);
-        $this->InstaAPI = new InstagramAPI($client);
-        $this->TwitterAPI = new TwitterAPI($client);
+        $this->FbAPI = new FacebookAPI($client, $parmeterBag);
+        $this->InstaAPI = new InstagramAPI($client, $parmeterBag);
+        $this->TwitterAPI = new TwitterAPI($client, $parmeterBag);
     }
 
     /**
