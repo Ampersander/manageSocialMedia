@@ -50,6 +50,11 @@ class Post
      */
     private $artistes;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TemplatePost::class, inversedBy="post")
+     */
+    private $templatePost;
+
 
     public function __construct()
     {
@@ -160,6 +165,18 @@ class Post
         if ($this->artistes->removeElement($artiste)) {
             $artiste->removePost($this);
         }
+
+        return $this;
+    }
+
+    public function getTemplatePost(): ?TemplatePost
+    {
+        return $this->templatePost;
+    }
+
+    public function setTemplatePost(?TemplatePost $templatePost): self
+    {
+        $this->templatePost = $templatePost;
 
         return $this;
     }

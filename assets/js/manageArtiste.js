@@ -24,25 +24,6 @@ $(function () {
 
 });
 
-$.ajax({
-    url : 'http://localhost:8000/api/artistes',
-    type : 'GET',
-    dataType : 'json',
-    success : function(resultat, statut){ 
-        console.log(resultat);
-        var countries =[];
-        for(var i = 0 ; i< resultat.length ;i++){
-           var elem =  resultat[i];
-           countries.push(elem.nom); 
-        }
-    },
-
-    error : function(resultat, statut, erreur){
-        console.log(resultat);
-    }
-
- });
-
 document
     .getElementById("form_description")
     .addEventListener("keydown", function(event) {
@@ -56,15 +37,15 @@ document
                 dataType : 'json',
                 success : function(resultat, statut){ 
                     console.log(resultat);
-                    var countries =[];
+                    var artistes =[];
                     for(var i = 0 ; i< resultat.length ;i++){
                        var elem =  resultat[i];
-                       countries.push(elem.nom); 
+                       artistes.push(elem.nom); 
                     }
                
-            //var countries = ['Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bangladesh', 'Belarus', 'Belgium', 'Bolivia', 'Brazil', 'Bulgaria', 'Cameroon', 'Canada', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Denmark', 'Dominica', 'Dominican Republic', 'Ecuador', 'Finland', 'France', 'Georgia', 'Germany', 'Gibraltar', 'Greece', 'Greenland', 'Guadeloupe', 'Guatemala', 'Guyana', 'Haiti', 'Iceland', 'India', 'Indonesia', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Mauritius', 'Mayotte', 'Mexico', 'Moldova', 'Norway', 'Palau', 'Paraguay', 'Poland', 'Portugal', 'Romania', 'Saint Helena', 'Saint Pierre and Miquelon', 'South Africa', 'South Georgia', 'South Korea', 'Spain', 'Sweden', 'Swaziland', 'Switzerland', 'United Kingdom', 'United States'];
+        
             
-            var items = countries.map(function (n) { return { label: n, group: "Countries" }});
+            var items = artistes.map(function (n) { return { label: n, group: "Artistes" }});
             var allowedChars = new RegExp(/^[a-zA-Z\s]+$/)
         
             function charsAllowed(value) {
@@ -92,7 +73,7 @@ document
                     }
                     return itemElement;
                 },
-                emptyMsg: "No countries found",
+                emptyMsg: "No artistes found",
                 customize: function(input, inputRect, container, maxHeight) {
                     if (maxHeight < 100) {
                         container.style.top = "";

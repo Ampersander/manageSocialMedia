@@ -93,7 +93,6 @@
                         <i class="fa fa-thumbs-up"></i></button></td>
                 </form>
 
-                {{account.id}}
                 <form method="post" action="{{ path('profil.FbAccount.delete', {id: account.id}) }}"
                     onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
                     <td><button type="submit" class="btn btn-danger">

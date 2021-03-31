@@ -48,10 +48,16 @@ class User implements UserInterface
      */
     private $socialMediaAccounts;
 
+    /**
+     * @ORM\OneToMany(targetEntity=TemplatePost::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $templatePosts;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->socialMediaAccounts = new ArrayCollection();
+        $this->templatePosts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -190,6 +196,36 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($socialMediaAccount->getUser() === $this) {
                 $socialMediaAccount->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TemplatePost[]
+     */
+    public function getTemplatePosts(): Collection
+    {
+        return $this->templatePosts;
+    }
+
+    public function addTemplatePost(TemplatePost $templatePost): self
+    {
+        if (!$this->templatePosts->contains($templatePost)) {
+            $this->templatePosts[] = $templatePost;
+            $templatePost->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTemplatePost(TemplatePost $templatePost): self
+    {
+        if ($this->templatePosts->removeElement($templatePost)) {
+            // set the owning side to null (unless already changed)
+            if ($templatePost->getUser() === $this) {
+                $templatePost->setUser(null);
             }
         }
 

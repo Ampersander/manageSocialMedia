@@ -4,15 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\SocialMediaAccount;
+use App\Entity\TemplatePost;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -21,6 +19,7 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
+use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PostController extends AbstractController
@@ -60,6 +59,13 @@ class PostController extends AbstractController
             $post = new Post();
         }
         $user = $this->get('security.token_storage')->getToken()->getUser();
+        $repository = $this->getDoctrine()->getRepository(TemplatePost::class);
+        $templatePosts = $repository->findByUser($user);
+        $arrayTemplate['Pas de template']= 0;
+        foreach($templatePosts as $templatePost){
+            $arrayTemplate[$templatePost->getTitle()] = $templatePost->getId();
+        }
+        $user = $this->get('security.token_storage')->getToken()->getUser();
         $form = $this->createFormBuilder($post)
             ->add('description', TextareaType::class, [
                 'attr'   =>  array(
@@ -69,8 +75,16 @@ class PostController extends AbstractController
             ])
             ->add('image', TextType::class)
             ->add('date')
+            ->add('templatePost', ChoiceType::class, [
+                'mapped' => false,
+                'choices'  => $arrayTemplate,
+            
+            ])
             ->getForm();
             $post->setUser($user);
+            $selectTemplatePost = $repository->findById($request->request->get('templatePost'));
+            if( $selectTemplatePost != null)
+                $post->setTemplatePost( $selectTemplatePost);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

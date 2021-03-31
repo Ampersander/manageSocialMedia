@@ -43,6 +43,37 @@ class FacebookAPI
         }
     }
 
+
+    
+    // Publie un statut avec un lien éventuel sur le compte Facebook
+    public function postMessageOnAccount($accountAccessToken, $message, $link = false)
+    {
+        $url = 'https://graph.facebook.com/v10.0/me';
+        try {
+            $params = [
+                'message' => $message,
+                'access_token' => $accountAccessToken
+            ];
+            if ($link != false) {
+                $params['link'] = $link;
+            }
+            $response = $this->client->request('POST', $url, [
+                'query' => $params,
+            ]);
+
+            if (200 !== $response->getStatusCode()) {
+                $content = $response->toArray(false);
+                $message = $content['error']['message'];
+                throw new \Exception('Echec de l\'envoi du post sur Facebook : ' . $message);
+            } else {
+                $content = $response->toArray();
+                return $content['id'];
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
     // Publie une photo avec un message éventuel sur la page Facebook
     public function postPhotoOnPage($pageAccessToken, $pageId, $photoPath, $message = false, $published = true)
     {
