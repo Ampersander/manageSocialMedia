@@ -19,9 +19,6 @@ class ManageAccountSocialMediaFormType extends AbstractType
             'choices'  => [
                 'Twitter' => 'twitter',
                 'Facebook compte' => 'facebook_account',
-                'Facebook Page' => 'facebook_page',
-                'Instagram' => 'instagram',
-                'LinkedIn' => 'linkedin',
             ],
         
         ])

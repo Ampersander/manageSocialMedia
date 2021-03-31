@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\Artistes;
+use App\Entity\Artiste;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Artistes|null find($id, $lockMode = null, $lockVersion = null)
- * @method Artistes|null findOneBy(array $criteria, array $orderBy = null)
- * @method Artistes[]    findAll()
- * @method Artistes[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Artiste|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Artiste|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Artiste[]    findAll()
+ * @method Artiste[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ArtistesRepository extends ServiceEntityRepository
+class ArtisteRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Artistes::class);
+        parent::__construct($registry, Artiste::class);
     }
 
     // /**
-    //  * @return Artistes[] Returns an array of Artistes objects
+    //  * @return Artiste[] Returns an array of Artiste objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class ArtistesRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Artistes
+    public function findOneBySomeField($value): ?Artiste
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.exampleField = :val')
@@ -47,13 +47,11 @@ class ArtistesRepository extends ServiceEntityRepository
         ;
     }
     */
-    public function findByName($value)
+    public function findByName($name)
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.nom like :query')
-            ->setParameter('query', "%". $value ."%")
-            // ->orderBy('c.id', 'ASC')
-            // ->setMaxResults(10)
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.nom = :nom')
+            ->setParameter('nom', $name)
             ->getQuery()
             ->getResult()
         ;

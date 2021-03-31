@@ -2,47 +2,47 @@
 
 namespace App\Entity;
 
-use App\Repository\ArtistesRepository;
+use App\Repository\ArtisteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ArtistesRepository::class)
+ * @ORM\Entity(repositoryClass=ArtisteRepository::class)
  */
-class Artistes
+class Artiste
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    public $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $nom;
+    public $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name_facebook;
+    public $nameFacebook;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name_twitter;
+    public $nameTwitter;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name_insta;
+    public $nameInsta;
 
     /**
      * @ORM\ManyToMany(targetEntity=Post::class, inversedBy="artistes")
      */
-    private $post;
+    public $post;
 
     public function __construct()
     {
@@ -68,36 +68,36 @@ class Artistes
 
     public function getNameFacebook(): ?string
     {
-        return $this->name_facebook;
+        return $this->nameFacebook;
     }
 
-    public function setNameFacebook(string $name_facebook): self
+    public function setNameFacebook(string $nameFacebook): self
     {
-        $this->name_facebook = $name_facebook;
+        $this->nameFacebook = $nameFacebook;
 
         return $this;
     }
 
     public function getNameTwitter(): ?string
     {
-        return $this->name_twitter;
+        return $this->nameTwitter;
     }
 
-    public function setNameTwitter(string $name_twitter): self
+    public function setNameTwitter(string $nameTwitter): self
     {
-        $this->name_twitter = $name_twitter;
+        $this->nameTwitter = $nameTwitter;
 
         return $this;
     }
 
     public function getNameInsta(): ?string
     {
-        return $this->name_insta;
+        return $this->nameInsta;
     }
 
-    public function setNameInsta(string $name_insta): self
+    public function setNameInsta(string $nameInsta): self
     {
-        $this->name_insta = $name_insta;
+        $this->nameInsta = $nameInsta;
 
         return $this;
     }

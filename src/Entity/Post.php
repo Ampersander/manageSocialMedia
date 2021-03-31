@@ -27,17 +27,12 @@ class Post
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $date;
+    public $date;
 
     /**
      * @ORM\Column(type="string", length=500)
      */
     private $description;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $socialMediaAccounts;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
@@ -46,15 +41,22 @@ class Post
     private $user;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Artistes::class, mappedBy="post")
+     * @ORM\ManyToMany(targetEntity=SocialMediaAccount::class, inversedBy="posts")
+     */
+    private $socialMediaAccounts;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Artiste::class, mappedBy="post")
      */
     private $artistes;
 
+
     public function __construct()
     {
+        $this->socialMediaAccounts = new ArrayCollection();
+        $this->artiste = new ArrayCollection();
         $this->artistes = new ArrayCollection();
     }
-
 
 
     public function getId(): ?int
@@ -98,17 +100,6 @@ class Post
         return $this;
     }
 
-    public function getSocialMediaAccounts(): ?string
-    {
-        return $this->socialMediaAccounts;
-    }
-
-    public function setSocialMediaAccounts(string $socialMediaAccounts): self
-    {
-        $this->socialMediaAccounts = $socialMediaAccounts;
-
-        return $this;
-    }
 
     public function getUser(): ?User
     {
@@ -123,14 +114,38 @@ class Post
     }
 
     /**
-     * @return Collection|Artistes[]
+     * @return Collection|SocialMediaAccount[]
+     */
+    public function getSocialMediaAccounts(): Collection
+    {
+        return $this->socialMediaAccounts;
+    }
+
+    public function addSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
+    {
+        if (!$this->socialMediaAccounts->contains($socialMediaAccount)) {
+            $this->socialMediaAccounts[] = $socialMediaAccount;
+        }
+
+        return $this;
+    }
+
+    public function removeSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
+    {
+        $this->socialMediaAccounts->removeElement($socialMediaAccount);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Artiste[]
      */
     public function getArtistes(): Collection
     {
         return $this->artistes;
     }
 
-    public function addArtiste(Artistes $artiste): self
+    public function addArtiste(Artiste $artiste): self
     {
         if (!$this->artistes->contains($artiste)) {
             $this->artistes[] = $artiste;
@@ -140,7 +155,7 @@ class Post
         return $this;
     }
 
-    public function removeArtiste(Artistes $artiste): self
+    public function removeArtiste(Artiste $artiste): self
     {
         if ($this->artistes->removeElement($artiste)) {
             $artiste->removePost($this);
@@ -148,4 +163,8 @@ class Post
 
         return $this;
     }
+
+   
+
+   
 }

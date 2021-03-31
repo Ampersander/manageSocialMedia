@@ -173,6 +173,7 @@ class User implements UserInterface
         return $this->socialMediaAccounts;
     }
 
+
     public function addSocialMediaAccount(SocialMediaAccount $socialMediaAccount): self
     {
         if (!$this->socialMediaAccounts->contains($socialMediaAccount)) {

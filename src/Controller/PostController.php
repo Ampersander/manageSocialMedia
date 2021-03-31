@@ -3,7 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Post;
-use App\Entity\Artistes;
+use App\Entity\SocialMediaAccount;
+use App\Entity\Artiste;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,19 +21,20 @@ use Doctrine\ORM\EntityManagerInterface;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
-
-//require "vendor/autoload.php";
+use App\Utility\TwitterAPI;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PostController extends AbstractController
 {
 
     private $FbAPI;
     private $InstaAPI;
-
+    private $TwitterAPI;
     public function __construct(HttpClientInterface $client)
     {
         $this->FbAPI = new FacebookAPI($client);
         $this->InstaAPI = new InstagramAPI($client);
+        $this->TwitterAPI = new TwitterAPI($client);
     }
 
     /**
@@ -40,11 +42,16 @@ class PostController extends AbstractController
      */
     public function index(): Response
     {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
         $repository = $this->getDoctrine()->getRepository(Post::class);
-        $posts = $repository->findBySocialMediaAccounts('DEFAULT');
+        $posts = $repository->findByUser($user);
+        $day = new \DateTime();
+
+
         return $this->render('post/index.html.twig', [
             'controller_name' => 'PostController',
             'posts' => $posts,
+            'day' => $day,
         ]);
     }
 
@@ -56,33 +63,33 @@ class PostController extends AbstractController
         if (!$post) {
             $post = new Post();
         }
-
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $form = $this->createFormBuilder($post)
-            ->add('description', TextareaType::class)
+            ->add('description', TextareaType::class, [
+                'attr'   =>  array(
+                    'class'   => 'm-2'),
+                'constraints' => new NotBlank(),
+                    
+            ])
             ->add('image', TextType::class)
             ->add('date')
             ->getForm();
             $post->setUser($user);
-            $post->setSocialMediaAccounts('DEFAULT');
 
         $form->handleRequest($request);
+        
         if ($form->isSubmitted() && $form->isValid()) {
-            $manager->persist($post);
-            $manager->flush();
+                $manager->persist($post);
+                $manager->flush();
 
             return $this->redirectToRoute('post_watch', [
                 'id' => $post->getId(),
             ]);
         }
-        $repository = $this->getDoctrine()->getRepository(Artistes::class);
-        $artiste = $repository->findAll();
-        $res = $artiste[0];
-        //return Json(testlist, JsonRequestBehavior.AllowGet);    
+
         return $this->render('post/create.html.twig', [
             'formPost' => $form->createView(),
             'editMode' => $post->getId() !== null,
-            'res' => $artiste,
         ]);
     }
 
@@ -101,128 +108,154 @@ class PostController extends AbstractController
      */
     public function watch(Post $post, Request $request, EntityManagerInterface $manager)
     {
+        
+        $repository = $this->getDoctrine()->getRepository(SocialMediaAccount::class);
         $image= $post->getImage();
         $date= $post->getDate();
+        $id = $post->getId();
         $description= $post->getDescription();
         $user = $this->get('security.token_storage')->getToken()->getUser();
-        
+        $day = new \DateTime();
+
         $facebook = $request->request->get('facebook');
         $insta = $request->request->get('insta');
         $twitter = $request->request->get('twitter');
+        $social_medias = $repository->findByUser($user);
 
-        if($facebook != '' || $insta != '' || $twitter != ''){
-        if($facebook == "facebook"){
-            $postFB = new Post();
-            $postFB->setUser($user);
-            $postFB->setDescription($description);
-            $postFB->setDate($date);
-            $postFB->setImage($image);
-            $postFB->setSocialMediaAccounts('facebook');
-            $manager->persist($postFB);
-            $manager->flush();
+        $nombre_incre = mb_substr_count($description, "@");
+        $biblie = [];
+        $mot = explode(" ", $description);
+        $j = 0;
+        for($i=0; $i<count($mot); $i++){
+            //$mot = substr($description, strpos($description, "@"), strpos($description, " ")-strlen($description));
 
-            try {
-                $pageId = '102213561957064';
-                $accountId = '139768931378739';
-                $clientSecret = 'ac660241b09b4640889456be63f3f7da';
-                // Mettre ici le token d'entrée (a recup sur API graph tools par ex)
-                $shortLivedToken = 'AABZCHn2BZAjMBAOOz2G6xqjKakRvlU64xtvAtaxlQeZBQEirCoUR1h6IDYi9UIpAF4bYehwWu1m94D99o27yW1mYs4X3jLim5ugXQ8dibYPFzbcNhXw93r63E9G0mLquZCAUUIYBBgpORA87hOFOgMxfpEB12W451khazrzN0hiiA4oDewsXppD36K2PkBZARV7P0vTwEdykarIC6gW0bH1hCtUO6gTmxFjNZCyVBfjrIvZB0PidvDbCwsZAXsockkZD';
-                $curl = curl_init();
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => "https://graph.facebook.com/v10.0/search?q=domingo",
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => "",
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 30,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "GET",
-                ));
-                $response = curl_exec($curl);
-                $err = curl_error($curl);
-                var_dump($response);
-                var_dump($err);
-                curl_close($curl);
-                
-                $postId = $this->FbAPI->postPhotosOnPage(
-                    $shortLivedToken,
-                    $accountId,
-                    $clientSecret,
-                    $pageId,
-                    [
-                        $image
-                    ],
-                    $description
-                );
-            } catch (\Throwable $th) {
-                throw $th;
+            if(strpos($mot[$i], "@") === false  ){
+                //echo 'yes';
+                $descriptionF = $description;
+                $descriptionI = $description;
+                $descriptionT = $description;
+
+            }else{
+                //echo $mot[$i];
+                $other = $this->getDoctrine()->getRepository(Artiste::class);
+                $artiste = $other->findByName(substr($mot[$i], 1));
+                //var_dump(count($artiste));
+                $nF = $artiste[0]->nameFacebook;
+                $nT = $artiste[0]->nameTwitter;
+                $nI = $artiste[0]->nameInsta;
+                //var_dump($artiste);
+                $descriptionF = str_replace($mot[$i], "@".$nF, $description);
+                $descriptionT = str_replace($mot[$i], "@".$nT, $description);
+                $descriptionI = str_replace($mot[$i], "@".$nI, $description);
             }
         }
-        if($insta == "insta"){
-            $postInst = new Post();
-            $postInst->setUser($user);
-            $postInst->setDescription($description);
-            $postInst->setDate($date);
-            $postInst->setImage($image);
-            $postInst->setSocialMediaAccounts('instagram');
-            $manager->persist($postInst);
-            $manager->flush();
+        
+        
+        if($facebook != null || $insta != null || $twitter != null){
+        
+            foreach($social_medias as $social_media)
+            {             
+                $checkboxValue = $request->request->get('checkbox'.$social_media->getId());
+                if($checkboxValue != NULL){
+                    $post->addSocialMediaAccount($social_media);
+                    $manager->persist($post);
+                    $manager->flush();
+                    
+                    $case = $social_media->getSocialMedia();
+                    
+                    switch ( $case) {
+                        case 'facebook_account':
+                            try {
+                                $FbAccount = $social_media->getFbAccount();
+                                $accountId = $FbAccount->getAccountId(); 
+                            } catch (\Throwable $th) {
+                                throw $th;
+                            }
+                            break;
+                        case 'fb_page':
+                            try {
+                                $FbPage = $social_media->getFbPage();
+                                $pageId = $FbPage->getPageID();
+                                $pageAccessToken = $FbPage->getPageAccessToken();
+                                 
+                                $postId = $this->FbAPI->postPhotoOnPage(
+                                    $pageAccessToken,
+                                    $pageId,
+                                    $image,
+                                    $descriptionF
+                                );
+                            } catch (\Throwable $th) {
+                                throw $th;
+                            }
+                            break;
+                        case 'instagram_account':
+                            try {
+                                $InstaAccount = $social_media->getInstaAccount();
+                                $accountId = $InstaAccount->getIdAccount();
+                                $FbAccount = $InstaAccount->getFbPage()->getFbAccount();
+                                $accessToken = $FbAccount->getLonglivedtoken();
+                                $photoUrl = $image;
+                                $message = $descriptionI;          
+                                $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $accessToken, $message);
+                            } catch (\Throwable $th) {
+                                throw $th;
+                            }
+                            break;
+                        case 'twitter_account':
 
-            try {
-                $accountId = '17841446705960906';
-                $photoUrl = $image;
-                $accessToken = 'EAABZCHn2BZAjMBAOOz2G6xqjKakRvlU64xtvAtaxlQeZBQEirCoUR1h6IDYi9UIpAF4bYehwWu1m94D99o27yW1mYs4X3jLim5ugXQ8dibYPFzbcNhXw93r63E9G0mLquZCAUUIYBBgpORA87hOFOgMxfpEB12W451khazrzN0hiiA4oDewsXppD36K2PkBZARV7P0vTwEdykarIC6gW0bH1hCtUO6gTmxFjNZCyVBfjrIvZB0PidvDbCwsZAXsockkZD';
-                $message = $description;          
-                $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $accessToken, $message);
-            } catch (\Throwable $th) {
-                throw $th;
+                            $TwitterAccount = $social_media->getTwitterAccount();
+
+                            $consumer_key = $TwitterAccount->getConsumerKey();
+                            $consumer_secret = $TwitterAccount->getConsumerSecret();
+                            $access_token = $TwitterAccount->getAccessToken();
+                            $access_token_secret = $TwitterAccount->getAccessTokenSecret();
+                            
+
+                            $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
+                            $photoPaths = [
+                                'C:\Users\romai\OneDrive\Documents\LP\SocialMedia\manageSocialMedia\assets\images\canard.jpg'
+                            ];
+                    
+                            $response = $this->TwitterAPI->postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, 'Test API N°2', $photoPaths);
+                            
+                            $content = $connection->get("account/verify_credentials");
+                            $new_status = $connection->post("statuses/update", ['status' => $descriptionT]);
+                            $status = $connection->get("statuses/home_timeline", ['count' => 25, "exclde_replies" => true]);
+                            break;
+                    }
+                }
             }
-        }
-        if($twitter == "twitter"){
-            $postTwitter = new Post();
-            $postTwitter->setUser($user);
-            $postTwitter->setDescription($description);
-            $postTwitter->setDate($date);
-            $postTwitter->setImage($image);
-            $postTwitter->setSocialMediaAccounts('twitter');
-            $manager->persist($postTwitter);
-            $manager->flush();
-
-            $consumer_key = '8zz3WouFDnNW0vJ3r5BpPZfxX';
-            $consumer_secret = 'yY6PC7CUEJYP2gg1X9uusxEdCfUMmW5UgIIowAWCunOXZDFM1F';
-            $access_token = '1371453453432655872-PGVA3ttM6nDTcRmfS5TqSEfRxuU48O';
-            $access_token_secret = 'RdhuU5csqLUhXzFrGrMuGo5Jl4cDG1AQQuWiFGDkhEOcS';
- 
-
-            $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
-            $content = $connection->get("account/verify_credentials");
-            //$statuses = $connection->get("users/search", ["q" => "raphael bessonnier"]);
-
-            //$descriptions = $description . " @" . $statuses[0]->screen_name;
-
-            $new_status = $connection->post("statuses/update", ['status' => $description]);
-            $new_status = $connection->post("statuses/update", ['status' => $description]);
-            $status = $connection->get("statuses/home_timeline", ['count' => 25, "exclde_replies" => true]);
+        if($date == null || $date < $day){
+            $this->getDoctrine()->getManager()->remove($post);
+            $this->getDoctrine()->getManager()->flush();
         }
         return $this->redirectToRoute('posts');
     }
+    
+    $socialMediaAccountsInstagram = $repository->findByUserAndSocialMedia($user,'instagram_account');
+    $socialMediaAccountsTwitter = $repository->findByUserAndSocialMedia($user,'twitter_account');
+    $socialMediaAccountsFacebook = $repository->findByUserAndSocialMedia($user,'facebook_account');
+    $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user,'fb_page');
+
 
         return $this->render('post/watch.html.twig', [
             'post' => $post,
+            'socialMediaAccountsInstagram' => $socialMediaAccountsInstagram,
+            'socialMediaAccountsTwitter' => $socialMediaAccountsTwitter,
+            'socialMediaAccountsFacebook' => $socialMediaAccountsFacebook,
+            'socialMediaPagesFacebook' => $socialMediaPagesFacebook,
         ]);
     }
 
     /**
-     * @Route ("/posts/delete/{id}", name="post_delete")
+     *@Route("/post/del/{id}", name= "post.del", methods={"DELETE"})
      */
-    public function delete(Post $posts, EntityManagerInterface $manager){
-
-        $post = $manager->getRepository(Post::class);
-
-        // Récupération de l'utilisateur (donc automatiquement géré par Doctrine)
-        $user = $post->find($posts);
-        
-        $entityManager->remove($user);
-        $entityManager->flush($user);
+    public function deletePost(Post $post, Request $request)
+    {
+        $this->getDoctrine()->getManager()->remove($post);
+        $this->getDoctrine()->getManager()->flush();
+       
+        return $this->redirectToRoute('posts');
+       
     }
-
 }
