@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -23,6 +24,7 @@ use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Validator\Constraints\File;
 
 class PostController extends AbstractController
 {
@@ -56,7 +58,8 @@ class PostController extends AbstractController
      *  @Route ("/post/new", name="post_create")
      *  @Route ("/post/{id}/edit", name="post_edit")
      */
-    public function form(Post $post = null, Request $request, EntityManagerInterface $manager) {
+    public function form(Post $post = null, Request $request, EntityManagerInterface $manager)
+    {
         if (!$post) {
             $post = new Post();
         }
@@ -64,14 +67,21 @@ class PostController extends AbstractController
         $form = $this->createFormBuilder($post)
             ->add('description', TextareaType::class, [
                 'attr'   =>  array(
-                    'class'   => 'm-2'),
+                    'class'   => 'm-2'
+                ),
                 'constraints' => new NotBlank(),
-                    
+
             ])
-            ->add('image', TextType::class)
+            ->add('image', FileType::class, [
+                'attr' => ['class' => 'imageInput'],
+                'mapped' => false,
+                'required' => false,
+                'multiple' => true,
+            ])
             ->add('date')
             ->getForm();
-            $post->setUser($user);
+        
+        $post->setUser($user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -93,7 +103,7 @@ class PostController extends AbstractController
      *  @Route ("/post/{id}", name="post_show")
      */
     public function show(Post $post)
-    { 
+    {
         return $this->render('post/show.html.twig', [
             'post' => $post,
         ]);
@@ -104,35 +114,34 @@ class PostController extends AbstractController
      */
     public function watch(Post $post, Request $request, EntityManagerInterface $manager)
     {
-        
+
         $repository = $this->getDoctrine()->getRepository(SocialMediaAccount::class);
-        $image= $post->getImage();
-        $date= $post->getDate();
-        $description= $post->getDescription();
+        $image = $post->getImage();
+        $date = $post->getDate();
+        $description = $post->getDescription();
         $user = $this->get('security.token_storage')->getToken()->getUser();
-        
+
         $facebook = $request->request->get('facebook');
         $insta = $request->request->get('insta');
         $twitter = $request->request->get('twitter');
         $social_medias = $repository->findByUser($user);
 
-        if($facebook != null || $insta != null || $twitter != null){
-        
-            foreach($social_medias as $social_media)
-            {             
-                $checkboxValue = $request->request->get('checkbox'.$social_media->getId());
-                if($checkboxValue != NULL){
+        if ($facebook != null || $insta != null || $twitter != null) {
+
+            foreach ($social_medias as $social_media) {
+                $checkboxValue = $request->request->get('checkbox' . $social_media->getId());
+                if ($checkboxValue != NULL) {
                     $post->addSocialMediaAccount($social_media);
                     $manager->persist($post);
                     $manager->flush();
-                    
+
                     $case = $social_media->getSocialMedia();
-                    
-                    switch ( $case) {
+
+                    switch ($case) {
                         case 'facebook_account':
                             try {
                                 $FbAccount = $social_media->getFbAccount();
-                                $accountId = $FbAccount->getAccountId(); 
+                                $accountId = $FbAccount->getAccountId();
                             } catch (\Throwable $th) {
                                 throw $th;
                             }
@@ -142,7 +151,7 @@ class PostController extends AbstractController
                                 $FbPage = $social_media->getFbPage();
                                 $pageId = $FbPage->getPageID();
                                 $pageAccessToken = $FbPage->getPageAccessToken();
-                                 
+
                                 $postId = $this->FbAPI->postPhotoOnPage(
                                     $pageAccessToken,
                                     $pageId,
@@ -160,7 +169,7 @@ class PostController extends AbstractController
                                 $FbAccount = $InstaAccount->getFbPage()->getFbAccount();
                                 $accessToken = $FbAccount->getLonglivedtoken();
                                 $photoUrl = $image;
-                                $message = $description;          
+                                $message = $description;
                                 $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $accessToken, $message);
                             } catch (\Throwable $th) {
                                 throw $th;
@@ -174,15 +183,15 @@ class PostController extends AbstractController
                             $consumer_secret = $TwitterAccount->getConsumerSecret();
                             $access_token = $TwitterAccount->getAccessToken();
                             $access_token_secret = $TwitterAccount->getAccessTokenSecret();
-                            
+
 
                             $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
                             $photoPaths = [
                                 'C:\Users\romai\OneDrive\Documents\LP\SocialMedia\manageSocialMedia\assets\images\canard.jpg'
                             ];
-                    
+
                             $response = $this->TwitterAPI->postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, 'Test API N°2', $photoPaths);
-                            
+
                             //$content = $connection->get("account/verify_credentials");
                             //$new_status = $connection->post("statuses/update", ['status' => $description]);
                             //$status = $connection->get("statuses/home_timeline", ['count' => 25, "exclde_replies" => true]);
@@ -190,15 +199,15 @@ class PostController extends AbstractController
                     }
                 }
             }
-        return $this->redirectToRoute('posts');
-    }
-    
-    $socialMediaAccountsInstagram = $repository->findByUserAndSocialMedia($user,'instagram_account');
-    $socialMediaAccountsTwitter = $repository->findByUserAndSocialMedia($user,'twitter_account');
-    $socialMediaAccountsFacebook = $repository->findByUserAndSocialMedia($user,'facebook_account');
-    $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user,'fb_page');
-   
-    
+            return $this->redirectToRoute('posts');
+        }
+
+        $socialMediaAccountsInstagram = $repository->findByUserAndSocialMedia($user, 'instagram_account');
+        $socialMediaAccountsTwitter = $repository->findByUserAndSocialMedia($user, 'twitter_account');
+        $socialMediaAccountsFacebook = $repository->findByUserAndSocialMedia($user, 'facebook_account');
+        $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user, 'fb_page');
+
+
 
         return $this->render('post/watch.html.twig', [
             'post' => $post,
