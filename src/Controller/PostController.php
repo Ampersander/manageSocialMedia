@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -55,7 +56,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    /**
+ /**
      *  @Route ("/post/new", name="post_create")
      *  @Route ("/post/{id}/edit", name="post_edit")
      */
@@ -67,24 +68,34 @@ class PostController extends AbstractController
         $form = $this->createFormBuilder($post)
             ->add('description', TextareaType::class, [
                 'attr'   =>  array(
-                    'class'   => 'm-2'),
+                'class'   => 'm-2'),
                 'constraints' => new NotBlank(),
                     
             ])
             ->add('image', TextType::class)
-            ->add('date')
+            ->add('date', DateType::class, [
+                'widget' => 'single_text',
+                'format' => 'yyyy-MM-dd',
+                'data' => new \DateTime(),
+                'attr' => ['class' => 'form-control', 'style' => 'line-height: 20px;'],
+            ])
             ->getForm();
             $post->setUser($user);
 
         $form->handleRequest($request);
-        
+        $planif = $request->request->get('planif');
+
         if ($form->isSubmitted() && $form->isValid()) {
                 $manager->persist($post);
                 $manager->flush();
+            if($planif != "planif"){
+                return $this->redirectToRoute('post_watch', [
+                    'id' => $post->getId(),
+                ]);
+            }else{
+                return $this->redirectToRoute('posts');
+            }
 
-            return $this->redirectToRoute('post_watch', [
-                'id' => $post->getId(),
-            ]);
         }
 
         return $this->render('post/create.html.twig', [
@@ -225,7 +236,7 @@ class PostController extends AbstractController
                     }
                 }
             }
-        if($date == null || $date < $day){
+        if($date < $day){
             $this->getDoctrine()->getManager()->remove($post);
             $this->getDoctrine()->getManager()->flush();
         }
@@ -240,22 +251,11 @@ class PostController extends AbstractController
 
         return $this->render('post/watch.html.twig', [
             'post' => $post,
+            'day' => $day,
             'socialMediaAccountsInstagram' => $socialMediaAccountsInstagram,
             'socialMediaAccountsTwitter' => $socialMediaAccountsTwitter,
             'socialMediaAccountsFacebook' => $socialMediaAccountsFacebook,
             'socialMediaPagesFacebook' => $socialMediaPagesFacebook,
         ]);
-    }
-
-    /**
-     *@Route("/post/del/{id}", name= "post.del", methods={"DELETE"})
-     */
-    public function deletePost(Post $post, Request $request)
-    {
-        $this->getDoctrine()->getManager()->remove($post);
-        $this->getDoctrine()->getManager()->flush();
-       
-        return $this->redirectToRoute('posts');
-       
     }
 }

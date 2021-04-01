@@ -11,17 +11,17 @@
 {{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article"}}) }}
 </div>
 <div class="form-group ">
+<label>Prévoir la plannification</label>
+<input type="checkbox" name="planif" value="planif" id="planif">
+<div style="display: none;" id="date">
 {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie"}}) }}
+</div>
 </div>
 <div class="form-group ">
 {{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image"}}) }}
 </div>
 <button type="submit" class="btn btn-primary mt-3">
-{% if editMode %}
-Enregistrer
-{% else %}
-Voir prévisualisation
-{% endif %}
+Voir la prévisualisation
 </button>
 {{ form_end(formPost) }}
     </div>
@@ -51,5 +51,6 @@ Voir prévisualisation
 
 {% block javascripts %}
 {{ encore_entry_script_tags('manageArtiste') }}
+{{ encore_entry_script_tags('hiddenBlock') }}
 {% endblock %}
 {% endblock %}

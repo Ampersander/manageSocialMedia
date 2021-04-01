@@ -283,7 +283,14 @@ label img {
     <label for="cb3"><img src="https://ra.ac.ae/wp-content/uploads/2020/01/logo-twitter-icon-symbol-0.png" /></label>
   </li>
 </ul>
-    <input class="btn btn-primary mb-5" type="submit" value="Valider l'envoie">
+
+    <input class="btn btn-primary mb-5" type="submit" value="
+    {% if post.date > day %}
+    Enregistrer le post pour une prépublication
+    {% else %}
+    Valider l'envoie du post
+    {% endif %}
+    ">
 
 
 </article>
