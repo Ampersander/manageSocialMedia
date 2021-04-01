@@ -34,7 +34,7 @@ class InstagramAPI
             };
             // Stockage en local
             $folder = $this->parameterBag->get('kernel.project_dir') . '/public/instagram/';
-            $imgName = uniqid() . $ext;
+            $imgName = uniqid() . '.' . $ext;
             $imgPath = $folder . $imgName;
             $image->move($folder, $imgPath);
             list($width, $height) = getimagesize($imgPath);
@@ -104,7 +104,7 @@ class InstagramAPI
                 throw new \Exception('Echec de la publication de la photo sur Instagram : message trop long, limite de caractères = 2200');
             };
             // Stockage temporaire de l'image
-            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/image_verification/';
+            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/images/instagram/';
             $imgPath = $folder . uniqid() . '.jpg';
             file_put_contents($imgPath, file_get_contents($photoUrl));
             list($width, $height) = getimagesize($imgPath);

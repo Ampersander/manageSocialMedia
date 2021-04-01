@@ -32,8 +32,8 @@ class FacebookAPI
                 $image = $image->getData();
                 $ext = $image->guessExtension();
                 // Stockage en local
-                $folder = $this->parameterBag->get('kernel.project_dir') . '/public/facebook/';
-                $imgName = uniqid() . $ext;
+                $folder = $this->parameterBag->get('kernel.project_dir') . '/public/images/facebook/';
+                $imgName = uniqid() . '.' . $ext;
                 $imgPath = $folder . $imgName;
                 $image->move($folder, $imgPath);
                 list($width, $height) = getimagesize($imgPath);

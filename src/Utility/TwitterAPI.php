@@ -21,8 +21,8 @@ class TwitterAPI
             foreach ($images as $image) {
                 $ext = $image->guessExtension();
                 // Stockage en local
-                $folder = $this->parameterBag->get('kernel.project_dir') . '/public/twitter/';
-                $imgName = uniqid() . $ext;
+                $folder = $this->parameterBag->get('kernel.project_dir') . '/public/images/twitter/';
+                $imgName = uniqid() . '.' . $ext;
                 $imgPath = $folder . $imgName;
                 $image->move($folder, $imgPath);
                 // Vérif ext image

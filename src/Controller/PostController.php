@@ -32,11 +32,11 @@ class PostController extends AbstractController
     private $FbAPI;
     private $InstaAPI;
     private $TwitterAPI;
-    public function __construct(HttpClientInterface $client, ParameterBagInterface $parmeterBag)
+    public function __construct(HttpClientInterface $client, ParameterBagInterface $parameterBag)
     {
-        $this->FbAPI = new FacebookAPI($client, $parmeterBag);
-        $this->InstaAPI = new InstagramAPI($client, $parmeterBag);
-        $this->TwitterAPI = new TwitterAPI($client, $parmeterBag);
+        $this->FbAPI = new FacebookAPI($client, $parameterBag);
+        $this->InstaAPI = new InstagramAPI($client, $parameterBag);
+        $this->TwitterAPI = new TwitterAPI($client, $parameterBag);
     }
 
     /**
@@ -58,7 +58,7 @@ class PostController extends AbstractController
      *  @Route ("/post/new", name="post_create")
      *  @Route ("/post/{id}/edit", name="post_edit")
      */
-    public function form(Post $post = null, Request $request, EntityManagerInterface $manager)
+    public function form(Post $post = null, Request $request, EntityManagerInterface $manager, ParameterBagInterface $parameterBag)
     {
         if (!$post) {
             $post = new Post();
@@ -80,16 +80,29 @@ class PostController extends AbstractController
             ])
             ->add('date')
             ->getForm();
-        
+
         $post->setUser($user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $images = $form->get('image')->getData();
+            $imageNames = [];
+            foreach ($images as $image) {
+                // Stockage en local
+                $ext = $image->guessExtension();
+                $folder = $parameterBag->get('kernel.project_dir') . '/public/images/preview/';
+                $imgName = uniqid() . '.' . $ext;
+                $imgPath = $folder . $imgName;
+                $image->move($folder, $imgPath);
+                $imageNames[] = $imgName;
+            }
+
             $manager->persist($post);
             $manager->flush();
 
-            return $this->redirectToRoute('post_watch', [
+            return $this->forward('App\Controller\PostController::watch', [
                 'id' => $post->getId(),
+                'imageNames' => $imageNames
             ]);
         }
 
@@ -112,7 +125,7 @@ class PostController extends AbstractController
     /**
      *  @Route ("/post/watch/{id}", name="post_watch")
      */
-    public function watch(Post $post, Request $request, EntityManagerInterface $manager)
+    public function watch(Post $post, Request $request, EntityManagerInterface $manager, $imageNames)
     {
 
         $repository = $this->getDoctrine()->getRepository(SocialMediaAccount::class);
@@ -207,10 +220,9 @@ class PostController extends AbstractController
         $socialMediaAccountsFacebook = $repository->findByUserAndSocialMedia($user, 'facebook_account');
         $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user, 'fb_page');
 
-
-
         return $this->render('post/watch.html.twig', [
             'post' => $post,
+            'images' => $imageNames,
             'socialMediaAccountsInstagram' => $socialMediaAccountsInstagram,
             'socialMediaAccountsTwitter' => $socialMediaAccountsTwitter,
             'socialMediaAccountsFacebook' => $socialMediaAccountsFacebook,

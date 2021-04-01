@@ -253,9 +253,9 @@ label img {
       <p>
         {{ post.description }}
       </p>
-            {% if post.image != null %}
+            {% if images != null %}
     <div class="intagram-card-image">
-      <img src="{{ post.image }}" width=100%/>
+      <img src="{{ absolute_url(asset('images/preview/'~images[0]) }}" width="100%"/>
     </div>
     {% endif %}
       <p class="tweetDate">{{ post.date | date('d/m/Y') }}
