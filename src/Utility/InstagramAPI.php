@@ -33,7 +33,7 @@ class InstagramAPI
                 throw new \Exception('Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . 'non supporté, formats acceptés = JPEG / JPG');
             };
             // Stockage en local
-            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/instagram/';
+            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/post_images/';
             $imgName = uniqid() . '.' . $ext;
             $imgPath = $folder . $imgName;
             $image->move($folder, $imgPath);
