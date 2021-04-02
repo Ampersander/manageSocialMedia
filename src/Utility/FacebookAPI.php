@@ -3,13 +3,16 @@
 namespace App\Utility;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 use App\Utility\ImgbbAPI;
+
 
 class FacebookAPI
 {
 
     private $client;
     private $ImgbbAPI;
+
 
     public function __construct(HttpClientInterface $client)
     {
@@ -90,6 +93,7 @@ class FacebookAPI
     {
         $url = 'https://graph.facebook.com/v10.0/' . $pageId . '/feed/';
         try {
+
             // Vérifications
             // Message vide
             if (!$message) {
@@ -101,6 +105,7 @@ class FacebookAPI
             };
 
             // Params
+
             $params = [
                 'message' => $message,
                 'access_token' => $pageAccessToken
@@ -113,6 +118,7 @@ class FacebookAPI
             $response = $this->client->request('POST', $url, [
                 'query' => $params,
             ]);
+
             if (200 !== $response->getStatusCode()) {
                 $content = $response->toArray(false);
                 $message = $content['error']['message'];
@@ -125,6 +131,7 @@ class FacebookAPI
             throw $e;
         }
     }
+
 
 
     /**
@@ -160,6 +167,7 @@ class FacebookAPI
             $response = $this->client->request('POST', $url, [
                 'query' => $params,
             ]);
+
             if (200 !== $response->getStatusCode()) {
                 $content = $response->toArray(false);
                 $message = $content['error']['message'];
@@ -172,6 +180,7 @@ class FacebookAPI
             throw $e;
         }
     }
+
 
     /**
      * Publie plusieurs photos en un post avec un message éventuel sur la page Facebook
@@ -192,6 +201,7 @@ class FacebookAPI
                 'access_token' => $pageAccessToken
             ];
             if ($message !== false) {
+
                 $params['message'] = $message;
             }
             // Inclue chaque id de photo a publier
@@ -201,6 +211,7 @@ class FacebookAPI
             }
 
             // Request
+
             $response = $this->client->request('POST', $url, [
                 'query' => $params,
             ]);

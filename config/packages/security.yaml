@@ -45,3 +45,4 @@ security:
         - { path: ^/template, roles: ROLE_USER }
         - { path: ^/artistes, roles: ROLE_USER }
         - { path: ^/api, roles: ROLE_USER }
+

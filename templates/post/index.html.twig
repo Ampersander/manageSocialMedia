@@ -15,10 +15,15 @@
   <div class="card-body">
    {# <h5 class="card-title">{{post.socialMediaAccounts}}</h5>#}
     <p class="card-text">{{ post.description }}</p>
+
+    {% if post.date != "" %}
+    {% if post.date > day %}
     <div class="d-flex justify-content-around">
-    <a href="{{ path('post_watch', {'id' : post.id}) }}" class="btn btn-primary">Lire la suite</a>
-    <a href="{{ path('post_edit', {'id' : post.id}) }}" class ="btn btn-primary">Modifier le post</a>
+    <a href="{{ path('post_watch', {'id' : post.id}) }}" class ="btn btn-primary">Modifier la plannification</a>
     </div>
+    {% endif %}
+    {% endif %}
+
   </div>
 </div>
 {% endfor %}

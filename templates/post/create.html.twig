@@ -9,10 +9,15 @@
 {{ form_start(formPost) }}
 <div class="form-group ">
 {{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article"}}) }}
+
 <div id="desc-warns"></div>
 </div>
 <div class="form-group ">
+<label>Prévoir la plannification</label>
+<input type="checkbox" name="planif" value="planif" id="planif">
+<div style="display: none;" id="date">
 {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie"}}) }}
+</div>
 </div>
 <div class="form-group ">
 {{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image"}}) }}
@@ -34,6 +39,7 @@ Enregistrer
 {% else %}
 Voir prévisualisation
 {% endif %}
+
 </button>
 {{ form_end(formPost) }}
     </div>
@@ -66,6 +72,9 @@ Voir prévisualisation
 {{ encore_entry_script_tags('manageCreatePost') }}
 
 {{ encore_entry_script_tags('postVerificator') }}
+
+{{ encore_entry_script_tags('manageArtiste') }}
+{{ encore_entry_script_tags('hiddenBlock') }}
 
 {% endblock %}
 {% endblock %}

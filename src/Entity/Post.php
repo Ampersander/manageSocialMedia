@@ -27,7 +27,9 @@ class Post
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $date;
+
+    public $date;
+
 
     /**
      * @ORM\Column(type="string", length=500)
@@ -50,11 +52,13 @@ class Post
      */
     private $artistes;
 
+
     /**
      * @ORM\ManyToOne(targetEntity=TemplatePost::class, inversedBy="post")
      */
     private $templatePost;
 
+ph
 
     public function __construct()
     {
@@ -169,6 +173,7 @@ class Post
         return $this;
     }
 
+
     public function getTemplatePost(): ?TemplatePost
     {
         return $this->templatePost;
@@ -180,6 +185,7 @@ class Post
 
         return $this;
     }
+
 
    
 

@@ -12,14 +12,16 @@
     <div class="co-name"><a href="#">User_name</a></div>
     <div class="time"><a href="#">{{ post.date | date('d/m/Y') }}</a> · <i class="fa fa-globe"></i></div>
   </div>
-  <div class="content" id="fbContent">
+
+  <div class="content">
     <p>{{ post.description }}</p>
   </div>
-      {% if images != null %}
-    <div class="intagram-card-image">
-      <img src="{{ absolute_url(asset('images/'~images[0])) }}" width="50px"/>
-    </div>
-    {% endif %}
+      {% if post.image != null %}
+  <div class="reference">
+    <img class="reference-thumb" src="{{ post.image }}" />
+  </div>
+  {% endif %}
+
   <div class="social">
     <div class="social-content"></div>
     <div class="social-buttons">
@@ -218,6 +220,9 @@ label img {
   z-index: -1;
 }
 </style>
+
+      {% if post.image != null %}
+
 <div class="instagram-card">
     <div class="instagram-card-header mb-2">
       <img src="http://placehold.it/40x40" class="instagram-card-user-image"/>
@@ -227,18 +232,19 @@ label img {
       <br>
 
     <div class="intagram-card-image">
-      {% if images != null %}
-    <div class="intagram-card-image">
-      <img src="{{ absolute_url(asset('images/'~images[0])) }}" width="50px"/>
-    </div>
-    {% endif %}
+
+      <img src="{{ post.image }}" width=100%/>
     </div>
 
-    <div class="instagram-card-content" id="instaContent">
+    <div class="instagram-card-content">
+
       <p><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
     </div>
 
 </div>
+
+{% endif %}
+
 
 <article class="tweetCard">
   <div class="tweetCardBody">
@@ -252,12 +258,14 @@ label img {
           <p>@user_name</p>
         </div>
       </div>
-      <p id="twitterContent">
+
+      <p>
         {{ post.description }}
       </p>
-            {% if images != null %}
+            {% if post.image != null %}
     <div class="intagram-card-image">
-      <img src="{{ absolute_url(asset('images/'~images[0])) }}" width="50px"/>
+      <img src="{{ post.image }}" width=100%/>
+
     </div>
     {% endif %}
       <p class="tweetDate">{{ post.date | date('d/m/Y') }}
@@ -268,6 +276,10 @@ label img {
 
 </article>
 <form method="post">
+
+<input type="hidden" name="_method" value="delete">
+<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+
 <article class="w-100 text-center">
 
 <ul class="w-100 d-flex justify-content-around">
@@ -283,7 +295,16 @@ label img {
     <label for="cb3"><img src="https://ra.ac.ae/wp-content/uploads/2020/01/logo-twitter-icon-symbol-0.png" /></label>
   </li>
 </ul>
-    <input class="btn btn-primary mb-5" type="submit" value="Valider l'envoie">
+
+
+    <input class="btn btn-primary mb-5" type="submit" value="
+    {% if post.date > day %}
+    Enregistrer le post pour une prépublication
+    {% else %}
+    Valider l'envoie du post
+    {% endif %}
+    ">
+
 
 
 </article>
@@ -407,4 +428,8 @@ label img {
 </div>
 </form>
 {% endblock %}
-{% block javascripts %}{{ encore_entry_script_tags('manageWatchPost') }}{% endblock %}
+
+{% block javascripts %}{{ encore_entry_script_tags('manageWatchPost') }}
+{{ encore_entry_script_tags('manageCreatePost') }}{% endblock %}
+
+

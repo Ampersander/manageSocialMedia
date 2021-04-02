@@ -2,10 +2,13 @@
 
 namespace App\Utility;
 
+
+
 use Abraham\TwitterOAuth\TwitterOAuth;
 
 class TwitterAPI
 {
+
     /**
      * Upload des photos sur un hébergeur et stockage local en vue d'une publication sur Twitter
      * @param array $images Liste d'images à stocker et heberger (donner $form->get('images'))
@@ -76,13 +79,16 @@ class TwitterAPI
                 $mediaIds = [];
                 foreach ($imagePaths as $path) {
                     $media = $connection->upload('media/upload', ['media' => $path]);
+
                     $mediaIds[] = $media->media_id_string;
                 }
                 $parameters['media_ids'] = implode(',', $mediaIds);
             }
 
+
             // Request
             $result = $connection->post('statuses/update', $parameters);
+
             if ($connection->getLastHttpCode() != 200) {
                 $body = $connection->getLastBody();
                 $body = json_decode(json_encode($body), true);
@@ -99,3 +105,4 @@ class TwitterAPI
         }
     }
 }
+

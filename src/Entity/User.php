@@ -48,16 +48,20 @@ class User implements UserInterface
      */
     private $socialMediaAccounts;
 
+
     /**
      * @ORM\OneToMany(targetEntity=TemplatePost::class, mappedBy="user", orphanRemoval=true)
      */
     private $templatePosts;
 
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->socialMediaAccounts = new ArrayCollection();
+
         $this->templatePosts = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -202,6 +206,7 @@ class User implements UserInterface
         return $this;
     }
 
+
     /**
      * @return Collection|TemplatePost[]
      */
@@ -231,4 +236,5 @@ class User implements UserInterface
 
         return $this;
     }
+
 }
