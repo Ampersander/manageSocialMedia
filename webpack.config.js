@@ -27,6 +27,8 @@ Encore
     .addEntry('manageCreatePost', './assets/js/manageCreatePost')
     .addEntry('manageSDKFb', './assets/js/manageSDKFb')
     .addEntry('manageTemplatePost', './assets/js/manageTemplatePost.js')
+    .addEntry('manageArtiste', './assets/js/manageArtiste')
+    .addEntry('postVerificator', './assets/js/postVerificator')
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
 

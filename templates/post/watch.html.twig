@@ -15,11 +15,11 @@
   <div class="content" id="fbContent">
     <p>{{ post.description }}</p>
   </div>
-      {% if post.image != null %}
-  <div class="reference">
-    <img class="reference-thumb" src="{{ post.image }}" />
-  </div>
-  {% endif %}
+      {% if images != null %}
+    <div class="intagram-card-image">
+      <img src="{{ absolute_url(asset('images/'~images[0])) }}" width="50px"/>
+    </div>
+    {% endif %}
   <div class="social">
     <div class="social-content"></div>
     <div class="social-buttons">
@@ -218,7 +218,6 @@ label img {
   z-index: -1;
 }
 </style>
-      {% if post.image != null %}
 <div class="instagram-card">
     <div class="instagram-card-header mb-2">
       <img src="http://placehold.it/40x40" class="instagram-card-user-image"/>
@@ -228,7 +227,11 @@ label img {
       <br>
 
     <div class="intagram-card-image">
-      <img src="{{ post.image }}" width=100%/>
+      {% if images != null %}
+    <div class="intagram-card-image">
+      <img src="{{ absolute_url(asset('images/'~images[0])) }}" width="50px"/>
+    </div>
+    {% endif %}
     </div>
 
     <div class="instagram-card-content" id="instaContent">
@@ -236,7 +239,6 @@ label img {
     </div>
 
 </div>
-{% endif %}
 
 <article class="tweetCard">
   <div class="tweetCardBody">
@@ -253,9 +255,9 @@ label img {
       <p id="twitterContent">
         {{ post.description }}
       </p>
-            {% if post.image != null %}
+            {% if images != null %}
     <div class="intagram-card-image">
-      <img src="{{ post.image }}" width=100%/>
+      <img src="{{ absolute_url(asset('images/'~images[0])) }}" width="50px"/>
     </div>
     {% endif %}
       <p class="tweetDate">{{ post.date | date('d/m/Y') }}
