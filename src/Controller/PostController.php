@@ -110,7 +110,7 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $images = $form->get('image')->getData();
             $imageNames = [];
-            var_dump($images);
+            
             if(!is_NULL($images)){
             foreach ($images as $image) {
                 // Stockage en local
