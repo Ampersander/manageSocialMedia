@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!
+{% endblock %}
+
+{% block body %}
+{{ parent() }}
+<div class="container">
+    <main>
+
+<div class="row m-5">
+    <div class="col-6 offset-3">
+        <div class="card">
+            <div class='card-header'>
+                <h1 class="h3 mb-3 font-weight-normal text-center">New Twitter Account</h1>
+            </div>
+            <div class="card-body bg-light">
+                {{ form_start(TwitterAccountFormType) }}
+
+              
+                <div class="form-group">
+                    {{ form_row(TwitterAccountFormType.name, {
+                    label: 'Nom compte'
+                    }) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(TwitterAccountFormType.consumerKey, {
+                    label: 'Consumer Key'
+                    }) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(TwitterAccountFormType.consumerSecret, {
+                    label: 'Consumer Secret'
+                    }) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(TwitterAccountFormType.accessToken, {
+                    label: 'Access Token'
+                    }) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(TwitterAccountFormType.accessTokenSecret, {
+                    label: 'Access Token Secret'
+                    }) }}
+                </div>
+                <div class='d-flex flex-column'>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">Ajout</button>
+                </div>
+
+                {{ form_end(TwitterAccountFormType) }}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+    <div class="card m-5">
+        <div class='card-header'>
+            <h1 class="h3 mb-3 font-weight-normal text-center">Twitter API</h1>
+        </div>
+        <div class="card-body bg-light ">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                          
+                            <th scope="col">Consumer Key</th>
+                            <th scope="col">Consumer Secret</th>
+                            <th scope="col">Access Token</th>
+                            <th scope="col">Access Token Secret</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    {% for account in accounts %}
+                    {% if account.SocialMediaAccount.socialMedia == 'twitter_account' %}
+                        <tr>
+                            <form method="post" action="{{ path('profil.TwitterAccount.edit', {id: account.id}) }}">
+                            <td><input type='text' value="{{ account.socialMediaAccount.name }}" name="accountName{{account.id}}"></input></td>
+                    <td><input type='text' value="{{account.ConsumerKey}}" name="accountConsumerKey{{account.id}}"></td></input>
+                    </td>
+                    <td><input type='text' value="{{ account.consumerSecret }}" name="accountConsumerSecret{{account.id}}"></td></input>
+                    </td>
+                    <td><input type='text' value="{{ account.accessToken }}" name="accountAccessToken{{account.id}}"></td></input>
+                    </td>
+                    <td><input type='text' value="{{ account.accessTokenSecret }}" name="accountAccessTokenSecret{{account.id}}"> </td>
+                    </input></td>
+                    <td><button type="submit" class="btn btn-success"> <input type="hidden" name="_method" value="POST">
+                            <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ account.id) }}"> <i
+                                class="fa fa-thumbs-up"></i></button></td>
+                    </form>
+                    <form method="post" action="{{ path('profil.TwitterAccount.delete', {id: account.id}) }}"
+                        onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
+                        <td><button type="submit" class="btn btn-danger"> <i class="fa fa-trash"></i> <input
+                                    type="hidden" name="_method" value="DELETE"> <input type="hidden" name="_token"
+                                    value="{{ csrf_token('delete' ~ account.id) }}"></button></td>
+                    </form>
+                    </tr>{% endif %}{% endfor %}
+                </table>
+            </div>
+    </div>
+    </main>
+</div>
+{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('manageAccountSocialMedia') }}{% endblock %}

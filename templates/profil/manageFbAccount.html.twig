@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!
+{% endblock %}
+
+{% block body %}
+{{ parent() }}
+<div class="container">
+    <main>
+<div class="row m-5">
+    <div class="col-6 offset-3">
+        <div class="card">
+            <div class='card-header'>
+                <h1 class="h3 mb-3 font-weight-normal text-center">New Facebook Account</h1>
+            </div>
+            <div class="card-body bg-light d-flex flex-column justify-content-center">
+            {{ form_start(FbAccountFormType) }}
+         <div class="form-group">
+                    {{ form_row(FbAccountFormType.accountId, {
+                    label: 'App ID',
+                    id:'fb-app-id',
+                    type:"number"
+                    }) }}
+                </div>
+                 <div class="form-group">
+                    {{ form_row(FbAccountFormType.clientSecret, {
+                    label: 'Client secret',
+                    id:'fb-client-secret',
+                    }) }}
+                </div>
+                
+                <div class="form-group invisible">
+                    {{ form_row(FbAccountFormType.name, {
+                    label: 'Nom compte',
+                    id:"name-account",
+                  
+                    }) }}
+                </div>
+                <div class="form-group invisible">
+                    {{ form_row(FbAccountFormType.shortLivedToken, {
+                    label: 'Short Lived Token',
+                    id:"access-token",
+                
+                    }) }}
+                </div>
+                <div class='invisible'>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">Ajout</button>
+                </div>
+
+                {{ form_end(FbAccountFormType) }}
+                <div class="d-flex justify-content-center">
+                    <button id="fb-log-btn"  class="btn btn-primary btn-block btn-lg">Log-in FB</button>
+               </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="card m-5">
+    <div class='card-header'>
+        <h1 class="h3 mb-3 font-weight-normal text-center">Facebook API</h1>
+    </div>
+    <div class="card-body bg-light">
+        <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">App ID</th>
+                    <th scope="col">Client Secret</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            {% for account in accounts %}
+            
+            
+            {% if account.socialMediaAccount.socialMedia == 'facebook_account' %}
+                <tr>
+                    <form method="post" action="{{ path('profil.FbAccount.edit', {id: account.id}) }}">
+                    <td><input type='text' value="{{ account.socialMediaAccount.name }}" name="accountName{{account.id}}"></input></td>
+                    
+                <td><input type='text' value="{{account.accountId}}" name="accountId{{account.id}}">
+                </td>
+                <td><input type='text' value="{{account.clientSecret}}" name="clientsecret{{account.id}}">
+                </td>
+                
+                </input></td><td><button type="submit" class="btn btn-success">
+                        <input type="hidden" name="_method" value="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ account.id) }}">
+                        <i class="fa fa-thumbs-up"></i></button></td>
+                </form>
+
+                <form method="post" action="{{ path('profil.FbAccount.delete', {id: account.id}) }}"
+                    onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
+                    <td><button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ account.id) }}"></button>
+                    </td>
+                </form>
+                </tr>{% endif %}{% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+    </main>
+</div>
+{% endblock %}
+
+ {% block javascripts %}
+            <script>
+                
+            </script>
+            <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+            {{ encore_entry_script_tags('manageSDKFb') }}
+            {{ encore_entry_script_tags('manageAccountSocialMedia') }}
+        {% endblock %}
