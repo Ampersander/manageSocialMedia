@@ -20,7 +20,7 @@ class Post
     private $id;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="array", nullable=true)
      */
     private $image;
 
@@ -72,12 +72,12 @@ class Post
         return $this->id;
     }
 
-    public function getImage(): ?string
+    public function getImage(): ?array
     {
         return $this->image;
     }
 
-    public function setImage(?string $image): self
+    public function setImage(?array $image): self
     {
         $this->image = $image;
 

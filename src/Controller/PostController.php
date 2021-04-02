@@ -37,7 +37,6 @@ class PostController extends AbstractController
         $this->FbAPI = new FacebookAPI($client, $parameterBag);
         $this->InstaAPI = new InstagramAPI($client, $parameterBag);
         $this->TwitterAPI = new TwitterAPI($client, $parameterBag);
-
     }
     /**
      * @Route("/posts", name="posts")
@@ -59,7 +58,7 @@ class PostController extends AbstractController
         ]);
     }
 
- /**
+    /**
      *  @Route ("/post/new", name="post_create")
      *  @Route ("/post/{id}/edit", name="post_edit")
      */
@@ -72,8 +71,8 @@ class PostController extends AbstractController
 
         $repository = $this->getDoctrine()->getRepository(TemplatePost::class);
         $templatePosts = $repository->findByUser($user);
-        $arrayTemplate['Pas de template']= 0;
-        foreach($templatePosts as $templatePost){
+        $arrayTemplate['Pas de template'] = 0;
+        foreach ($templatePosts as $templatePost) {
             $arrayTemplate[$templatePost->getTitle()] = $templatePost->getId();
         }
         $user = $this->get('security.token_storage')->getToken()->getUser();
@@ -104,49 +103,47 @@ class PostController extends AbstractController
             ->add('templatePost', ChoiceType::class, [
                 'mapped' => false,
                 'choices'  => $arrayTemplate,
-            
+
             ])
             ->getForm();
-
-            $post->setUser($user);
-            $selectTemplatePost = $repository->findById($request->request->get('templatePost'));
-            if( $selectTemplatePost != null)
-                $post->setTemplatePost( $selectTemplatePost);
+            
+        $selectTemplatePost = $repository->findById($request->request->get('templatePost'));
+        if ($selectTemplatePost != null)
+            $post->setTemplatePost($selectTemplatePost);
 
         $post->setUser($user);
 
         $planif = $request->request->get('planif');
 
-      
-           
+
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $images = $form->get('image')->getData();
             $imageNames = [];
-            
-            if(!is_NULL($images)){
-            foreach ($images as $image) {
-                // Stockage en local
-                $ext = $image->guessExtension();
-                $folder = $parameterBag->get('kernel.project_dir') . '/public/images/';
-                $imgName = uniqid() . '.' . $ext;
-                $imgPath = $folder . $imgName;
-                $image->move($folder, $imgPath);
-                $imageNames[] = $imgName;
+            if (!is_NULL($images)) {
+                foreach ($images as $image) {
+                    // Stockage en local
+                    $ext = $image->guessExtension();
+                    $folder = $parameterBag->get('kernel.project_dir') . '/public/post_images/';
+                    $imgName = uniqid() . '.' . $ext;
+                    $imgPath = $folder . $imgName;
+                    $image->move($folder, $imgPath);
+                    $imageNames[] = $imgName;
+                }
             }
-        }
+            $post->setImage($imageNames);
             $manager->persist($post);
             $manager->flush();
-            if($planif != "planif"){
-    
+            if ($planif != "planif") {
+
                 return $this->forward('App\Controller\PostController::watch', [
                     'id' => $post->getId(),
                     'imageNames' => $imageNames
                 ]);
-            }else{
+            } else {
                 return $this->redirectToRoute('posts');
             }
-
         }
 
         return $this->render('post/create.html.twig', [
@@ -159,7 +156,7 @@ class PostController extends AbstractController
      *  @Route ("/post/{id}", name="post_show")
      */
     public function show(Post $post)
-    { 
+    {
         return $this->render('post/show.html.twig', [
             'post' => $post,
         ]);
@@ -171,12 +168,12 @@ class PostController extends AbstractController
 
     public function watch(Post $post, Request $request, EntityManagerInterface $manager)
     {
-        
+
         $repository = $this->getDoctrine()->getRepository(SocialMediaAccount::class);
-        $image= $post->getImage();
-        $date= $post->getDate();
+        $image = $post->getImage();
+        $date = $post->getDate();
         $id = $post->getId();
-        $description= $post->getDescription();
+        $description = $post->getDescription();
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $day = new \DateTime();
 
@@ -186,35 +183,32 @@ class PostController extends AbstractController
         $social_medias = $repository->findByUser($user);
 
 
-        
 
-                    
 
-        
-        
-        if($facebook != null || $insta != null || $twitter != null){
-        
-            foreach($social_medias as $social_media)
-            {             
-                $checkboxValue = $request->request->get('checkbox'.$social_media->getId());
-                if($checkboxValue != NULL){
+
+
+
+
+        if ($facebook != null || $insta != null || $twitter != null) {
+
+            foreach ($social_medias as $social_media) {
+                $checkboxValue = $request->request->get('checkbox' . $social_media->getId());
+                if ($checkboxValue != NULL) {
                     $post->addSocialMediaAccount($social_media);
                     $manager->persist($post);
                     $manager->flush();
-                    
+
                     $case = $social_media->getSocialMedia();
                     $mot = explode(" ", $description);
 
-                    for($i=0; $i<count($mot); $i++){
+                    for ($i = 0; $i < count($mot); $i++) {
                         //$mot = substr($description, strpos($description, "@"), strpos($description, " ")-strlen($description));
-
-                        if(strpos($mot[$i], "@") === false  ){
+                        if (strpos($mot[$i], "@") === false) {
                             //echo 'yes';
                             $descriptionF = $description;
                             $descriptionI = $description;
                             $descriptionT = $description;
-
-                        }else{
+                        } else {
                             //echo $mot[$i];
                             $other = $this->getDoctrine()->getRepository(Artiste::class);
                             $artiste = $other->findByName(substr($mot[$i], 1));
@@ -223,18 +217,18 @@ class PostController extends AbstractController
                             $nT = $artiste[0]->nameTwitter;
                             $nI = $artiste[0]->nameInsta;
                             //var_dump($artiste);
-                            $descriptionF = str_replace($mot[$i], "@".$nF, $description);
-                            $descriptionT = str_replace($mot[$i], "@".$nT, $description);
-                            $descriptionI = str_replace($mot[$i], "@".$nI, $description);
+                            $descriptionF = str_replace($mot[$i], "@" . $nF, $description);
+                            $descriptionT = str_replace($mot[$i], "@" . $nT, $description);
+                            $descriptionI = str_replace($mot[$i], "@" . $nI, $description);
+                        }
                     }
-                }
-                    
-                    switch ( $case) {
+
+                    switch ($case) {
 
                         case 'facebook_account':
                             try {
                                 $FbAccount = $social_media->getFbAccount();
-                                $accountId = $FbAccount->getAccountId(); 
+                                $accountId = $FbAccount->getAccountId();
                             } catch (\Throwable $th) {
                                 throw $th;
                             }
@@ -250,7 +244,6 @@ class PostController extends AbstractController
                                     $image,
                                     //$description,
                                     $descriptionF
-
                                 );
                             } catch (\Throwable $th) {
                                 throw $th;
@@ -264,30 +257,26 @@ class PostController extends AbstractController
                                 $accessToken = $FbAccount->getLonglivedtoken();
                                 $photoUrl = $image;
                                 //$message = $description;
-                                $message = $descriptionI;          
+                                $message = $descriptionI;
                                 $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $photoUrl, $accessToken, $message);
                             } catch (\Throwable $th) {
                                 throw $th;
                             }
                             break;
                         case 'twitter_account':
-
                             $TwitterAccount = $social_media->getTwitterAccount();
-
                             $consumer_key = $TwitterAccount->getConsumerKey();
                             $consumer_secret = $TwitterAccount->getConsumerSecret();
                             $access_token = $TwitterAccount->getAccessToken();
                             $access_token_secret = $TwitterAccount->getAccessTokenSecret();
-
 
                             $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
                             $photoPaths = [
                                 'C:\Users\romai\OneDrive\Documents\LP\SocialMedia\manageSocialMedia\assets\images\canard.jpg'
                             ];
 
-                    
                             $response = $this->TwitterAPI->postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, 'Test API N°2', $photoPaths);
-                            
+
                             $content = $connection->get("account/verify_credentials");
                             $new_status = $connection->post("statuses/update", ['status' => $descriptionT]);
                             $status = $connection->get("statuses/home_timeline", ['count' => 25, "exclde_replies" => true]);
@@ -296,17 +285,17 @@ class PostController extends AbstractController
                 }
             }
 
-        if($date < $day){
-            $this->getDoctrine()->getManager()->remove($post);
-            $this->getDoctrine()->getManager()->flush();
+            if ($date < $day) {
+                $this->getDoctrine()->getManager()->remove($post);
+                $this->getDoctrine()->getManager()->flush();
+            }
+            return $this->redirectToRoute('posts');
         }
-        return $this->redirectToRoute('posts');
-    }
-    
-    $socialMediaAccountsInstagram = $repository->findByUserAndSocialMedia($user,'instagram_account');
-    $socialMediaAccountsTwitter = $repository->findByUserAndSocialMedia($user,'twitter_account');
-    $socialMediaAccountsFacebook = $repository->findByUserAndSocialMedia($user,'facebook_account');
-    $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user,'fb_page');
+
+        $socialMediaAccountsInstagram = $repository->findByUserAndSocialMedia($user, 'instagram_account');
+        $socialMediaAccountsTwitter = $repository->findByUserAndSocialMedia($user, 'twitter_account');
+        $socialMediaAccountsFacebook = $repository->findByUserAndSocialMedia($user, 'facebook_account');
+        $socialMediaPagesFacebook = $repository->findByUserAndSocialMedia($user, 'fb_page');
 
 
         return $this->render('post/watch.html.twig', [
