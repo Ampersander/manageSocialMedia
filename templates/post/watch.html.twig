@@ -12,7 +12,7 @@
     <div class="co-name"><a href="#">User_name</a></div>
     <div class="time"><a href="#">{{ post.date | date('d/m/Y') }}</a> · <i class="fa fa-globe"></i></div>
   </div>
-  <div class="content">
+  <div class="content" id="fbContent">
     <p>{{ post.description }}</p>
   </div>
       {% if post.image != null %}
@@ -231,7 +231,7 @@ label img {
       <img src="{{ post.image }}" width=100%/>
     </div>
 
-    <div class="instagram-card-content">
+    <div class="instagram-card-content" id="instaContent">
       <p><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
     </div>
 
@@ -250,7 +250,7 @@ label img {
           <p>@user_name</p>
         </div>
       </div>
-      <p>
+      <p id="twitterContent">
         {{ post.description }}
       </p>
             {% if post.image != null %}
@@ -405,4 +405,4 @@ label img {
 </div>
 </form>
 {% endblock %}
-{% block javascripts %}{{ encore_entry_script_tags('manageCreatePost') }}{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('manageWatchPost') }}{% endblock %}

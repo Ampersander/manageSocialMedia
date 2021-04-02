@@ -73,7 +73,10 @@ class PostController extends AbstractController
                 'constraints' => new NotBlank(),
                     
             ])
-            ->add('image', TextType::class)
+            ->add('image', TextType::class, [
+                'required' => false,
+            ])
+           
             ->add('date')
             ->add('templatePost', ChoiceType::class, [
                 'mapped' => false,
@@ -146,6 +149,7 @@ class PostController extends AbstractController
                             try {
                                 $FbAccount = $social_media->getFbAccount();
                                 $accountId = $FbAccount->getAccountId(); 
+                               
                             } catch (\Throwable $th) {
                                 throw $th;
                             }

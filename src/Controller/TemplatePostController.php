@@ -8,9 +8,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\View;
 
 class TemplatePostController extends AbstractController
 {
+
+ /**
+ * Retrieves a collection of TemplatePost resource
+ * @Get(
+ *     path = "/api/templateposts",
+ * )
+ * @View
+ */
+public function getTemplatePosts()
+{
+    
+    $templatePost = $this->getDoctrine()->getRepository(TemplatePost::class)->findAll();
+    // In case our GET was a success we need to return a 200 HTTP OK response with the collection of article object
+    return $templatePost;
+}
+
     /**
      * @Route("/template", name="template")
      */
