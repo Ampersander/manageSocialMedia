@@ -7,7 +7,6 @@ use App\Utility\ImgbbAPI;
 
 class FacebookAPI
 {
-
     private $client;
     private $ImgbbAPI;
 
@@ -18,69 +17,48 @@ class FacebookAPI
     }
 
     /**
-     * Upload des photos sur un hébergeur et stockage local en vue d'une publication sur Facebook
-     * @param array $images Liste d'images à stocker et heberger (donner $form->get('images'))
-     * @return array[array] $hostedImages Retourne une liste de listes, à utiliser comme suit :
-     * $nomImage1 = array[0]['name']
-     * $urlImage2 = array[1]['url']
+     * Upload des photos sur un hébergeur après vérifications en vue d'une publication sur Facebook
+     * @param array[string] $images Liste des noms des images à vérifier
+     * @return $results Retourne une liste de listes associatives avec nom, url, validité et erreurs des images
      */
-    public function stockAndHostImages($images)
+    public function checkAndHostImages($imageNames)
     {
-        try {
-            $hostedImages = [];
-            foreach ($images as $image) {
-                $image = $image->getData();
-                $ext = $image->guessExtension();
-                // Stockage en local
-                $folder = $this->parameterBag->get('kernel.project_dir') . '/public/post_images/';
-                $imgName = uniqid() . '.' . $ext;
-                $imgPath = $folder . $imgName;
-                $image->move($folder, $imgPath);
-                list($width, $height) = getimagesize($imgPath);
-                // Vérif ext image
-                if ($ext != 'jpg' && $ext != 'jpeg' && $ext != 'png') {
-                    unlink($imgPath);
-                    foreach ($hostedImages as $image) {
-                        unlink($folder . $image['name']);
-                    }
-                    throw new \Exception('Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . 'non supporté, formats acceptés = JPEG ou PNG');
-                };
-                // Vérif ratio image
-                if ($width / $height < 0.8) {
-                    unlink($imgPath);
-                    foreach ($hostedImages as $image) {
-                        unlink($folder . $image['name']);
-                    }
-                    throw new \Exception('Echec de l\'envoi du post sur Facebook : photo trop longue, ratio minimum = 4:5');
-                } elseif ($width / $height > 1.91) {
-                    unlink($imgPath);
-                    foreach ($hostedImages as $image) {
-                        unlink($folder . $image['name']);
-                    }
-                    throw new \Exception('Echec de l\'envoi du post sur Facebook : photo trop large, ratio maximum = 1.91:1');
-                }
-                // Vérif poids image
-                $fileSize = filesize($imgPath);
-                if ($fileSize > 10 * (10 ** 6)) {
-                    unlink($imgPath);
-                    foreach ($hostedImages as $image) {
-                        unlink($folder . $image['name']);
-                    }
-                    throw new \Exception('Echec de la publication de la photo sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B');
-                };
-                // Envoi de la photo sur le site de l'hébergeur
-                $image = base64_encode($image);
-                $url = $this->ImgbbAPI->uploadImage($image);
-                $imgInfos = [
-                    'name' => $imgName,
-                    'url' => $$url
-                ];
-                $hostedImages[] = $imgInfos;
+        $results = [];
+        foreach ($imageNames as $imageName) {
+            $imageResult = [
+                'name' => $imageName,
+                'url' => '',
+                'isValid' => true,
+                'errors' => []
+            ];
+            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/post_images/';
+            $imagePath = $folder . $imageName;
+            // Vérif ext image
+            $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
+            if ($ext != 'jpg' && $ext != 'jpeg' && $ext != 'png') {
+                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . 'non supporté, formats acceptés = JPEG ou PNG';
             }
-        } catch (\Exception $e) {
-            throw $e;
+            // Vérif ratio image
+            list($width, $height) = getimagesize($imagePath);
+            if ($width / $height < 0.8) {
+                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : photo trop longue, ratio minimum = 4:5';
+            } elseif ($width / $height > 1.91) {
+                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : photo trop large, ratio maximum = 1.91:1';
+            }
+            // Vérif poids image
+            $fileSize = filesize($imagePath);
+            if ($fileSize > 10 * (10 ** 6)) {
+                $imageResult['errors'][] = 'Echec de la publication de la photo sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B';
+            }
+            // Envoi de la photo sur le site de l'hébergeur
+            $data = file_get_contents($imagePath);
+            // $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            $image = base64_encode($data);
+            $url = $this->ImgbbAPI->uploadImage($image);
+            $imageResult['url'] = $url;
+            $results[] = $imageResult;
         }
-        return $hostedImages;
+        return $results;
     }
 
     /**
@@ -269,90 +247,87 @@ class FacebookAPI
         }
     }
 
-     // Renvoie les pages liées aux comptes
-     public function getPages($shortLivedToken)
-     {
-         $url = 'https://graph.facebook.com/me';
-         try {
-             $params = [
-                 'fields' => 'id,name,accounts',
-                 'access_token' => $shortLivedToken
-             ];
-             $response = $this->client->request('GET', $url, [
-                 'query' => $params,
-             ]);
- 
-             if (200 !== $response->getStatusCode()) {
-                 $content = $response->toArray(false);
-                 $message = $content['error']['message'];
-                 throw new \Exception('Echec obtention Pages Facebook : ' . $message);
-             } else {
-                 $content = $response->toArray();
-                 return $content['accounts'];
-             }
-         } catch (\Exception $e) {
-             throw $e;
-         }
-     }
+    // Renvoie les pages liées aux comptes
+    public function getPages($shortLivedToken)
+    {
+        $url = 'https://graph.facebook.com/me';
+        try {
+            $params = [
+                'fields' => 'id,name,accounts',
+                'access_token' => $shortLivedToken
+            ];
+            $response = $this->client->request('GET', $url, [
+                'query' => $params,
+            ]);
 
-     // Renvoie l'id instagram lié à la page
-     public function getIdInstagram($shortLivedToken,$id_page_fb)
-     {
-         $url = 'https://graph.facebook.com/v10.0/'.$id_page_fb;
-         try {
-             $params = [
-                 'fields' => 'instagram_business_account',
-                 'access_token' => $shortLivedToken,
-             ];
-             $response = $this->client->request('GET', $url, [
-                 'query' => $params,
-             ]);
- 
-             if (200 !== $response->getStatusCode()) {
-                 $content = $response->toArray(false);
-                 $message = $content['error']['message'];
-                 throw new \Exception('Echec obtention Id Account Instagram : ' . $message);
-             } else {
-                 $content = $response->toArray();
-                 $idInsta = null;
-                 if(isset($content['instagram_business_account'])){
+            if (200 !== $response->getStatusCode()) {
+                $content = $response->toArray(false);
+                $message = $content['error']['message'];
+                throw new \Exception('Echec obtention Pages Facebook : ' . $message);
+            } else {
+                $content = $response->toArray();
+                return $content['accounts'];
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    // Renvoie l'id instagram lié à la page
+    public function getIdInstagram($shortLivedToken, $id_page_fb)
+    {
+        $url = 'https://graph.facebook.com/v10.0/' . $id_page_fb;
+        try {
+            $params = [
+                'fields' => 'instagram_business_account',
+                'access_token' => $shortLivedToken,
+            ];
+            $response = $this->client->request('GET', $url, [
+                'query' => $params,
+            ]);
+
+            if (200 !== $response->getStatusCode()) {
+                $content = $response->toArray(false);
+                $message = $content['error']['message'];
+                throw new \Exception('Echec obtention Id Account Instagram : ' . $message);
+            } else {
+                $content = $response->toArray();
+                $idInsta = null;
+                if (isset($content['instagram_business_account'])) {
                     $idInstaContent = $content['instagram_business_account'];
                     $idInsta =  $idInstaContent['id'];
                 }
-                    return $idInsta;
-                
-             }
-         } catch (\Exception $e) {
-             throw $e;
-         }
-     }
-     
-// Renvoie le nom de la page/compteFb/CompteInstagram
-public function getName($shortLivedToken,$id)
-{
-    $url = 'https://graph.facebook.com/v10.0/'.$id;
-    try {
-        $params = [
-            'fields' => 'name',
-            'access_token' => $shortLivedToken,
-        ];
-        $response = $this->client->request('GET', $url, [
-            'query' => $params,
-        ]);
-
-        if (200 !== $response->getStatusCode()) {
-            $content = $response->toArray(false);
-            $message = $content['error']['message'];
-            throw new \Exception('Echec obtention Id Account Instagram : ' . $message);
-        } else {
-            $content = $response->toArray();
-          
-               return $content['name'];
-           
+                return $idInsta;
+            }
+        } catch (\Exception $e) {
+            throw $e;
         }
-    } catch (\Exception $e) {
-        throw $e;
     }
-}
 
+    // Renvoie le nom de la page/compteFb/CompteInstagram
+    public function getName($shortLivedToken, $id)
+    {
+        $url = 'https://graph.facebook.com/v10.0/' . $id;
+        try {
+            $params = [
+                'fields' => 'name',
+                'access_token' => $shortLivedToken,
+            ];
+            $response = $this->client->request('GET', $url, [
+                'query' => $params,
+            ]);
+
+            if (200 !== $response->getStatusCode()) {
+                $content = $response->toArray(false);
+                $message = $content['error']['message'];
+                throw new \Exception('Echec obtention Id Account Instagram : ' . $message);
+            } else {
+                $content = $response->toArray();
+
+                return $content['name'];
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
 }

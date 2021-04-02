@@ -7,48 +7,46 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 class TwitterAPI
 {
     /**
-     * Upload des photos sur un hébergeur et stockage local en vue d'une publication sur Twitter
-     * @param array $images Liste d'images à stocker et heberger (donner $form->get('images'))
-     * @return array $names Retourne la liste des noms des images stockées localement
+     * Upload des photos sur un hébergeur après vérification en vue d'une publication sur Twitter
+     * @param array[string] $images Liste des noms des images à vérifier
+     * @return $result Retourne une liste de listes associatives avec nom, validité et erreurs des images
      */
-    public function stockImages($images)
+    public function checkImages($imagesNames)
     {
-        try {
-            $names = [];
-            // Vérif nombres d'images
-            if (sizeof($images) > 4) throw new \Exception('Echec de l\'envoi du post sur Twitter, 4 images maximum autorisées');
-
-            foreach ($images as $image) {
-                $ext = $image->guessExtension();
-                // Stockage en local
-                $folder = $this->parameterBag->get('kernel.project_dir') . '/public/post_images/';
-                $imgName = uniqid() . '.' . $ext;
-                $imgPath = $folder . $imgName;
-                $image->move($folder, $imgPath);
-                // Vérif ext image
-                if ($ext != 'jpg' && $ext != 'jpeg' && $ext != 'png' && $ext != 'gif' && $ext != 'webp') {
-                    unlink($imgPath);
-                    foreach ($names as $name) {
-                        unlink($folder . $name);
-                    }
-                    throw new \Exception('Echec de l\'envoi du post sur Twitter : format d\'image ' . $ext . 'non supporté, formats acceptés = JPG, PNG, GIF, WEBP');
-                };
-                // Vérif poids image
-                $fileSize = filesize($imgPath);
-                if ($fileSize > 5 * (10 ** 6)) {
-                    unlink($imgPath);
-                    foreach ($names as $name) {
-                        unlink($folder . $name);
-                    }
-                    throw new \Exception('Echec de la publication de la photo sur Twitter : image trop volumineuse, limite de taille = 5MB, taille de l\'image = ' . $fileSize . 'B');
-                };
-                // Stockage du path dans la valeur retour                
-                $names[] = $imgName;
+        $results = [];
+        // Vérif nombres d'images
+        try{
+            if (sizeof($imagesNames) > 4){
+                throw new \Exception('Echec de l\'envoi du post sur Twitter, 4 images maximum autorisées');
             }
         } catch (\Exception $e) {
             throw $e;
         }
-        return $names;
+        
+        foreach ($imagesNames as $imageName) {
+            $imageResult = [
+                'name' => $imageName,
+                'isValid' => true,
+                'errors' => []
+            ];
+            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/post_images/';
+            $imagePath = $folder . $imageName;
+            // Vérif ext image
+            $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
+            if ($ext != 'jpg' && $ext != 'jpeg' && $ext != 'png' && $ext != 'gif' && $ext != 'webp') {
+                $imageResult['isValid'] = false;
+                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Twitter : format d\'image ' . $ext . 'non supporté, formats acceptés = JPG, PNG, GIF, WEBP';
+            };
+            // Vérif poids image
+            $fileSize = filesize($imagePath);
+            if ($fileSize > 5 * (10 ** 6)) {
+                $imageResult['isValid'] = false;
+                $imageResult['errors'][] = 'Echec de la publication de la photo sur Twitter : image trop volumineuse, limite de taille = 5MB, taille de l\'image = ' . $fileSize . 'B';
+            };
+            // Stockage du path dans la valeur retour                
+            $result[] = $imageResult;
+        }
+        return $results;
     }
 
     /**
