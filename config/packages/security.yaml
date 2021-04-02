@@ -41,3 +41,8 @@ security:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/profil, roles: ROLE_USER }
         - { path: ^/posts, roles: ROLE_USER }
+        - { path: ^/post, roles: ROLE_USER }
+        - { path: ^/template, roles: ROLE_USER }
+        - { path: ^/artistes, roles: ROLE_USER }
+        - { path: ^/api, roles: ROLE_USER }
+

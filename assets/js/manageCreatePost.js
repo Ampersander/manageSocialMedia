@@ -1,101 +1,124 @@
-'use strict';
 const $ = require('jquery');
-import '../bootstrap';
+const autocomplete = require('autocompleter');
+
+
 $(function () {
 
-    $(document).on("click", "#cb1", function () {
-        //alert('yes');
-        if ($("#cb1").prop('checked'))
-            $('#facebookModal').show();
+
+    $(document).on("click", ".btn-close", function (e) {
+        $('#artisteModal').hide();
     });
 
-    $(document).on("click", "#cb2", function () {
-        if ($("#cb2").prop('checked'))
-            $('#instagramModal').show();
-    });
-
-    $(document).on("click", "#cb3", function () {
-        if ($("#cb3").prop('checked'))
-            $('#twitterModal').show();
-    });
-
-    $(document).on("click", ".saveTw", function (e) {
-       // e.preventDefault();
-        $('#twitterModal').hide();
-        var checkboxEmpty = true;
-
-        for (var i = 0; i < $('.twitter').length; i++) {
-            var checkbox = $('.twitter')[i];
-            if (checkbox.checked) {
-                checkboxEmpty = false;
-                $("#cb3").prop('checked', true);
-            } 
-           
-        }
-        if(checkboxEmpty == true)
-        $("#cb3").prop('checked', false);
-    });
-
-    $(document).on("click", ".saveInst", function (e) {
-       // e.preventDefault();
-        $('#instagramModal').hide();
-        var checkboxEmpty = true;
-        for (var i = 0; i < $('.instagram').length; i++) {
-            var checkbox = $('.instagram')[i];
-            if (checkbox.checked) {
-                checkboxEmpty = false;
-                $("#cb2").prop('checked', true);
-            } 
-        }
-        if(checkboxEmpty == true)
-        $("#cb2").prop('checked', false);
-
-    });
-
-    $(document).on("click", ".saveFb", function (e) {
-       // e.preventDefault();
-        $('#facebookModal').hide();
-
-        var checkboxEmpty = true;
-        for (var i = 0; i < $('.facebook').length; i++) {
-            var checkbox = $('.facebook')[i];
-            if (checkbox.checked) {
-                checkboxEmpty = false;
-                $("#cb1").prop('checked', true);
-            }
-        }
-        if(checkboxEmpty == true)
-            $("#cb1").prop('checked', false);
-
-
-    });
-
-
-    $(document).on("click", ".btn-close", function () {
+    $(document).on("click", ".save", function () {
+        var value = document.getElementById('testinput').value;
+        console.log(value);
+        var desc = document.getElementById('form_description').value;
+        console.log(desc);
         
-
-       
-        for (var i = 0; i < $('input[type=checkbox]:visible').length; i++) {
-            var checkbox = $('input[type=checkbox]:visible')[i];
-            checkbox.checked = false;
-            if(checkbox.classList.contains("instagram"))
-            $("#cb2").prop('checked', false);
-            if(checkbox.classList.contains("twitter"))
-            $("#cb3").prop('checked', false);
-            if(checkbox.classList.contains("facebook"))
-            $("#cb1").prop('checked', false);
-        }
-       
-
-
-        $('#instagramModal').hide();
-        $('#facebookModal').hide();
-        $('#twitterModal').hide();
+        var string = desc+ value;
+        console.log(string);
+        document.getElementById('form_description').value = string;
+        $('#artisteModal').hide();   
     });
-
-
-
-
 
 });
+
+document
+    .getElementById("form_description")
+    .addEventListener("keydown", function(event) {
+        console.log(event.key);
+        if (event.key === "@") {
+            $('#artisteModal').show();
+            setTimeout(function(){ document.getElementById('testinput').value = ''; }, 20);
+            $.ajax({
+                url : 'http://localhost:8000/api/artistes',
+                type : 'GET',
+                dataType : 'json',
+                success : function(resultat, statut){ 
+                    console.log(resultat);
+                    var artistes =[];
+                    for(var i = 0 ; i< resultat.length ;i++){
+                       var elem =  resultat[i];
+                       artistes.push(elem.nom); 
+                    }
+               
+        
+            
+            var items = artistes.map(function (n) { return { label: n, group: "Artistes" }});
+            var allowedChars = new RegExp(/^[a-zA-Z\s]+$/)
+        
+            function charsAllowed(value) {
+                return allowedChars.test(value);
+            }
+        
+            autocomplete({
+                input: document.getElementById('testinput'),
+                minLength: 1,
+                onSelect: function (item, inputfield) {
+                    inputfield.value = item.label
+                },
+                fetch: function (text, callback) {
+                    var match = text.toLowerCase();
+                    callback(items.filter(function(n) { return n.label.toLowerCase().indexOf(match) !== -1; }));
+                },
+                render: function(item, value) {
+                    var itemElement = document.createElement("div");
+                    if (charsAllowed(value)) {
+                        var regex = new RegExp(value, 'gi');
+                        var inner = item.label.replace(regex, function(match) { return "<strong>" + match + "</strong>" });
+                        itemElement.innerHTML = inner;
+                    } else {
+                        itemElement.textContent = item.label;
+                    }
+                    return itemElement;
+                },
+                emptyMsg: "No artistes found",
+                customize: function(input, inputRect, container, maxHeight) {
+                    if (maxHeight < 100) {
+                        container.style.top = "";
+                        container.style.bottom = (window.innerHeight - inputRect.bottom + input.offsetHeight) + "px";
+                        container.style.maxHeight = "140px";
+                    }
+                }
+            })
+        
+            document.getElementById('testinput').focus();
+        },
+            
+        error : function(resultat, statut, erreur){
+            console.log(resultat);
+        }
+    
+     });
+        }
+    });
+
+
+   
+    document
+    .getElementById("form_templatePost")
+    .addEventListener("change", function(event) {
+
+            $.ajax({
+                url : 'http://localhost:8000/api/templateposts',
+                type : 'GET',
+                dataType : 'json',
+                success : function(resultat, statut){ 
+                    console.log(resultat);
+                    for(var i = 0 ; i< resultat.length ;i++){
+                       if(document.getElementById("form_templatePost").value == resultat[i].id ) {
+                        var desc = document.getElementById('form_description');
+                        var descArray = desc.value.split(' ');
+                        desc.value = descArray[0]+'\n '+resultat[i].description;
+                       }
+                    }   
+        },
+            
+        error : function(resultat, statut, erreur){
+            console.log(resultat);
+        }
+    
+    });
+       });
+
 

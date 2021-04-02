@@ -8,11 +8,13 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 
 Encore
     // directory where compiled assets will be stored
+
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
     .setPublicPath('/build')
     // only needed for CDN's or sub-directory deploy
     //.setManifestKeyPrefix('build/')
+
 
     /*
      * ENTRY CONFIG
@@ -23,10 +25,12 @@ Encore
     .addEntry('app', './assets/app.js')
     .addEntry('customScss', './assets/app.js')
     .addEntry('manageAccountSocialMedia', './assets/js/manageAccountSocialMedia')
+    .addEntry('manageWatchPost', './assets/js/manageWatchPost')
     .addEntry('manageCreatePost', './assets/js/manageCreatePost')
     .addEntry('manageSDKFb', './assets/js/manageSDKFb')
-    .addEntry('manageArtiste', './assets/js/manageArtiste')
+    .addEntry('manageTemplatePost', './assets/js/manageTemplatePost.js')
     .addEntry('postVerificator', './assets/js/postVerificator')
+    .addEntry('hiddenBlock', './assets/js/hiddenBlock')
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
 
@@ -45,6 +49,7 @@ Encore
      * https://symfony.com/doc/current/frontend.html#adding-more-features
      */
     .cleanupOutputBeforeBuild()
+
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
     // enables hashed filenames (e.g. app.abc123.css)
@@ -75,6 +80,7 @@ Encore
 
     // uncomment if you're having problems with a jQuery plugin
     .autoProvidejQuery()
+
     //Function to copy your images on the public directory to allow asset() to access those files
     .copyFiles({
         from: './assets/images',
@@ -87,6 +93,7 @@ Encore
       pattern: /\.(png|xml|json|txt|svg|manifest)$/
   })
 ;
+
 
 module.exports = Encore.getWebpackConfig();
 /*

@@ -5,9 +5,11 @@ namespace App\Utility;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
+
 class InstagramAPI
 {
     private $client;
+
     protected $parameterBag;
 
     public function __construct(HttpClientInterface $client, ParameterBagInterface $parameterBag)
@@ -62,7 +64,9 @@ class InstagramAPI
     {
         $url = 'https://graph.facebook.com/v10.0/' . $accountId . '/media_publish';
         try {
+
             // Params
+
             $params = [
                 'creation_id' => $this->sendPhotoOnPage($accountId, $photoUrl, $access_token, $message),
                 'access_token' => $access_token
@@ -76,6 +80,7 @@ class InstagramAPI
                 $content = $response->toArray(false);
                 $error = $content['error']['message'];
                 throw new \Exception('Echec de la publication de la photo sur Instagram : ' . $error);
+
             } else {
                 $content = $response->toArray();
                 return $content['id'];
@@ -115,6 +120,7 @@ class InstagramAPI
             unlink($imgPath);
 
             // Params
+
             $params = [
                 'image_url' => $photoUrl,
                 'access_token' => $access_token
@@ -129,6 +135,7 @@ class InstagramAPI
                 $content = $response->toArray(false);
                 $error = $content['error']['message'];
                 throw new \Exception('Echec de l\'envoi du post sur Instagram : ' . $error);
+
             } else {
                 $content = $response->toArray();
                 return $content['id'];
@@ -137,4 +144,6 @@ class InstagramAPI
             throw $e;
         }
     }
+
 }
+
