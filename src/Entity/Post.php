@@ -58,7 +58,6 @@ class Post
      */
     private $templatePost;
 
-ph
 
     public function __construct()
     {

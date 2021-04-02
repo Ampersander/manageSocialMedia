@@ -10,31 +10,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Entity\Artiste;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\Persistence\ObjectManager;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
-
-use FOS\RestBundle\Controller\Annotations\Get;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Validator\Constraints\File;
-
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 
@@ -51,7 +38,7 @@ class PostController extends AbstractController
         $this->InstaAPI = new InstagramAPI($client, $parameterBag);
         $this->TwitterAPI = new TwitterAPI($client, $parameterBag);
 
-
+    }
     /**
      * @Route("/posts", name="posts")
      */
@@ -67,18 +54,8 @@ class PostController extends AbstractController
         return $this->render('post/index.html.twig', [
             'controller_name' => 'PostController',
             'posts' => $posts,
-
-        ]);
-    }
-
-    /**
-     *  @Route ("/post/new", name="post_create")
-     *  @Route ("/post/{id}/edit", name="post_edit")
-     */
-    public function form(Post $post = null, Request $request, EntityManagerInterface $manager, ParameterBagInterface $parameterBag)
-    {
-
             'day' => $day,
+
         ]);
     }
 
@@ -86,8 +63,8 @@ class PostController extends AbstractController
      *  @Route ("/post/new", name="post_create")
      *  @Route ("/post/{id}/edit", name="post_edit")
      */
-    public function form(Post $post = null, Request $request, EntityManagerInterface $manager) {
-
+    public function form(Post $post = null, Request $request, EntityManagerInterface $manager, ParameterBagInterface $parameterBag)
+    {
         if (!$post) {
             $post = new Post();
         }
@@ -209,46 +186,10 @@ class PostController extends AbstractController
         $social_medias = $repository->findByUser($user);
 
 
-        if ($facebook != null || $insta != null || $twitter != null) {
+        
 
-            foreach ($social_medias as $social_media) {
-                $checkboxValue = $request->request->get('checkbox' . $social_media->getId());
-                if ($checkboxValue != NULL) {
-                    $post->addSocialMediaAccount($social_media);
-                    $manager->persist($post);
-                    $manager->flush();
+                    
 
-                    $case = $social_media->getSocialMedia();
-
-                    switch ($case) {
-
-        $nombre_incre = mb_substr_count($description, "@");
-        $biblie = [];
-        $mot = explode(" ", $description);
-        $j = 0;
-        for($i=0; $i<count($mot); $i++){
-            //$mot = substr($description, strpos($description, "@"), strpos($description, " ")-strlen($description));
-
-            if(strpos($mot[$i], "@") === false  ){
-                //echo 'yes';
-                $descriptionF = $description;
-                $descriptionI = $description;
-                $descriptionT = $description;
-
-            }else{
-                //echo $mot[$i];
-                $other = $this->getDoctrine()->getRepository(Artiste::class);
-                $artiste = $other->findByName(substr($mot[$i], 1));
-                //var_dump(count($artiste));
-                $nF = $artiste[0]->nameFacebook;
-                $nT = $artiste[0]->nameTwitter;
-                $nI = $artiste[0]->nameInsta;
-                //var_dump($artiste);
-                $descriptionF = str_replace($mot[$i], "@".$nF, $description);
-                $descriptionT = str_replace($mot[$i], "@".$nT, $description);
-                $descriptionI = str_replace($mot[$i], "@".$nI, $description);
-            }
-        }
         
         
         if($facebook != null || $insta != null || $twitter != null){
@@ -262,6 +203,31 @@ class PostController extends AbstractController
                     $manager->flush();
                     
                     $case = $social_media->getSocialMedia();
+                    $mot = explode(" ", $description);
+
+                    for($i=0; $i<count($mot); $i++){
+                        //$mot = substr($description, strpos($description, "@"), strpos($description, " ")-strlen($description));
+
+                        if(strpos($mot[$i], "@") === false  ){
+                            //echo 'yes';
+                            $descriptionF = $description;
+                            $descriptionI = $description;
+                            $descriptionT = $description;
+
+                        }else{
+                            //echo $mot[$i];
+                            $other = $this->getDoctrine()->getRepository(Artiste::class);
+                            $artiste = $other->findByName(substr($mot[$i], 1));
+                            //var_dump(count($artiste));
+                            $nF = $artiste[0]->nameFacebook;
+                            $nT = $artiste[0]->nameTwitter;
+                            $nI = $artiste[0]->nameInsta;
+                            //var_dump($artiste);
+                            $descriptionF = str_replace($mot[$i], "@".$nF, $description);
+                            $descriptionT = str_replace($mot[$i], "@".$nT, $description);
+                            $descriptionI = str_replace($mot[$i], "@".$nI, $description);
+                    }
+                }
                     
                     switch ( $case) {
 
