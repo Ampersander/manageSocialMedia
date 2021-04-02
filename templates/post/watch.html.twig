@@ -17,7 +17,9 @@
   </div>
       {% if images != null %}
     <div class="intagram-card-image">
-      <img src="{{ absolute_url(asset('images/'~images[0])) }}" width="50px"/>
+    {% for image in images %}
+      <img src="{{ absolute_url(asset('images/'~image)) }}" width="50px"/>
+    {% endfor %}
     </div>
     {% endif %}
   <div class="social">
@@ -257,7 +259,10 @@ label img {
       </p>
             {% if images != null %}
     <div class="intagram-card-image">
-      <img src="{{ absolute_url(asset('images/'~images[0])) }}" width="50px"/>
+      {% for image in images %}
+      <img src="{{ absolute_url(asset('images/'~image)) }}" width="50px"/>
+    </div>
+    {% endfor %}
     </div>
     {% endif %}
       <p class="tweetDate">{{ post.date | date('d/m/Y') }}

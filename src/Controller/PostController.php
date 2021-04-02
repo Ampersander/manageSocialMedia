@@ -90,7 +90,7 @@ class PostController extends AbstractController
             foreach ($images as $image) {
                 // Stockage en local
                 $ext = $image->guessExtension();
-                $folder = $parameterBag->get('kernel.project_dir') . '/public/images/';
+                $folder = $parameterBag->get('kernel.project_dir') . '/public/post_images/';
                 $imgName = uniqid() . '.' . $ext;
                 $imgPath = $folder . $imgName;
                 $image->move($folder, $imgPath);

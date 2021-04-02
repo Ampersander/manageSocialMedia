@@ -7,7 +7,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class InstagramAPI
 {
-
     private $client;
     protected $parameterBag;
 
@@ -18,51 +17,44 @@ class InstagramAPI
     }
 
     /**
-     * Upload des photos sur un hébergeur et stockage local en vue d'une publication sur Instagram
-     * @param $image Image à stocker et heberger (donner $form->get('images')->getData())
-     * @return array Retourne une array, à utiliser comme suit :
-     * $nomImage = array['name']
-     * $urlImage = array['url']
+     * Upload une photo sur un hébergeur après vérifications en vue d'une publication sur Instagram
+     * @param $imageName Nom de l'image à heberger
+     * @return $result Retourne nom, url, validité et erreurs de l'image
      */
-    public function stockAndHostImage($image)
+    public function checkAndHostImage($imageName)
     {
-        try {
-            // Vérif ext image
-            $ext = $image->guessExtension();
-            if ($ext != 'jpg' && $ext != 'jpeg') {
-                throw new \Exception('Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . 'non supporté, formats acceptés = JPEG / JPG');
-            };
-            // Stockage en local
-            $folder = $this->parameterBag->get('kernel.project_dir') . '/public/post_images/';
-            $imgName = uniqid() . '.' . $ext;
-            $imgPath = $folder . $imgName;
-            $image->move($folder, $imgPath);
-            list($width, $height) = getimagesize($imgPath);
-            // Vérif ratio image
-            if ($width / $height < 0.8) {
-                unlink($imgPath);
-                throw new \Exception('Echec de l\'envoi du post sur Instagram : photo trop longue, ratio minimum = 4:5');
-            } elseif ($width / $height > 1.91) {
-                unlink($imgPath);
-                throw new \Exception('Echec de l\'envoi du post sur Instagram : photo trop large, ratio maximum = 1.91:1');
-            }
-            // Vérif poids image
-            $fileSize = filesize($imgPath);
-            if ($fileSize > 8 * (2 ** 20)) {
-                unlink($imgPath);
-                throw new \Exception('Echec de la publication de la photo sur Instagram : image trop volumineuse, limite de taille = 8MiB, taille de l\'image = ' . $fileSize . 'B');
-            };
-            // Envoi de la photo sur le site de l'hébergeur
-            $image = base64_encode($image);
-            $url = $this->ImgbbAPI->uploadImage($image);
-            $imgInfos = [
-                'name' => $imgName,
-                'url' => $$url
-            ];
-        } catch (\Exception $e) {
-            throw $e;
+        $result = [
+            'name' => $imageName,
+            'url' => '',
+            'isValid' => true,
+            'errors' => []
+        ];
+        $folder = $this->parameterBag->get('kernel.project_dir') . '/public/post_images/';
+        $imagePath = $folder . $imageName;
+        // Vérif ext image
+        $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
+        if ($ext != 'jpg' && $ext != 'jpeg') {
+            $result['errors'][] = 'Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . 'non supporté, formats acceptés = JPEG / JPG';
         }
-        return $url;
+        // Vérif ratio image
+        list($width, $height) = getimagesize($imagePath);
+        if ($width / $height < 0.8) {
+            $result['errors'][] = 'Echec de l\'envoi du post sur Instagram : photo trop longue, ratio minimum = 4:5';
+        } elseif ($width / $height > 1.91) {
+            $result['errors'][] = 'Echec de l\'envoi du post sur Instagram : photo trop large, ratio maximum = 1.91:1';
+        }
+        // Vérif poids image
+        $fileSize = filesize($imagePath);
+        if ($fileSize > 8 * (2 ** 20)) {
+            $result['errors'][] = 'Echec de la publication de la photo sur Instagram : image trop volumineuse, limite de taille = 8MiB, taille de l\'image = ' . $fileSize . 'B';
+        }
+        // Envoi de la photo sur le site de l'hébergeur
+        $data = file_get_contents($imagePath);
+        // $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        $image = base64_encode($data);
+        $url = $this->ImgbbAPI->uploadImage($image);
+        $result['url'] = $url;
+        return $result;
     }
 
     // Publie une photo sur Instagram, des tags peuvent être ajoutés
