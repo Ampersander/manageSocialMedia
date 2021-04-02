@@ -11,12 +11,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-<<<<<<< HEAD
-=======
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
->>>>>>> test
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -89,13 +86,10 @@ class PostController extends AbstractController
                 'required' => false,
                 'multiple' => true,
             ])
-<<<<<<< HEAD
-            ->add('image', TextType::class, [
+            ->add('imageURL', TextType::class, [
+                'mapped' => false,
                 'required' => false,
             ])
-           
-=======
->>>>>>> test
             ->add('date')
             ->add('templatePost', ChoiceType::class, [
                 'mapped' => false,
@@ -103,20 +97,21 @@ class PostController extends AbstractController
             
             ])
             ->getForm();
-<<<<<<< HEAD
+
             $post->setUser($user);
             $selectTemplatePost = $repository->findById($request->request->get('templatePost'));
             if( $selectTemplatePost != null)
                 $post->setTemplatePost( $selectTemplatePost);
-=======
 
         $post->setUser($user);
->>>>>>> test
+
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $images = $form->get('image')->getData();
             $imageNames = [];
+            var_dump($images);
+            if(!is_NULL($images)){
             foreach ($images as $image) {
                 // Stockage en local
                 $ext = $image->guessExtension();
@@ -126,7 +121,7 @@ class PostController extends AbstractController
                 $image->move($folder, $imgPath);
                 $imageNames[] = $imgName;
             }
-
+        }
             $manager->persist($post);
             $manager->flush();
 
@@ -184,12 +179,8 @@ class PostController extends AbstractController
                         case 'facebook_account':
                             try {
                                 $FbAccount = $social_media->getFbAccount();
-<<<<<<< HEAD
                                 $accountId = $FbAccount->getAccountId(); 
-                               
-=======
-                                $accountId = $FbAccount->getAccountId();
->>>>>>> test
+
                             } catch (\Throwable $th) {
                                 throw $th;
                             }
