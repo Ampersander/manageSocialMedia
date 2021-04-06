@@ -5,6 +5,23 @@
 
 {% block body %}
     {{ parent() }}
+    <ul>
+    {% if errors.facebook %}
+        {% for error in errors.facebook %}
+            <li>{{error}}<li>
+        {% endfor %}
+    {% endif %}
+    {% if errors.instagram %}
+        {% for error in errors.instagram %}
+            <li>{{error}}<li>
+        {% endfor %}
+    {% endif %}
+    {% if errors.twitter %}
+        {% for error in errors.twitter %}
+            <li>{{error}}<li>
+        {% endfor %}
+    {% endif %}
+    </ul>
     <article class="d-flex align-items-center justify-content-around">
         <div class="f-card mt-5">
             <div class="header">
@@ -27,7 +44,9 @@
             </div>
             {% if post.image != null %}
                 <div class="reference">
-                    <img class="reference-thumb" src="{{ asset('post_images/' ~ post.image[0]) }}"/>
+                    {% for image in post.image %}
+                        <img class="reference-thumb" src="{{ asset('post_images/' ~ image) }}"/>
+                    {% endfor %}
                 </div>
             {% endif %}
 
@@ -279,8 +298,9 @@
                             </p>
                             {% if post.image != null %}
                                 <div class="intagram-card-image">
-                                    <img src="{{ asset('post_images/' ~ post.image[0]) }}" width="100%"/>
-
+                                    {% for image in post.image %}
+                                        <img src="{{ asset('post_images/' ~ image) }}" width="100%"/>
+                                    {% endfor %}
                                 </div>
                             {% endif %}
                             <p class="tweetDate">{{ post.date | date('d/m/Y') }}
@@ -313,12 +333,12 @@
 
 
                             <input class="btn btn-primary mb-5" type="submit" value="
-                                    {% if post.date > day %}
-                                    Enregistrer le post pour une prépublication
-                                    {% else %}
-                                    Valider l'envoie du post
-                                    {% endif %}
-                                    "></article>
+                                                                {% if post.date > day %}
+                                                                Enregistrer le post pour une prépublication
+                                                                {% else %}
+                                                                Valider l'envoie du post
+                                                                {% endif %}
+                                                                "></article>
 
                             <!-- Modal -->
                             <div class="modal" id="instagramModal" tabindex="-1" aria-labelledby="instagramModalLabel" aria-hidden="true">

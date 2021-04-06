@@ -1,77 +1,77 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-{{ parent() }}
-<div class="d-flex justify-content-center">
-<div class="card m-3" style="width: 30rem;">
-<div class='card-header'> <h1>Création d'un post</h1></div>
-  <div class="card-body d-flex justify-content-center">
-  
-{{ form_start(formPost) }}
-<div class="form-group ">
-{{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article"}}) }}
+    {{ parent() }}
+    <div class="d-flex justify-content-center">
+        <div class="card m-3" style="width: 30rem;">
+            <div class='card-header'>
+                <h1>Création d'un post</h1>
+            </div>
+            <div class="card-body d-flex justify-content-center">
 
-<div id="desc-warns"></div>
-</div>
-<div class="form-group ">
-<label>Prévoir la plannification</label>
-<input type="checkbox" name="planif" value="planif" id="planif">
-<div style="display: none;" id="date">
-{{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie"}}) }}
-</div>
-</div>
-<div class="form-group ">
-{{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image"}}) }}
-</div>
-<div class="form-group ">
-{{ form_row(formPost.imageURL, {'attr': {'placeholder': "Lien de l'image"}}) }}
-</div>
+                {{ form_start(formPost) }}
+                <div class="form-group ">
+                    {{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article" }}) }}
+
+                    <div id="desc-warns"></div>
+                </div>
+                <div class="form-group ">
+                    <label>Prévoir la plannification</label>
+                    <input type="checkbox" name="planif" value="planif" id="planif">
+                        <div style="display: none;" id="date">
+                            {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie" }}) }}
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        {{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image" }}) }}
+                    </div>
+                    <div class="form-group ">
+                        {{ form_row(formPost.imageURL, {'attr': {'placeholder': "Lien de l'image" }}) }}
+                    </div>
 
 
-<div class="form-group ">
-{{ form_row(formPost.templatePost) }}
-</div>
+                    <div class="form-group ">
+                        {{ form_row(formPost.templatePost) }}
+                    </div>
 
-<button id="trash" type="button">Retirer les photos</button>
-<div id="image-list"></div>
-<button type="submit" class="btn btn-primary mt-3">
-{% if editMode %}
-Enregistrer
-{% else %}
-Voir prévisualisation
-{% endif %}
-
-</button>
-{{ form_end(formPost) }}
+                    <button id="trash" type="button">Retirer les photos</button>
+                    <div id="image-list"></div>
+                    <button type="submit" class="btn btn-primary mt-3">
+                        {% if editMode %}
+                            Enregistrer
+                        {% else %}
+                            Créer le post
+                        {% endif %}
+                    </button>
+                    {{ form_end(formPost) }}
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-</div>
 
 
-<!-- Modal -->
-<div class="modal" id="artisteModal" tabindex="-1" aria-labelledby="twitterModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="twitterModalLabel">Twitter account</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <input type="text" id="testinput" placeholder="Type 'a'">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary save">Save changes</button>
-      </div>
-      
-    </div>
-  </div>
-</div>
+    <!-- Modal -->
+    <div class="modal" id="artisteModal" tabindex="-1" aria-labelledby="twitterModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="twitterModalLabel">Twitter account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="testinput" placeholder="Type 'a'"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary save">Save changes</button>
+                    </div>
 
-{% block javascripts %}
+                </div>
+            </div>
+        </div>
 
-{{ encore_entry_script_tags('manageCreatePost') }}
-{{ encore_entry_script_tags('postVerificator') }}
-{{ encore_entry_script_tags('hiddenBlock') }}
+        {% block javascripts %}
 
-{% endblock %}
-{% endblock %}
+            {{ encore_entry_script_tags('manageCreatePost') }}
+            {{ encore_entry_script_tags('postVerificator') }}
+            {{ encore_entry_script_tags('hiddenBlock') }}
+
+        {% endblock %}
+    {% endblock %}

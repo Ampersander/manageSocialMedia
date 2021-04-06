@@ -2,12 +2,16 @@
 
 namespace App\Utility;
 
-
-
 use Abraham\TwitterOAuth\TwitterOAuth;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class TwitterAPI
 {
+
+    public function __construct(ParameterBagInterface $parameterBag)
+    {
+        $this->parameterBag = $parameterBag;
+    }
 
     /**
      * Upload des photos sur un hébergeur après vérification en vue d'une publication sur Twitter
@@ -17,15 +21,6 @@ class TwitterAPI
     public function checkImages($imagesNames)
     {
         $results = [];
-        // Vérif nombres d'images
-        try{
-            if (sizeof($imagesNames) > 4){
-                throw new \Exception('Echec de l\'envoi du post sur Twitter, 4 images maximum autorisées');
-            }
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
         foreach ($imagesNames as $imageName) {
             $imageResult = [
                 'name' => $imageName,
@@ -36,27 +31,28 @@ class TwitterAPI
             $imagePath = $folder . $imageName;
             // Vérif ext image
             $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
-            if ($ext != 'jpg' && $ext != 'jpeg' && $ext != 'png' && $ext != 'gif' && $ext != 'webp') {
+            $validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            if (!in_array(strtolower($ext), $validExts)) {
                 $imageResult['isValid'] = false;
-                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Twitter : format d\'image ' . $ext . 'non supporté, formats acceptés = JPG, PNG, GIF, WEBP';
-            };
+                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Twitter : format d\'image ' . $ext . ' non supporté, formats acceptés = JPG, PNG, GIF, WEBP, SVG';
+            }
             // Vérif poids image
             $fileSize = filesize($imagePath);
             if ($fileSize > 5 * (10 ** 6)) {
                 $imageResult['isValid'] = false;
                 $imageResult['errors'][] = 'Echec de la publication de la photo sur Twitter : image trop volumineuse, limite de taille = 5MB, taille de l\'image = ' . $fileSize . 'B';
-            };
+            }
             // Stockage du path dans la valeur retour                
-            $result[] = $imageResult;
+            $results[] = $imageResult;
         }
         return $results;
     }
 
     /**
      * Publie un statut avec ou sans photos sur la page Twitter
-     * @param array $imagePaths Liste des chemins (absolus) des images, ne rien mettre si pas d'images
+     * @param array $imageNames Liste des noms des images, ne rien mettre si pas d'images
      */
-    public function postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, $message = false, $imagePaths = false)
+    public function postStatusOnPage($consumer_key, $consumer_secret, $access_token, $access_token_secret, $message = false, $imageNames = false)
     {
         try {
             $connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
@@ -73,11 +69,11 @@ class TwitterAPI
                 ];
             }
             // Si le tweet contient des photos
-            if ($imagePaths != false) {
+            if ($imageNames) {
                 $mediaIds = [];
-                foreach ($imagePaths as $path) {
-                    $media = $connection->upload('media/upload', ['media' => $path]);
-
+                foreach ($imageNames as $imageName) {
+                    $folder = $this->parameterBag->get('kernel.project_dir') . '/public/post_images/';
+                    $media = $connection->upload('media/upload', ['media' => $folder . $imageName]);
                     $mediaIds[] = $media->media_id_string;
                 }
                 $parameters['media_ids'] = implode(',', $mediaIds);
@@ -103,4 +99,3 @@ class TwitterAPI
         }
     }
 }
-

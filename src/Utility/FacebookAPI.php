@@ -3,6 +3,7 @@
 namespace App\Utility;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use App\Utility\ImgbbAPI;
 
@@ -11,12 +12,14 @@ class FacebookAPI
 {
     private $client;
     private $ImgbbAPI;
+    private $parameterBag;
 
 
-    public function __construct(HttpClientInterface $client)
+    public function __construct(HttpClientInterface $client, ParameterBagInterface $parameterBag)
     {
         $this->client = $client;
         $this->ImgbbAPI = new ImgbbAPI($client);
+        $this->parameterBag = $parameterBag;
     }
 
     /**
@@ -27,7 +30,7 @@ class FacebookAPI
     public function checkAndHostImages($imageNames)
     {
         $results = [];
-        foreach ($imageNames as $imageName) {
+        foreach ($imageNames as $index => $imageName) {
             $imageResult = [
                 'name' => $imageName,
                 'url' => '',
@@ -38,27 +41,34 @@ class FacebookAPI
             $imagePath = $folder . $imageName;
             // Vérif ext image
             $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
-            if ($ext != 'jpg' && $ext != 'jpeg' && $ext != 'png') {
-                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . 'non supporté, formats acceptés = JPEG ou PNG';
+            $validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            if (!in_array(strtolower($ext), $validExts)) {
+                $imageResult['isValid'] = false;
+                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . ' non supporté, formats acceptés = JPG, PNG, GIF, WEBP, SVG';
+            } else {
+                // Vérif ratio image
+                list($width, $height) = getimagesize($imagePath);
+                if ($width / $height < 0.8) {
+                    $result['isValid'] = false;
+                    $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : image N°' . $index . ' photo trop longue, ratio minimum = 4:5';
+                } elseif ($width / $height > 1.91) {
+                    $result['isValid'] = false;
+                    $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : image N°' . $index . ' photo trop large, ratio maximum = 1.91:1';
+                }
+                // Vérif poids image
+                $fileSize = filesize($imagePath);
+                if ($fileSize > 10 * (10 ** 6)) {
+                    $result['isValid'] = false;
+                    $imageResult['errors'][] = 'Echec de la publication de la photo sur Facebook : image N°' . $index . ' trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B';
+                }
+                // Envoi de la photo sur le site de l'hébergeur
+                if (empty($imageResult['errors'])) {
+                    $data = file_get_contents($imagePath);
+                    $image = base64_encode($data);
+                    $url = $this->ImgbbAPI->uploadImage($image);
+                    $imageResult['url'] = $url;
+                }
             }
-            // Vérif ratio image
-            list($width, $height) = getimagesize($imagePath);
-            if ($width / $height < 0.8) {
-                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : photo trop longue, ratio minimum = 4:5';
-            } elseif ($width / $height > 1.91) {
-                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : photo trop large, ratio maximum = 1.91:1';
-            }
-            // Vérif poids image
-            $fileSize = filesize($imagePath);
-            if ($fileSize > 10 * (10 ** 6)) {
-                $imageResult['errors'][] = 'Echec de la publication de la photo sur Facebook : image trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B';
-            }
-            // Envoi de la photo sur le site de l'hébergeur
-            $data = file_get_contents($imagePath);
-            // $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            $image = base64_encode($data);
-            $url = $this->ImgbbAPI->uploadImage($image);
-            $imageResult['url'] = $url;
             $results[] = $imageResult;
         }
         return $results;
@@ -149,7 +159,7 @@ class FacebookAPI
             if (200 !== $response->getStatusCode()) {
                 $content = $response->toArray(false);
                 $message = $content['error']['message'];
-                throw new \Exception('Echec de l\'envoi de la photo sur Facebook : ' . $message);
+                throw new \Exception('Echec de l\'envoi de la photo sur Facebook : ' . $message . var_dump($content));
             } else {
                 $content = $response->toArray();
                 return $content['id'];
@@ -170,8 +180,8 @@ class FacebookAPI
         try {
             // Upload des photos sans les publier
             $unpublishedPhotoIds = [];
-            foreach ($imageUrls as $url) {
-                $unpublishedPhotoIds[] = $this->postPhotoOnPage($pageAccessToken, $pageId, $url, false, false);
+            foreach ($imageUrls as $imageUrl) {
+                $unpublishedPhotoIds[] = $this->postPhotoOnPage($pageAccessToken, $pageId, $imageUrl, false, false);
             }
 
             // Params
@@ -179,7 +189,6 @@ class FacebookAPI
                 'access_token' => $pageAccessToken
             ];
             if ($message !== false) {
-
                 $params['message'] = $message;
             }
             // Inclue chaque id de photo a publier
