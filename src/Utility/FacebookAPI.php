@@ -44,21 +44,21 @@ class FacebookAPI
             $validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
             if (!in_array(strtolower($ext), $validExts)) {
                 $imageResult['isValid'] = false;
-                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . ' non supporté, formats acceptés = JPG, PNG, GIF, WEBP, SVG';
+                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . ' non supporté, formats acceptés = JPG, PNG, WEBP, SVG';
             } else {
                 // Vérif ratio image
                 list($width, $height) = getimagesize($imagePath);
                 if ($width / $height < 0.8) {
-                    $result['isValid'] = false;
-                    $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : image N°' . $index . ' photo trop longue, ratio minimum = 4:5';
+                    $imageResult['isValid'] = false;
+                    $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : image N°' . $index . ' trop longue, ratio minimum = 4:5';
                 } elseif ($width / $height > 1.91) {
-                    $result['isValid'] = false;
-                    $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : image N°' . $index . ' photo trop large, ratio maximum = 1.91:1';
+                    $imageResult['isValid'] = false;
+                    $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : image N°' . $index . ' trop large, ratio maximum = 1.91:1';
                 }
                 // Vérif poids image
                 $fileSize = filesize($imagePath);
                 if ($fileSize > 10 * (10 ** 6)) {
-                    $result['isValid'] = false;
+                    $imageResult['isValid'] = false;
                     $imageResult['errors'][] = 'Echec de la publication de la photo sur Facebook : image N°' . $index . ' trop volumineuse, limite de taille = 10MB, taille de l\'image = ' . $fileSize . 'B';
                 }
                 // Envoi de la photo sur le site de l'hébergeur
@@ -159,7 +159,7 @@ class FacebookAPI
             if (200 !== $response->getStatusCode()) {
                 $content = $response->toArray(false);
                 $message = $content['error']['message'];
-                throw new \Exception('Echec de l\'envoi de la photo sur Facebook : ' . $message . var_dump($content));
+                throw new \Exception('Echec de l\'envoi de la photo sur Facebook : ' . $message );
             } else {
                 $content = $response->toArray();
                 return $content['id'];
