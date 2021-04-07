@@ -3,34 +3,34 @@
 {% block body %}
 {{ parent() }}
 <div class="row m-5">
-   <div class="col-6 offset-3">
-       <form method="post">
+   <div class="">
+       <form method="post w-100">
            {% if error %}
                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
            {% endif %}
-           <div class="card">
-           <div class='card-header'> <h1 class="h3 mb-3 font-weight-normal text-center">Log In</h1> </div>
-               <div class="card-body bg-light">
+           <div class="card w-75 bg-dark text-white mx-auto">
+           <div class='card-header bg-secondary'> <h1 class="h3 mb-3 font-weight-normal text-center">Log In</h1> </div>
+               <div class="card-body">
                    <div class="form-group">
-                       <label for="inputEmail" class="sr-only">Email</label>
-                       <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+                       <label for="inputEmail" class="sr-only font-weight">Email</label>
+                       <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="mb-3 form-control w-100 mt-3" placeholder="Email" required autofocus>
                    </div>
                    <div class="form-group">
-                       <label for="inputPassword" class="sr-only">Password</label>
-                       <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                       <label for="inputPassword" class="sr-only font-weight">Password</label>
+                       <input type="password" name="password" id="inputPassword" class="mb-3 form-control w-100 mt-3" placeholder="Password" required>
                    </div>
                    <input type="hidden" name="_csrf_token"
                        value="{{ csrf_token('authenticate') }}"
                    >
                    <div class='d-flex flex-column'>
-                  <a class='d-flex justify-content-center alink' href="{{ path('app_forgot_password_request')}}">Forgot password?</a>
+                  <a class='d-flex justify-content-center alink text-white font-weight' href="{{ path('app_forgot_password_request')}}">Forgot password?</a>
                        <div class="checkbox mb-3 d-flex justify-content-center">
                            <label>
-                               <input type="checkbox" name="_remember_me"> Remember me
+                               <input type="checkbox" name="_remember_me" class="font-weight"> Remember me
                            </label>
                        </div>
                    
-                   <button class="btn btn-lg btn-primary btn-block" type="submit">
+                   <button class="btn btn-lg btn-primary btn-block w-25 mx-auto" type="submit">
                        Log in
                    </button>
                 </div>

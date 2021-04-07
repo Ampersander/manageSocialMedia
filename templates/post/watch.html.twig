@@ -1,34 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello PostController!{% endblock %}
-
 {% block body %}
-{{ parent() }}
-<article class="d-flex align-items-center justify-content-around">
-<div class="f-card mt-5">
-  <div class="header">
-    <div class="options"><i class="fa fa-chevron-down"></i></div>
-    <img class="co-logo" src="http://placehold.it/40x40" />
-    <div class="co-name"><a href="#">User_name</a></div>
-    <div class="time"><a href="#">{{ post.date | date('d/m/Y') }}</a> · <i class="fa fa-globe"></i></div>
-  </div>
-  <div class="content">
-    <p>{{ post.description }}</p>
-  </div>
-      {% if post.image != null %}
-  <div class="reference">
-    <img class="reference-thumb" src="{{ post.image }}" />
-  </div>
-  {% endif %}
-  <div class="social">
-    <div class="social-content"></div>
-    <div class="social-buttons">
-      <span><i class="fa fa-thumbs-up"></i>Like</span>
-      <span><i class="fa fa-comment"></i>Comment</span>
-      <span><i class="fa fa-share"></i>Share</span></div>
-  </div>
-</div>
-
 <style>
 
 a {
@@ -39,7 +12,6 @@ a {
     background: #ffffff;
     border: 1px solid #f2f2f2;
     border-radius: 3px;
-    width: 100%;
     max-width: 350px;
     margin: auto;
 }
@@ -93,7 +65,6 @@ a {
     align-items: center;
 }
 
-
 .cardContent {
   display: flex;
   flex-direction: column;
@@ -102,9 +73,8 @@ a {
   padding: 10px;
 }
 .tweetCard {
-  height: 300px;
-  width: 25%;
-  margin: 30px;
+  height: auto;
+      max-width: 350px;
   /*   below is a google font */
   font-family: "Quicksand", sans-serif;
 }
@@ -218,51 +188,80 @@ label img {
   z-index: -1;
 }
 </style>
-      {% if post.image != null %}
-<div class="instagram-card">
-    <div class="instagram-card-header mb-2">
-      <img src="http://placehold.it/40x40" class="instagram-card-user-image"/>
-      <a class="instagram-card-user-name" href="https://www.instagram.com/followmeto/">User_name</a>
-      <div class="instagram-card-time">{{ post.date | date('d/m/Y') }}</div>
+
+{{ parent() }}
+
+<article class="align-items-center justify-content-around mx-auto row">
+  <div class="f-card mt-5 col-md-4 col-sm-12 col-lg-3">
+    <div class="header">
+      <div class="options"><i class="fa fa-chevron-down"></i></div>
+      <img class="co-logo" src="http://placehold.it/40x40" />
+      <div class="co-name"><a href="#">User_name</a></div>
+      <div class="time"><a href="#">{{ post.date | date('d/m/Y') }}</a> · <i class="fa fa-globe"></i></div>
     </div>
-      <br>
-
-    <div class="intagram-card-image">
-      <img src="{{ post.image }}" width=100%/>
+    <div class="content">
+      <p>{{ post.description }}</p>
     </div>
-
-    <div class="instagram-card-content">
-      <p><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
-    </div>
-
-</div>
-{% endif %}
-
-<article class="tweetCard">
-  <div class="tweetCardBody">
-    <div class="cardContent">
-      <div class="headerContent mb-2">
-        <div class="headerImgHolder">
-          <img class="tweetCard-img" src="http://placehold.it/40x40">
-        </div>
-        <div class="headerContentText">
-          <h3>User_name</h3>
-          <p>@user_name</p>
-        </div>
-      </div>
-      <p>
-        {{ post.description }}
-      </p>
-            {% if post.image != null %}
-    <div class="intagram-card-image">
-      <img src="{{ post.image }}" width=100%/>
+        {% if post.image != null %}
+    <div class="reference">
+      <img class="reference-thumb" src="{{ post.image }}" />
     </div>
     {% endif %}
-      <p class="tweetDate">{{ post.date | date('d/m/Y') }}
-      </p>
+    <div class="social">
+      <div class="social-content"></div>
+      <div class="social-buttons">
+        <span><i class="fa fa-thumbs-up"></i>Like</span>
+        <span><i class="fa fa-comment"></i>Comment</span>
+        <span><i class="fa fa-share"></i>Share</span></div>
     </div>
   </div>
-</article>
+
+
+        {% if post.image != null %}
+  <div class="instagram-card col-md-4 col-sm-12 col-lg-3">
+      <div class="instagram-card-header mb-2">
+        <img src="http://placehold.it/40x40" class="instagram-card-user-image"/>
+        <a class="instagram-card-user-name" href="https://www.instagram.com/followmeto/">User_name</a>
+        <div class="instagram-card-time">{{ post.date | date('d/m/Y') }}</div>
+      </div>
+        <br>
+
+      <div class="intagram-card-image">
+        <img src="{{ post.image }}" width=100%/>
+      </div>
+
+      <div class="instagram-card-content">
+        <p><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
+      </div>
+
+  </div>
+  {% endif %}
+
+  <div class="tweetCard col-md-4 col-sm-12 col-lg-3">
+    <div class="tweetCardBody">
+      <div class="cardContent">
+        <div class="headerContent mb-2">
+          <div class="headerImgHolder">
+            <img class="tweetCard-img" src="http://placehold.it/40x40">
+          </div>
+          <div class="headerContentText">
+            <h3>User_name</h3>
+            <p>@user_name</p>
+          </div>
+        </div>
+        <p>
+          {{ post.description }}
+        </p>
+              {% if post.image != null %}
+      <div class="intagram-card-image">
+        <img src="{{ post.image }}" width=100%/>
+      </div>
+      {% endif %}
+        <p class="tweetDate">{{ post.date | date('d/m/Y') }}
+        </p>
+      </div>
+    </div>
+  </div>
 
 </article>
 <form method="post">
@@ -284,13 +283,7 @@ label img {
   </li>
 </ul>
 
-    <input class="btn btn-primary mb-5" type="submit" value="
-    {% if post.date > day %}
-    Enregistrer le post pour une prépublication
-    {% else %}
-    Valider l'envoie du post
-    {% endif %}
-    ">
+    <input class="btn btn-primary mb-5" type="submit" value="Valider l'envoie du post">
 
 
 </article>
@@ -414,4 +407,6 @@ label img {
 </div>
 </form>
 {% endblock %}
-{% block javascripts %}{{ encore_entry_script_tags('manageCreatePost') }}{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('manageCreatePost') }}
+{{ encore_entry_script_tags('countPost') }}
+{% endblock %}

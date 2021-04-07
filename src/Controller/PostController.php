@@ -24,6 +24,8 @@ use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\View;
 
 class PostController extends AbstractController
 {
@@ -236,10 +238,8 @@ class PostController extends AbstractController
                     }
                 }
             }
-        if($date < $day){
-            $this->getDoctrine()->getManager()->remove($post);
-            $this->getDoctrine()->getManager()->flush();
-        }
+        $this->getDoctrine()->getManager()->remove($post);
+        $this->getDoctrine()->getManager()->flush();
         return $this->redirectToRoute('posts');
     }
     
@@ -258,4 +258,19 @@ class PostController extends AbstractController
             'socialMediaPagesFacebook' => $socialMediaPagesFacebook,
         ]);
     }
+
+      /**
+ * Retrieves a collection of Post resource
+ * @Get(
+ *     path = "/api/post",
+ * )
+ * @View
+ */
+public function getPost()
+{
+    
+    $post = $this->getDoctrine()->getRepository(Post::class)->findAll();
+    // In case our GET was a success we need to return a 200 HTTP OK response with the collection of article object
+    return $post;
+}
 }

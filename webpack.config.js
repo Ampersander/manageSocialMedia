@@ -27,6 +27,7 @@ Encore
     .addEntry('manageSDKFb', './assets/js/manageSDKFb')
     .addEntry('manageArtiste', './assets/js/manageArtiste')
     .addEntry('hiddenBlock', './assets/js/hiddenBlock')
+    .addEntry('countPost', './assets/js/countPost')
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
 

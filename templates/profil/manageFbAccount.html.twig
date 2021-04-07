@@ -8,48 +8,48 @@
 <div class="container">
     <main>
 <div class="row m-5">
-    <div class="col-6 offset-3">
-        <div class="card">
-            <div class='card-header'>
+    <div class="">
+        <div class="card text-white bg-dark">
+            <div class='card-header bg-secondary'>
                 <h1 class="h3 mb-3 font-weight-normal text-center">New Facebook Account</h1>
             </div>
-            <div class="card-body bg-light d-flex flex-column justify-content-center">
-            {{ form_start(FbAccountFormType) }}
+            <div class="card-body d-flex flex-column justify-content-center w-100">
+            {{ form_start(FbAccountFormType, {'attr': {'class': 'w-75 mx-auto'}}) }}
          <div class="form-group">
-                    {{ form_row(FbAccountFormType.accountId, {
-                    label: 'App ID',
-                    id:'fb-app-id',
-                    type:"number"
+                    {{ form_row(FbAccountFormType.accountId, {'attr': {'class': 'mb-3 form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
+                    'label': 'App ID',
+                    'id':'fb-app-id',
+                    'type':"number"
                     }) }}
                 </div>
                  <div class="form-group">
-                    {{ form_row(FbAccountFormType.clientSecret, {
+                    {{ form_row(FbAccountFormType.clientSecret, {'attr': {'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
                     label: 'Client secret',
                     id:'fb-client-secret',
                     }) }}
                 </div>
                 
                 <div class="form-group invisible">
-                    {{ form_row(FbAccountFormType.name, {
+                    {{ form_row(FbAccountFormType.name, {'attr': {'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
                     label: 'Nom compte',
                     id:"name-account",
                   
                     }) }}
                 </div>
                 <div class="form-group invisible">
-                    {{ form_row(FbAccountFormType.shortLivedToken, {
+                    {{ form_row(FbAccountFormType.shortLivedToken, {'attr': {'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
                     label: 'Short Lived Token',
                     id:"access-token",
                 
                     }) }}
                 </div>
-                <div class='invisible'>
-                    <button type="submit" class="btn btn-primary btn-block btn-lg">Ajout</button>
+                <div class='invisible w-25 mx-auto'>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg mt-3">Ajout</button>
                 </div>
 
                 {{ form_end(FbAccountFormType) }}
-                <div class="d-flex justify-content-center">
-                    <button id="fb-log-btn"  class="btn btn-primary btn-block btn-lg">Log-in FB</button>
+                <div class="d-flex justify-content-center w-25 mx-auto">
+                    <button id="fb-log-btn"  class="btn btn-primary btn-block btn-lg mt-3">Log-in FB</button>
                </div>
             </div>
         </div>
@@ -58,13 +58,13 @@
 </div>
 
 
-<div class="card m-5">
-    <div class='card-header'>
+<div class="card m-5 text-white bg-dark">
+    <div class='card-header bg-secondary'>
         <h1 class="h3 mb-3 font-weight-normal text-center">Facebook API</h1>
     </div>
-    <div class="card-body bg-light">
+    <div class="card-body text-white">
         <div class="table-responsive">
-        <table class="table">
+        <table class="table text-white">
             <thead>
                 <tr>
                     <th scope="col">Name</th>
@@ -80,11 +80,11 @@
             {% if account.socialMediaAccount.socialMedia == 'facebook_account' %}
                 <tr>
                     <form method="post" action="{{ path('profil.FbAccount.edit', {id: account.id}) }}">
-                    <td><input type='text' value="{{ account.socialMediaAccount.name }}" name="accountName{{account.id}}"></input></td>
+                    <td class="form-group"><input class="form-control" type='text' value="{{ account.socialMediaAccount.name }}" name="accountName{{account.id}}"></input></td>
                     
-                <td><input type='text' value="{{account.accountId}}" name="accountId{{account.id}}">
+                <td class="form-group"><input class="form-control" type='text' value="{{account.accountId}}" name="accountId{{account.id}}">
                 </td>
-                <td><input type='text' value="{{account.clientSecret}}" name="clientsecret{{account.id}}">
+                <td class="form-group"><input class="form-control" type='text' value="{{account.clientSecret}}" name="clientsecret{{account.id}}">
                 </td>
                 
                 </input></td><td><button type="submit" class="btn btn-success">
@@ -93,7 +93,7 @@
                         <i class="fa fa-thumbs-up"></i></button></td>
                 </form>
 
-                {{account.id}}
+                
                 <form method="post" action="{{ path('profil.FbAccount.delete', {id: account.id}) }}"
                     onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
                     <td><button type="submit" class="btn btn-danger">
@@ -118,4 +118,5 @@
             <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
             {{ encore_entry_script_tags('manageSDKFb') }}
             {{ encore_entry_script_tags('manageAccountSocialMedia') }}
+            {{ encore_entry_script_tags('countPost') }}
         {% endblock %}

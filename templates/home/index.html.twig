@@ -7,7 +7,7 @@
 {{ parent() }}
     <div class="container">
         <main>
-            <div class="py-5 text-center mt-5">
+            <div class="py-5 text-center mt-5 text-white mx-auto">
                 <h2>Manage Social Media</h2>
             </div>
         </main>
@@ -16,5 +16,6 @@
 {% endblock %}
 
 {% block javascripts %}
+{{ encore_entry_script_tags('countPost') }}
             {{ encore_entry_script_tags('manageAccountSocialMedia') }}
-        {% endblock %}
+{% endblock %}

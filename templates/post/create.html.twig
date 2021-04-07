@@ -1,26 +1,26 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 {{ parent() }}
-<div class="d-flex justify-content-center">
-<div class="card m-3" style="width: 30rem;">
-<div class='card-header'> <h1>Création d'un post</h1></div>
-  <div class="card-body d-flex justify-content-center">
-  
-{{ form_start(formPost) }}
-<div class="form-group ">
-{{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article"}}) }}
+<div class="d-flex justify-content-center align-items-center w-75 mx-auto">
+<div class="card m-3 text-white bg-dark w-100">
+<div class='card-header bg-secondary'> <h1>Création d'un post</h1></div>
+  <div class="card-body d-flex justify-content-center ">
+
+{{ form_start(formPost, {'attr': {'class': 'w-75'}}) }}
+<div class="form-group w-100">
+{{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article", 'class': 'form-control w-100 height mt-3'}, 'label_attr': {'class':'font-weight'} }) }}
 </div>
-<div class="form-group ">
-<label>Prévoir la plannification</label>
-<input type="checkbox" name="planif" value="planif" id="planif">
+<div class="form-group mt-4">
+<label class="font-weight">Prévoir la plannification</label>
+<input type="checkbox" name="planif" value="planif" id="planif" class="mb-3">
 <div style="display: none;" id="date">
-{{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie"}}) }}
+{{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie", 'class': 'form-control w-100 mt-3 mb-3'}, 'label_attr': {'class':'font-weight'}}) }}
 </div>
 </div>
-<div class="form-group ">
-{{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image"}}) }}
+<div class="form-group">
+{{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
 </div>
-<button type="submit" class="btn btn-primary mt-3">
+<button type="submit" class="btn btn-primary mt-4">
 Voir la prévisualisation
 </button>
 {{ form_end(formPost) }}
@@ -35,7 +35,7 @@ Voir la prévisualisation
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="twitterModalLabel">Twitter account</h5>
+        <h5 class="modal-title" id="twitterModalLabel">Tag un utilisateur</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -52,5 +52,6 @@ Voir la prévisualisation
 {% block javascripts %}
 {{ encore_entry_script_tags('manageArtiste') }}
 {{ encore_entry_script_tags('hiddenBlock') }}
+{{ encore_entry_script_tags('countPost') }}
 {% endblock %}
 {% endblock %}
