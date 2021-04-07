@@ -77,21 +77,14 @@ class PostController extends AbstractController
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $form = $this->createFormBuilder($post)
             ->add('description', TextareaType::class, [
-                'attr'   =>  array(
-                    'class'   => 'm-2'
-                ),
+                'attr' => array('class' => 'm-2'),
                 'constraints' => new NotBlank(),
-
             ])
             ->add('image', FileType::class, [
                 'attr' => ['class' => 'imageInput'],
                 'mapped' => false,
                 'required' => false,
                 'multiple' => true,
-            ])
-            ->add('imageURL', TextType::class, [
-                'mapped' => false,
-                'required' => false,
             ])
             ->add('date', DateType::class, [
                 'widget' => 'single_text',
@@ -102,7 +95,6 @@ class PostController extends AbstractController
             ->add('templatePost', ChoiceType::class, [
                 'mapped' => false,
                 'choices'  => $arrayTemplate,
-
             ])
             ->getForm();
 
@@ -305,7 +297,7 @@ class PostController extends AbstractController
                                         array_slice($images, 0, 4)
                                     );
                                 }
-                            }else{
+                            } else {
                                 $this->TwitterAPI->postStatusOnPage(
                                     $consumer_key,
                                     $consumer_secret,
