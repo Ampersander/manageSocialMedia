@@ -17,7 +17,7 @@
         {% if post.image != null %}
         {% for image in post.image %}
          <img class="card-img-top"
-            src="{{ image }}"
+            src="{{ asset('post_images/' ~ image) }}" 
             alt="Card image cap" />
         {% endfor %}
          

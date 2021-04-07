@@ -35,10 +35,10 @@ class InstagramAPI
         $imagePath = $folder . $imageName;
         // Vérif ext image
         $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
-        $validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+        $validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         if (!in_array(strtolower($ext), $validExts)) {
             $result['isValid'] = false;
-            $result['errors'][] = 'Echec de l\'envoi du post sur Instagram : format d\'image ' . $ext . ' non supporté, formats acceptés = JPG, PNG, GIF, WEBP, SVG';
+            $result['errors'][] = 'Echec de l\'envoi du post sur Instagram : format d\'image ' . $ext . ' non supporté, formats acceptés = JPG, PNG, WEBP';
         } else {
             // Vérif ratio image
             list($width, $height) = getimagesize($imagePath);
