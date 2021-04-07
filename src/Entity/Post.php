@@ -152,7 +152,7 @@ class Post
     {
         return $this->artistes;
     }
-
+    
     public function addArtiste(Artiste $artiste): self
     {
         if (!$this->artistes->contains($artiste)) {

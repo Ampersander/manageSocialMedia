@@ -18,10 +18,22 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email',EmailType ::class)
+            ->add('email', EmailType::class, [
+                'attr' => [
+                    'class' => 'mb-3 form-control w-100 mt-3',
+                ],
+                'label_attr' => [
+                    'class' => 'font-weight',
+                ]
+            ])
             ->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
+                'attr' => [
+                    'class' => 'mb-3 form-control w-100 mt-3',
+                ],
+                'label_attr' => [
+                    'class' => 'font-weight',
+                ],
+
                 'mapped' => false,
                 'constraints' => [
                     new NotBlank([
@@ -29,16 +41,23 @@ class RegistrationFormType extends AbstractType
                     ]),
                     new Length([
                         'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
+                        'minMessage' =>
+                            'Your password should be at least {{ limit }} characters',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),
-                ],    
+                ],
             ])
             ->add('plainPassword', RepeatedType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
                 'type' => PasswordType::class,
+                'attr' => [
+                    'class' => 'mb-3 form-control w-100 mt-3',
+                ],
+                'label_attr' => [
+                    'class' => 'font-weight',
+                ],
                 'mapped' => false,
                 'constraints' => [
                     new NotBlank([
@@ -46,16 +65,17 @@ class RegistrationFormType extends AbstractType
                     ]),
                     new Length([
                         'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
+                        'minMessage' =>
+                            'Your password should be at least {{ limit }} characters',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),
                 ],
                 'first_options' => ['label' => 'Password'],
                 'second_options' => ['label' => 'Confirm Password'],
-                'invalid_message' => 'Your password does not match the confirmation.'
-            ])
-        ;
+                'invalid_message' =>
+                    'Your password does not match the confirmation.',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

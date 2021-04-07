@@ -47,7 +47,6 @@ class ArtisteRepository extends ServiceEntityRepository
         ;
     }
     */
-
     public function findByName($name)
     {
         return $this->createQueryBuilder('s')
@@ -57,5 +56,4 @@ class ArtisteRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-
 }

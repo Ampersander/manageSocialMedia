@@ -1,472 +1,422 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PostController!
-{% endblock %}
-
+{% block title %}Hello PostController!{% endblock %}
 {% block body %}
-    {{ parent() }}
-    <ul>
-    {% if errors.facebook %}
-        {% for error in errors.facebook %}
-            <li>{{error}}<li>
+<style>
+
+a {
+    text-decoration: none;
+}
+
+.instagram-card {
+    background: #ffffff;
+    border: 1px solid #f2f2f2;
+    border-radius: 3px;
+    max-width: 350px;
+    margin: auto;
+}
+
+.instagram-card-header {
+    padding: 20px;
+    height: 40px;
+}
+
+.instagram-card-user-image {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+}
+
+.instagram-card-time {
+    float: right;
+    width: 80px;
+    padding-top: 10px;
+    text-align: right;
+    color: #999;
+}
+
+.instagram-card-user-name {
+    margin-left: 20px;
+    font-weight: bold;
+    color: #262626;
+}
+
+.instagram-card-content {
+    padding: 20px;
+}
+
+.likes {
+    font-weight: bold;
+}
+
+.instagram-card-content-user {
+    font-weight: bold;
+    color: #262626;
+}
+
+.hashtag {
+    color: #003569;
+}
+
+.instagram-card-footer {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
+}
+.tweetCard {
+  height: auto;
+      max-width: 350px;
+  /*   below is a google font */
+  font-family: "Quicksand", sans-serif;
+}
+.tweetCardBody {
+  background-color: #fff;
+  border-radius: 25px;
+}
+.tweetCardBody .headerContent {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+}
+.tweetCardBody .headerContent .headerImgHolder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tweetCardBody .headerContent .headerContentText {
+  margin-left: 5px;
+}
+.tweetCardBody .headerContent .headerContentText h3 {
+  margin: 0;
+  font-weight: 900;
+  font-size: 15;
+}
+.tweetCardBody .headerContent .headerContentText p {
+  font-size: 14px;
+  margin: 0;
+  color: #84868a;
+}
+.tweetCard-img {
+  height: 38px;
+  width: 38px;
+  border-radius: 50%;
+}
+.tweetTarget {
+  color: #397dfa;
+}
+.tweetDate {
+  font-size: 11px;
+  color: #84868a;
+  width: 100%;
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  display: inline-block;
+}
+
+input[type="checkbox"][id^="cb"] {
+  display: none;
+}
+
+label {
+  border: 1px solid #fff;
+  padding: 10px;
+  display: block;
+  position: relative;
+  margin: 10px;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+label::before {
+  background-color: white;
+  color: white;
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  border: 1px solid grey;
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  line-height: 28px;
+  transition-duration: 0.4s;
+  transform: scale(0);
+}
+
+label img {
+  height: 100px;
+  width: auto;
+  transition-duration: 0.2s;
+  transform-origin: 50% 50%;
+}
+
+:checked+label {
+  border-color: #ddd;
+}
+
+:checked+label::before {
+  content: "✓";
+  background-color: grey;
+  transform: scale(1);
+}
+
+:checked+label img {
+  transform: scale(0.9);
+  box-shadow: 0 0 5px #333;
+  z-index: -1;
+}
+</style>
+
+{{ parent() }}
+
+<article class="align-items-center justify-content-around mx-auto row">
+  <div class="f-card mt-5 col-md-4 col-sm-12 col-lg-3">
+    <div class="header">
+      <div class="options"><i class="fa fa-chevron-down"></i></div>
+      <img class="co-logo" src="http://placehold.it/40x40" />
+      <div class="co-name"><a href="#">User_name</a></div>
+      <div class="time"><a href="#">{{ post.date | date('d/m/Y') }}</a> · <i class="fa fa-globe"></i></div>
+    </div>
+    <div class="content">
+      <p>{{ post.description }}</p>
+    </div>
+        {% if post.image != null %}
+    <div class="reference">
+    {% for image in post.image %}
+               <img class="reference-thumb" src="{{image }}" />
         {% endfor %}
+     
+    </div>
     {% endif %}
-    {% if errors.instagram %}
-        {% for error in errors.instagram %}
-            <li>{{error}}<li>
-        {% endfor %}
-    {% endif %}
-    {% if errors.twitter %}
-        {% for error in errors.twitter %}
-            <li>{{error}}<li>
-        {% endfor %}
-    {% endif %}
-    </ul>
-    <article class="d-flex align-items-center justify-content-around">
-        <div class="f-card mt-5">
-            <div class="header">
-                <div class="options">
-                    <i class="fa fa-chevron-down"></i>
-                </div>
-                <img class="co-logo" src="http://placehold.it/40x40"/>
-                <div class="co-name">
-                    <a href="#">User_name</a>
-                </div>
-                <div class="time">
-                    <a href="#">{{ post.date | date('d/m/Y') }}</a>
-                    ·
-                    <i class="fa fa-globe"></i>
-                </div>
-            </div>
+    <div class="social">
+      <div class="social-content"></div>
+      <div class="social-buttons">
+        <span><i class="fa fa-thumbs-up"></i>Like</span>
+        <span><i class="fa fa-comment"></i>Comment</span>
+        <span><i class="fa fa-share"></i>Share</span></div>
+    </div>
+  </div>
 
-            <div class="content">
-                <p>{{ post.description }}</p>
-            </div>
-            {% if post.image != null %}
-                <div class="reference">
-                    {% for image in post.image %}
-                        <img class="reference-thumb" src="{{ asset('post_images/' ~ image) }}"/>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <div class="social">
-                <div class="social-content"></div>
-                <div class="social-buttons">
-                    <span>
-                        <i class="fa fa-thumbs-up"></i>Like</span>
-                    <span>
-                        <i class="fa fa-comment"></i>Comment</span>
-                    <span>
-                        <i class="fa fa-share"></i>Share</span>
-                </div>
-            </div>
-        </div>
-
-        <style>
-
-            a {
-                text-decoration: none;
-            }
-
-            .instagram-card {
-                background: #ffffff;
-                border: 1px solid #f2f2f2;
-                border-radius: 3px;
-                width: 100%;
-                max-width: 350px;
-                margin: auto;
-            }
-
-            .instagram-card-header {
-                padding: 20px;
-                height: 40px;
-            }
-
-            .instagram-card-user-image {
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                vertical-align: middle;
-            }
-
-            .instagram-card-time {
-                float: right;
-                width: 80px;
-                padding-top: 10px;
-                text-align: right;
-                color: #999;
-            }
-
-            .instagram-card-user-name {
-                margin-left: 20px;
-                font-weight: bold;
-                color: #262626;
-            }
-
-            .instagram-card-content {
-                padding: 20px;
-            }
-
-            .likes {
-                font-weight: bold;
-            }
-
-            .instagram-card-content-user {
-                font-weight: bold;
-                color: #262626;
-            }
-
-            .hashtag {
-                color: #003569;
-            }
-
-            .instagram-card-footer {
-                padding: 20px;
-                display: flex;
-                align-items: center;
-            }
-
-
-            .cardContent {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin: 10px;
-                padding: 10px;
-            }
-            .tweetCard {
-                height: 300px;
-                width: 25%;
-                margin: 30px;
-                /*   below is a google font */
-                font-family: "Quicksand", sans-serif;
-            }
-            .tweetCardBody {
-                background-color: #fff;
-                border-radius: 25px;
-            }
-            .tweetCardBody .headerContent {
-                display: flex;
-                justify-content: flex-start;
-                align-items: flex-start;
-                width: 100%;
-            }
-            .tweetCardBody .headerContent .headerImgHolder {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            .tweetCardBody .headerContent .headerContentText {
-                margin-left: 5px;
-            }
-            .tweetCardBody .headerContent .headerContentText h3 {
-                margin: 0;
-                font-weight: 900;
-                font-size: 15;
-            }
-            .tweetCardBody .headerContent .headerContentText p {
-                font-size: 14px;
-                margin: 0;
-                color: #84868a;
-            }
-            .tweetCard-img {
-                height: 38px;
-                width: 38px;
-                border-radius: 50%;
-            }
-            .tweetTarget {
-                color: #397dfa;
-            }
-            .tweetDate {
-                font-size: 11px;
-                color: #84868a;
-                width: 100%;
-            }
-
-            ul {
-                list-style-type: none;
-            }
-
-            li {
-                display: inline-block;
-            }
-
-            input[type="checkbox"][id^="cb"] {
-                display: none;
-            }
-
-            label {
-                border: 1px solid #fff;
-                padding: 10px;
-                display: block;
-                position: relative;
-                margin: 10px;
-                cursor: pointer;
-                -webkit-touch-callout: none;
-                -webkit-user-select: none;
-                -khtml-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-            }
-
-            label::before {
-                background-color: white;
-                color: white;
-                content: " ";
-                display: block;
-                border-radius: 50%;
-                border: 1px solid grey;
-                position: absolute;
-                top: -5px;
-                left: -5px;
-                width: 25px;
-                height: 25px;
-                text-align: center;
-                line-height: 28px;
-                transition-duration: 0.4s;
-                transform: scale(0);
-            }
-
-            label img {
-                height: 100px;
-                width: auto;
-                transition-duration: 0.2s;
-                transform-origin: 50% 50%;
-            }
-
-            :checked+label {
-                border-color: #ddd;
-            }
-
-            :checked+label::before {
-                content: "✓";
-                background-color: grey;
-                transform: scale(1);
-            }
-
-            :checked+label img {
-                transform: scale(0.9);
-                box-shadow: 0 0 5px #333;
-                z-index: -1;
-            }
-        </style>
 
         {% if post.image != null %}
+  <div class="instagram-card col-md-4 col-sm-12 col-lg-3">
+      <div class="instagram-card-header mb-2">
+        <img src="http://placehold.it/40x40" class="instagram-card-user-image"/>
+        <a class="instagram-card-user-name" href="https://www.instagram.com/followmeto/">User_name</a>
+        <div class="instagram-card-time">{{ post.date | date('d/m/Y') }}</div>
+      </div>
+        <br>
 
-            <div class="instagram-card">
-                <div class="instagram-card-header mb-2">
-                    <img src="http://placehold.it/40x40" class="instagram-card-user-image"/>
-                    <a class="instagram-card-user-name" href="https://www.instagram.com/followmeto/">User_name</a>
-                    <div class="instagram-card-time">{{ post.date | date('d/m/Y') }}</div>
-                </div>
-                <br>
+      <div class="intagram-card-image">
+      
+        {% for image in post.image %}
+              <img src="{{ image }}" width=100%/>
+        {% endfor %}
+        
+      </div>
 
-                    <div class="intagram-card-image">
+      <div class="instagram-card-content">
+        <p><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
+      </div>
 
-                        <img src="{{ asset('post_images/' ~ post.image[0]) }}" width="100%"/>
-                    </div>
+  </div>
+  {% endif %}
 
-                    <div class="instagram-card-content">
+  <div class="tweetCard col-md-4 col-sm-12 col-lg-3">
+    <div class="tweetCardBody">
+      <div class="cardContent">
+        <div class="headerContent mb-2">
+          <div class="headerImgHolder">
+            <img class="tweetCard-img" src="http://placehold.it/40x40">
+          </div>
+          <div class="headerContentText">
+            <h3>User_name</h3>
+            <p>@user_name</p>
+          </div>
+        </div>
+        <p>
+          {{ post.description }}
+        </p>
+              {% if post.image != null %}
+      <div class="intagram-card-image">
+      {% for image in post.image %}
+              <img src="{{ image }}" width=100%/>
+        {% endfor %}
+      </div>
+      {% endif %}
+        <p class="tweetDate">{{ post.date | date('d/m/Y') }}
+        </p>
+      </div>
+    </div>
+  </div>
 
-                        <p>
-                            <a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>
-                            {{ post.description }}
-                        </p>
-                    </div>
+</article>
+<form method="post">
+<input type="hidden" name="_method" value="delete">
+<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+<article class="w-100 text-center">
 
-                </div>
+<ul class="w-100 d-flex justify-content-around">
+  <li><input type="checkbox" id="cb1" name="facebook" value="facebook"/>
+    <label for="cb1"><img src="https://1000logos.net/wp-content/uploads/2016/11/Facebook-logo.png" width=100%/></label>
+  </li>
+  {% if post.image != null %}
+  <li><input type="checkbox" id="cb2" name="insta" value="insta"/>
+    <label for="cb2"><img src="https://www.edigitalagency.com.au/wp-content/uploads/instagram-logo-svg-vector-for-print.svg" /></label>
+  </li>
+  {% endif %}
+  <li><input type="checkbox" id="cb3" name="twitter" value="twitter"/>
+    <label for="cb3"><img src="https://ra.ac.ae/wp-content/uploads/2020/01/logo-twitter-icon-symbol-0.png" /></label>
+  </li>
+</ul>
 
-            {% endif %}
-
-
-            <article class="tweetCard">
-                <div class="tweetCardBody">
-                    <div class="cardContent">
-                        <div class="headerContent mb-2">
-                            <div class="headerImgHolder">
-                                <img class="tweetCard-img" src="http://placehold.it/40x40"></div>
-                                <div class="headerContentText">
-                                    <h3>User_name</h3>
-                                    <p>@user_name</p>
-                                </div>
-                            </div>
-
-                            <p>
-                                {{ post.description }}
-                            </p>
-                            {% if post.image != null %}
-                                <div class="intagram-card-image">
-                                    {% for image in post.image %}
-                                        <img src="{{ asset('post_images/' ~ image) }}" width="100%"/>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <p class="tweetDate">{{ post.date | date('d/m/Y') }}
-                            </p>
-                        </div>
-                    </div>
-                </article>
-
-            </article>
-            <form method="post">
-
-                <input type="hidden" name="_method" value="delete">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
-
-                        <article class="w-100 text-center">
-
-                            <ul class="w-100 d-flex justify-content-around">
-                                <li><input type="checkbox" id="cb1" name="facebook" value="facebook"/>
-                                    <label for="cb1"><img src="https://1000logos.net/wp-content/uploads/2016/11/Facebook-logo.png" width="100%"/></label>
-                                </li>
-                                {% if post.image != null %}
-                                    <li><input type="checkbox" id="cb2" name="insta" value="insta"/>
-                                        <label for="cb2"><img src="https://www.edigitalagency.com.au/wp-content/uploads/instagram-logo-svg-vector-for-print.svg"/></label>
-                                    </li>
-                                {% endif %}
-                                <li><input type="checkbox" id="cb3" name="twitter" value="twitter"/>
-                                    <label for="cb3"><img src="https://ra.ac.ae/wp-content/uploads/2020/01/logo-twitter-icon-symbol-0.png"/></label>
-                                </li>
-                            </ul>
+    <input class="btn btn-primary mb-5" type="submit" value="Valider l'envoie du post">
 
 
-                            <input class="btn btn-primary mb-5" type="submit" value="
-                                                                {% if post.date > day %}
-                                                                Enregistrer le post pour une prépublication
-                                                                {% else %}
-                                                                Valider l'envoie du post
-                                                                {% endif %}
-                                                                "></article>
+</article>
 
-                            <!-- Modal -->
-                            <div class="modal" id="instagramModal" tabindex="-1" aria-labelledby="instagramModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Instagram account</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-
-                                        <div class="modal-body">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Name</th>
-                                                        <th scope="col">Réseaux</th>
-                                                        <th scope="col">Sélection</th>
-                                                    </thead>
-
-                                                    {% for socialMediaAccountInstagram in socialMediaAccountsInstagram %}
-                                                        <tr>
-                                                            <td>{{ socialMediaAccountInstagram.name }}</td>
-                                                            <td>{{ socialMediaAccountInstagram.socialMedia }}</td>
-                                                            <td>
-                                                                <input type="checkbox" name="checkbox{{ socialMediaAccountInstagram.id }}" class='instagram' value='1'></input>
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-
-                                                </table>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-primary saveInst">Save changes</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
+<!-- Modal -->
+<div class="modal" id="instagramModal" tabindex="-1" aria-labelledby="instagramModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Instagram account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+      <table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Name</th>
+							<th scope="col">Réseaux</th>
+							<th scope="col">Sélection</th>
+					</thead>
+          
+					 {% for socialMediaAccountInstagram in socialMediaAccountsInstagram %}
+						<tr>
+							<td>{{socialMediaAccountInstagram.name}}</td>
+              <td>{{socialMediaAccountInstagram.socialMedia}}</td>	
+              <td><input type="checkbox" name="checkbox{{socialMediaAccountInstagram.id}}" class='instagram' value='1'></input></td> 
+			      </tr>
+          {% endfor %}
+         
+    </table>  
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary saveInst">Save changes</button>
+      </div>
+      	
+    </div>
+  </div>
+</div>
 
 
-                                <!-- Modal -->
-                                <div class="modal" id="twitterModal" tabindex="-1" aria-labelledby="twitterModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="twitterModalLabel">Twitter account</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">Name</th>
-                                                            <th scope="col">Réseaux</th>
-                                                            <th scope="col">Sélection</th>
-                                                        </thead>
-
-                                                        {% for socialMediaAccountTwitter in socialMediaAccountsTwitter %}
-                                                            <tr>
-                                                                <td>{{ socialMediaAccountTwitter.name }}</td>
-                                                                <td>{{ socialMediaAccountTwitter.socialMedia }}</td>
-                                                                <td>
-                                                                    <input type="checkbox" name="checkbox{{ socialMediaAccountTwitter.id }}" class='twitter' value='1'></input>
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-
-                                                    </table>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-primary saveTw">Save changes</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
+<!-- Modal -->
+<div class="modal" id="twitterModal" tabindex="-1" aria-labelledby="twitterModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="twitterModalLabel">Twitter account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Name</th>
+							<th scope="col">Réseaux</th>
+							<th scope="col">Sélection</th>
+					</thead>
+         
+					 {% for socialMediaAccountTwitter in socialMediaAccountsTwitter %}
+						<tr>
+							<td>{{socialMediaAccountTwitter.name}}</td>
+              <td>{{socialMediaAccountTwitter.socialMedia}}</td>	
+               <td><input type="checkbox" name="checkbox{{socialMediaAccountTwitter.id}}" class='twitter' value='1'></input></td>	
+			      </tr>
+          {% endfor %}
+          
+    </table>  
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary saveTw">Save changes</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
 
 
-                                    <!-- Modal -->
-                                    <div class="modal" id="facebookModal" tabindex="-1" aria-labelledby="facebookModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="facebookModalLabel">Facebook account and Pages</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
 
-                                                <div class="modal-body">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">Réseaux</th>
-                                                                <th scope="col">Sélection</th>
-                                                            </thead>
 
-                                                            {% for socialMediaAccountFacebook in socialMediaAccountsFacebook %}
-                                                                <tr>
-                                                                    <td>{{ socialMediaAccountFacebook.name }}</td>
-                                                                    <td>{{ socialMediaAccountFacebook.socialMedia }}</td>
-                                                                    <td>
-                                                                        <input type="checkbox" name="checkbox{{ socialMediaAccountFacebook.id }}" class='facebook' value='1'></input>
-                                                                    </td>
-                                                                </tr>
-                                                            {% endfor %}
-                                                            {% for socialMediaPageFacebook in socialMediaPagesFacebook %}
-                                                                <tr>
-                                                                    <td>{{ socialMediaPageFacebook.name }}</td>
-                                                                    <td>{{ socialMediaPageFacebook.socialMedia }}</td>
-                                                                    <td>
-                                                                        <input type="checkbox" name="checkbox{{ socialMediaPageFacebook.id }}" class='facebook' value='1'></input>
-                                                                    </td>
-                                                                </tr>
-                                                            {% endfor %}
-
-                                                        </table>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-primary saveFb">Save changes</button>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                {% endblock %}
-
-                                {% block javascripts %}
-                                    {{ encore_entry_script_tags('manageWatchPost') }}
-                                    {{ encore_entry_script_tags('manageCreatePost') }}
-                                {% endblock %}
+<!-- Modal -->
+<div class="modal" id="facebookModal" tabindex="-1" aria-labelledby="facebookModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="facebookModalLabel">Facebook account and Pages</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+       
+      <div class="modal-body">
+      <table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Name</th>
+							<th scope="col">Réseaux</th>
+							<th scope="col">Sélection</th>
+					</thead>
+          
+					 {% for socialMediaAccountFacebook in socialMediaAccountsFacebook %}
+						<tr>
+							<td>{{socialMediaAccountFacebook.name}}</td>
+              <td>{{socialMediaAccountFacebook.socialMedia}}</td>	
+             <td><input type="checkbox" name="checkbox{{socialMediaAccountFacebook.id}}" class='facebook' value='1'></input></td>	
+			      </tr>
+          {% endfor %}
+          {% for socialMediaPageFacebook in socialMediaPagesFacebook %}
+						<tr>
+							<td>{{socialMediaPageFacebook.name}}</td>
+              <td>{{socialMediaPageFacebook.socialMedia}}</td>	
+              <td><input type="checkbox" name="checkbox{{socialMediaPageFacebook.id}}" class='facebook' value='1'></input></td>	
+			      </tr>
+          {% endfor %}
+          
+    </table>  
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary saveFb">Save changes</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+</form>
+{% endblock %}
+{% block javascripts %}
+{{ encore_entry_script_tags('manageWatchPost') }}
+{{ encore_entry_script_tags('countPost') }}
+{% endblock %}

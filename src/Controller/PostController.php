@@ -4,16 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\SocialMediaAccount;
+use App\Entity\Artiste;
 use App\Entity\TemplatePost;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use App\Entity\Artiste;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +22,8 @@ use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\View;
 
 
 class PostController extends AbstractController
@@ -46,7 +47,6 @@ class PostController extends AbstractController
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $repository = $this->getDoctrine()->getRepository(Post::class);
         $posts = $repository->findByUser($user);
-
         $day = new \DateTime();
 
 
