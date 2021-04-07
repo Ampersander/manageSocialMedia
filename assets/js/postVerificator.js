@@ -36,7 +36,7 @@ function getImageWarns(imageInfos) {
     let size = imageInfos.size;
     let warnMessages = [];
     // Extension
-    if (!['png', 'jpg', 'jpeg', 'webp', 'svg'].includes(ext)) {
+    if (!['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
         warnMessages.push('Format de l\'image incompatible avec les réseaux sociaux');
     }
     // Ratio

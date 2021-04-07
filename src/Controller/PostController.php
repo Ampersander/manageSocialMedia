@@ -165,8 +165,8 @@ class PostController extends AbstractController
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $day = new \DateTime();
 
-        // Erreurs envoi post
-        $errors = [
+        // Message après l'envoi du post
+        $sendingMsg = [
             'facebook' => [],
             'instagram' => [],
             'twitter' => []
@@ -213,7 +213,6 @@ class PostController extends AbstractController
                     }
 
                     switch ($case) {
-
                         case 'facebook_account':
                             try {
                                 $FbAccount = $social_media->getFbAccount();
@@ -228,6 +227,7 @@ class PostController extends AbstractController
                                 $pageId = $FbPage->getPageID();
                                 $pageAccessToken = $FbPage->getPageAccessToken();
                                 if ($images) {
+                                    $isValid = true;
                                     // Check et host images
                                     $hostedImages = $this->FbAPI->checkAndHostImages($images);
                                     foreach ($hostedImages as $imageResult) {
@@ -235,15 +235,18 @@ class PostController extends AbstractController
                                         if ($imageResult['isValid']) {
                                             $imageUrls[] = $imageResult['url'];
                                         } else {
-                                            $errors['facebook'] = $imageResult['errors'];
+                                            $isValid = false;
+                                            $sendingMsg['facebook'] = $imageResult['errors'];
                                         }
                                     }
                                     // Post
-                                    if (empty($errors['facebook'])) {
-                                        $this->FbAPI->postPhotosOnPage($pageAccessToken, $pageId, $imageUrls, $descriptionF);
+                                    if ($isValid) {
+                                        $postId = $this->FbAPI->postPhotosOnPage($pageAccessToken, $pageId, $imageUrls, $descriptionF);
+                                        $sendingMsg['facebook'][] = 'Le post a été effectué avec succès sur la page ' . $social_media->getName() . ' sur Facebook !';
                                     }
                                 } else {
-                                    $this->FbAPI->postMessageOnPage($pageAccessToken, $pageId, $descriptionF);
+                                    $postId = $this->FbAPI->postMessageOnPage($pageAccessToken, $pageId, $descriptionF);
+                                    $sendingMsg['facebook'][] = 'Le post a été effectué avec succès sur la page ' . $social_media->getName() . ' sur Facebook !';
                                 }
                             } catch (\Throwable $th) {
                                 throw $th;
@@ -257,15 +260,18 @@ class PostController extends AbstractController
                                 $accessToken = $FbAccount->getLonglivedtoken();
                                 // Check et host imagess
                                 if ($images) {
+                                    $isValid = true;
                                     $hostedImage = $this->InstaAPI->checkAndHostImage($images[0]);
                                     if ($hostedImage['isValid']) {
                                         $imageUrl = $hostedImage['url'];
                                     } else {
-                                        $errors['instagram'] = $hostedImage['errors'];
+                                        $isValid = false;
+                                        $sendingMsg['instagram'] = $hostedImage['errors'];
                                     }
                                     // Post
-                                    if (empty($errors['instagram'])) {
-                                        $this->InstaAPI->publishPhotoOnPage($accountId, $imageUrl, $accessToken, $descriptionI);
+                                    if ($isValid) {
+                                        $postId = $this->InstaAPI->publishPhotoOnPage($accountId, $imageUrl, $accessToken, $descriptionI);
+                                        $sendingMsg['instagram'][] = 'Le post a été effectué avec succès sur la page ' . $social_media->getName() . ' sur Instagram !';
                                     }
                                 }
                             } catch (\Throwable $th) {
@@ -278,34 +284,28 @@ class PostController extends AbstractController
                             $consumer_secret = $TwitterAccount->getConsumerSecret();
                             $access_token = $TwitterAccount->getAccessToken();
                             $access_token_secret = $TwitterAccount->getAccessTokenSecret();
+                            // Check images
                             if ($images) {
-                                // Check images
+                                $isValid = true;
                                 $checkImages = $this->TwitterAPI->checkImages(array_slice($images, 0, 4));
                                 foreach ($checkImages as $imageResult) {
                                     if (!$imageResult['isValid']) {
-                                        $errors['twitter'] = $imageResult['errors'];
+                                        $isValid = false;
+                                        $sendingMsg['twitter'] = $imageResult['errors'];
                                     }
                                 }
-                                // Post
-                                if (empty($errors['twitter'])) {
-                                    $this->TwitterAPI->postStatusOnPage(
-                                        $consumer_key,
-                                        $consumer_secret,
-                                        $access_token,
-                                        $access_token_secret,
-                                        $descriptionT,
-                                        array_slice($images, 0, 4)
-                                    );
-                                }
-                            } else {
-                                $this->TwitterAPI->postStatusOnPage(
+                            }
+                            // Post
+                            if ($isValid) {
+                                $postId = $this->TwitterAPI->postStatusOnPage(
                                     $consumer_key,
                                     $consumer_secret,
                                     $access_token,
                                     $access_token_secret,
                                     $descriptionT,
-                                    false
+                                    $images ? array_slice($images, 0, 4) : false
                                 );
+                                $sendingMsg['twitter'][] = 'Le post a été effectué avec succès sur la page ' . $social_media->getName() . ' sur Twitter !';
                             }
                             break;
                     }
@@ -313,11 +313,8 @@ class PostController extends AbstractController
             }
 
             if ($date < $day) {
-                $this->getDoctrine()->getManager()->remove($post);
-                $this->getDoctrine()->getManager()->flush();
-            }
-            if (empty($errors['facebook']) && empty($errors['instagram']) && empty($errors['twitter'])) {
-                return $this->redirectToRoute('posts');
+                // $this->getDoctrine()->getManager()->remove($post);
+                // $this->getDoctrine()->getManager()->flush();
             }
         }
 
@@ -333,7 +330,7 @@ class PostController extends AbstractController
             'socialMediaAccountsTwitter' => $socialMediaAccountsTwitter,
             'socialMediaAccountsFacebook' => $socialMediaAccountsFacebook,
             'socialMediaPagesFacebook' => $socialMediaPagesFacebook,
-            'errors' => $errors
+            'sendingMsg' => $sendingMsg
         ]);
     }
 }

@@ -41,10 +41,10 @@ class FacebookAPI
             $imagePath = $folder . $imageName;
             // Vérif ext image
             $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
-            $validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            $validExts = ['jpg', 'jpeg', 'png', 'webp'];
             if (!in_array(strtolower($ext), $validExts)) {
                 $imageResult['isValid'] = false;
-                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . ' non supporté, formats acceptés = JPG, PNG, WEBP, SVG';
+                $imageResult['errors'][] = 'Echec de l\'envoi du post sur Facebook : format d\'image ' . $ext . ' non supporté, formats acceptés = JPG, PNG, WEBP';
             } else {
                 // Vérif ratio image
                 list($width, $height) = getimagesize($imagePath);

@@ -6,19 +6,19 @@
 {% block body %}
     {{ parent() }}
     <ul>
-    {% if errors.facebook %}
-        {% for error in errors.facebook %}
-            <li>{{error}}<li>
+    {% if sendingMsg.facebook %}
+        {% for message in sendingMsg.facebook %}
+            <li>{{message}}<li>
         {% endfor %}
     {% endif %}
-    {% if errors.instagram %}
-        {% for error in errors.instagram %}
-            <li>{{error}}<li>
+    {% if sendingMsg.instagram %}
+        {% for message in sendingMsg.instagram %}
+            <li>{{message}}<li>
         {% endfor %}
     {% endif %}
-    {% if errors.twitter %}
-        {% for error in errors.twitter %}
-            <li>{{error}}<li>
+    {% if sendingMsg.twitter %}
+        {% for message in sendingMsg.twitter %}
+            <li>{{message}}<li>
         {% endfor %}
     {% endif %}
     </ul>
