@@ -21,6 +21,8 @@ Lancer les commandes :
 
 **composer install**
 
+**npm build**
+
 **symfony serve --not-tls**
 
 Se rendre sur le lien affiché dans le terminal (habituellement http://localhost:8000/).
