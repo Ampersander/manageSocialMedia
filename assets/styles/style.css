@@ -1,0 +1,27 @@
+.body {
+    background-color: #000;
+}
+
+.nav-bg {
+    background-color: #151414;
+}
+
+nav .navbar-nav li a {
+    color: #FF9200 !important;
+}
+
+.widht-div {
+    background-color: #474441;
+}
+
+.height {
+    height: 7.5em !important;
+}
+
+.font-weight {
+    font-size: 18px;
+}
+
+.espace-between {
+    width: 30%;
+}
