@@ -27,6 +27,6 @@ Se rendre sur le lien affiché dans le terminal (habituellement http://localhost
 
 ## Auteurs
 
-- **Raphael BESSONIER**
+- **Raphael BESSONNIER**
 - **Romain BAERT**
 - **Yuyari SALAS**
