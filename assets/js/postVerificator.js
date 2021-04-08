@@ -35,6 +35,10 @@ function getImageWarns(imageInfos) {
     let ext = imageInfos.ext;
     let size = imageInfos.size;
     let warnMessages = [];
+    // Extension
+    if (!['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
+        warnMessages.push('Format de l\'image incompatible avec les réseaux sociaux');
+    }
     // Ratio
     if (ratio < 4 / 5) {
         warnMessages.push('Image trop grande verticalement, ratio minimum 4:5');
@@ -46,22 +50,13 @@ function getImageWarns(imageInfos) {
     if (size > 10 * (10 ** 6)) {
         warnMessages.push('Image trop lourde pour Facebook, taille maximum 10Mo');
     }
-    if (ext != 'png' && ext != 'jpg' && ext != 'jpeg') {
-        warnMessages.push('Format de l\'image incompatible avec Facebook');
-    }
     // Insta
     if (size > 8 * (2 ** 20)) {
         warnMessages.push('Image trop lourde pour Instagram, taille maximum 8Mio');
     }
-    if (ext != 'jpg' && ext != 'jpeg') {
-        warnMessages.push('Format de l\'image incompatible avec Instagram');
-    }
     // Twitter
     if (size > 5 * (10 ** 6)) {
         warnMessages.push('Image trop lourde pour Twitter, taille maximum 5Mo');
-    }
-    if (!['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
-        warnMessages.push('Format de l\'image incompatible avec Twitter');
     }
     return warnMessages;
 }

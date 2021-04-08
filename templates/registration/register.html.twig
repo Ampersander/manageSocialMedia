@@ -9,23 +9,21 @@
 		<div class="alert alert-danger" role="alert">{{ flashError }}</div>
 	{% endfor %}
 	<div class="row m-5">
-		<div class="col-6 offset-3">
-			<div class="card">
-				<div class='card-header'>
+		<div class="">
+			<div class="card w-100 text-white bg-dark">
+				<div class='card-header bg-secondary'>
 					<h1 class="h3 mb-3 font-weight-normal text-center">Register</h1>
 				</div>
-				<div class="card-body bg-light">
-					{{ form_start(registrationForm) }}
+				<div class="card-body">
+					{{ form_start(registrationForm, {'attr': {'class': 'w-75 mx-auto'}}) }}
                     <div class="form-group">
 					{{ form_row(registrationForm.email) }}
                     </div>
                     <div class="form-group">
-					{{ form_row(registrationForm.plainPassword, {
-                        label: 'Password'
-                    }) }}
+					{{ form_row(registrationForm.plainPassword) }}
                     </div>
 					<div class='d-flex flex-column'>
-						<button type="submit" class="btn btn-primary btn-block btn-lg">Register</button>
+						<button type="submit" class="btn btn-primary btn-block btn-lg mt-3 w-25 mx-auto">Register</button>
 					</div>
 
 					{{ form_end(registrationForm) }}

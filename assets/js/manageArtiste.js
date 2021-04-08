@@ -1,4 +1,4 @@
-  const $ = require('jquery');
+  /*const $ = require('jquery');
   const autocomplete = require('autocompleter');
 
 
@@ -110,4 +110,4 @@
 
               });
           }
-      });
+      });*/

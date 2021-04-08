@@ -18,6 +18,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use App\Utility\FacebookAPI;
 use App\Utility\InstagramAPI;
 use App\Utility\TwitterAPI;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class ProfilController extends AbstractController
 {
@@ -25,9 +26,9 @@ class ProfilController extends AbstractController
 
     private $FbAPI;
 
-    public function __construct(HttpClientInterface $client)
+    public function __construct(HttpClientInterface $client, ParameterBagInterface $parameterBag)
     {
-        $this->FbAPI = new FacebookAPI($client);
+        $this->FbAPI = new FacebookAPI($client, $parameterBag);
     }
 
     /**

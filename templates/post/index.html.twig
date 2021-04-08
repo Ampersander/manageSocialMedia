@@ -1,31 +1,77 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PostController!{% endblock %}
+{% block title %}
+    Voir mes posts
+{% endblock %}
 
 {% block body %}
-{{ parent() }}
-<article class="d-flex justify-content-around flex-wrap m-4">
-{% for post in posts %}
-<div class="card m-3" style="width: 18rem;">
-      {% if post.image != null %}
-  <img class="card-img-top" src="{{ post.image }}" alt="Card image cap">
-  {% else %}
-    <img class="card-img-top" src="https://www.lyoncapitale.fr/wp-content/themes/siteorigin-fidumedias/images/lyoncap/actularge.jpg" alt="Card image cap">
-  {% endif %}
-  <div class="card-body">
-   {# <h5 class="card-title">{{post.socialMediaAccounts}}</h5>#}
-    <p class="card-text">{{ post.description }}</p>
+  {{ parent() }}
+  <article class="d-flex justify-content-around flex-wrap m-4">
+    {% for post in posts %}
+      <div class="card m-3 bg-dark text-white" style="width: 18rem;">
+        {% if post.date >= day %}
+        <span class="badge bg-success">En attente</span>
+        {% else %}
+        <span class="badge bg-danger">En retard</span>
+        {% endif %}
+        {% if post.image != null %}
+        {% if post.image|length > 1 %}
+         <div id="carouselExampleControls{{post.id}}" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
 
-    {% if post.date != "" %}
-    {% if post.date > day %}
-    <div class="d-flex justify-content-around">
-    <a href="{{ path('post_watch', {'id' : post.id}) }}" class ="btn btn-primary">Modifier la plannification</a>
-    </div>
-    {% endif %}
-    {% endif %}
-
-  </div>
-</div>
-{% endfor %}
-</article>
+          {% for image in post.image %}
+            {% if loop.first %}
+                    <div class="carousel-item active">
+                    <img class="reference-thumb d-block w-100" src="{{ asset('post_images/' ~ image) }}"  alt="..." width=100%/>
+                    </div>
+                {% else %}
+                    <div class="carousel-item">
+                    <img class="reference-thumb d-block w-100" src="{{ asset('post_images/' ~ image) }}"  alt="..." width=100%/>
+                    </div>
+                {% endif %}     
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls{{post.id}}" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls{{post.id}}" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        {% else %}
+        {% for image in post.image %}
+         <img class="card-img-top" src="{{ asset('post_images/' ~ image) }}" alt="Card image cap">
+         {% endfor %}
+         {% endif %}
+        {% else %}
+          <img class="card-img-top"
+            src="https://www.lyoncapitale.fr/wp-content/themes/siteorigin-fidumedias/images/lyoncap/actularge.jpg"
+            alt="Card image cap" />
+        {% endif %}
+        <div class="card-body">
+          {# <h5 class="card-title">{{post.socialMediaAccounts}}</h5> #}
+          <p class="card-text">
+            {{ post.description }}
+          </p>
+          <small>Date de prépublication : {{post.date|date("d/m/Y")}}</small>
+          <div class="d-flex justify-content-around mt-3">
+            <a href="{{
+              path(
+                'post_watch',
+                {
+                  id: post.id
+                }
+              )
+              }}"
+              class="btn btn-primary col-5">
+              <i class="fas fa-envelope fa-2x"></i>
+            </a>
+            <a href="{{ path('post_edit', {id: post.id}) }}" class="btn btn-success col-5"><i class="fas fa-pen fa-2x"></i></a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </article>
 {% endblock %}

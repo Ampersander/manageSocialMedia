@@ -8,8 +8,8 @@ use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
 
+use Doctrine\ORM\EntityManagerInterface;
 
 
 
@@ -33,7 +33,6 @@ public function getArticles()
     // In case our GET was a success we need to return a 200 HTTP OK response with the collection of article object
     return $articles;
 }
-
 
 /**
  * @Route ("/artiste", name="artiste_create")
@@ -102,6 +101,5 @@ public function artiste(Request $request, EntityManagerInterface $manager){
         }
             return $this->redirectToRoute('artiste_create'); 
     }
-
 
 }

@@ -9,42 +9,42 @@
     <main>
 
 <div class="row m-5">
-    <div class="col-6 offset-3">
-        <div class="card">
-            <div class='card-header'>
+    <div class="">
+        <div class="card text-white bg-dark w-100">
+            <div class='card-header bg-secondary'>
                 <h1 class="h3 mb-3 font-weight-normal text-center">New Twitter Account</h1>
             </div>
-            <div class="card-body bg-light">
-                {{ form_start(TwitterAccountFormType) }}
+            <div class="card-body w-100">
+                {{ form_start(TwitterAccountFormType, {'attr': {'class': 'w-75 mx-auto'}}) }}
 
               
                 <div class="form-group">
-                    {{ form_row(TwitterAccountFormType.name, {
+                    {{ form_row(TwitterAccountFormType.name, {'attr': {'class': 'mb-3 form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
                     label: 'Nom compte'
                     }) }}
                 </div>
                 <div class="form-group">
-                    {{ form_row(TwitterAccountFormType.consumerKey, {
+                    {{ form_row(TwitterAccountFormType.consumerKey, {'attr': {'class': 'mb-3 form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
                     label: 'Consumer Key'
                     }) }}
                 </div>
                 <div class="form-group">
-                    {{ form_row(TwitterAccountFormType.consumerSecret, {
+                    {{ form_row(TwitterAccountFormType.consumerSecret, {'attr': {'class': 'mb-3 form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
                     label: 'Consumer Secret'
                     }) }}
                 </div>
                 <div class="form-group">
-                    {{ form_row(TwitterAccountFormType.accessToken, {
+                    {{ form_row(TwitterAccountFormType.accessToken, {'attr': {'class': 'mb-3 form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
                     label: 'Access Token'
                     }) }}
                 </div>
                 <div class="form-group">
-                    {{ form_row(TwitterAccountFormType.accessTokenSecret, {
+                    {{ form_row(TwitterAccountFormType.accessTokenSecret, {'attr': {'class': 'mb-3 form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'},
                     label: 'Access Token Secret'
                     }) }}
                 </div>
-                <div class='d-flex flex-column'>
-                    <button type="submit" class="btn btn-primary btn-block btn-lg">Ajout</button>
+                <div class='d-flex flex-column w-25 mx-auto'>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg mt-3">Ajout</button>
                 </div>
 
                 {{ form_end(TwitterAccountFormType) }}
@@ -54,13 +54,13 @@
 </div>
 </div>
 
-    <div class="card m-5">
-        <div class='card-header'>
+    <div class="card m-5 text-white bg-dark">
+        <div class='card-header bg-secondary'>
             <h1 class="h3 mb-3 font-weight-normal text-center">Twitter API</h1>
         </div>
-        <div class="card-body bg-light ">
+        <div class="card-body">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table text-white">
                     <thead>
                         <tr>
                             <th scope="col">Name</th>
@@ -103,4 +103,6 @@
     </main>
 </div>
 {% endblock %}
-{% block javascripts %}{{ encore_entry_script_tags('manageAccountSocialMedia') }}{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('manageAccountSocialMedia') }}
+{{ encore_entry_script_tags('countPost') }}
+{% endblock %}

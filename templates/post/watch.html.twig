@@ -1,36 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello PostController!{% endblock %}
-
 {% block body %}
-{{ parent() }}
-<article class="d-flex align-items-center justify-content-around">
-<div class="f-card mt-5">
-  <div class="header">
-    <div class="options"><i class="fa fa-chevron-down"></i></div>
-    <img class="co-logo" src="http://placehold.it/40x40" />
-    <div class="co-name"><a href="#">User_name</a></div>
-    <div class="time"><a href="#">{{ post.date | date('d/m/Y') }}</a> · <i class="fa fa-globe"></i></div>
-  </div>
-
-  <div class="content">
-    <p>{{ post.description }}</p>
-  </div>
-      {% if post.image != null %}
-  <div class="reference">
-    <img class="reference-thumb" src="{{ post.image }}" />
-  </div>
-  {% endif %}
-
-  <div class="social">
-    <div class="social-content"></div>
-    <div class="social-buttons">
-      <span><i class="fa fa-thumbs-up"></i>Like</span>
-      <span><i class="fa fa-comment"></i>Comment</span>
-      <span><i class="fa fa-share"></i>Share</span></div>
-  </div>
-</div>
-
 <style>
 
 a {
@@ -41,7 +12,6 @@ a {
     background: #ffffff;
     border: 1px solid #f2f2f2;
     border-radius: 3px;
-    width: 100%;
     max-width: 350px;
     margin: auto;
 }
@@ -95,7 +65,6 @@ a {
     align-items: center;
 }
 
-
 .cardContent {
   display: flex;
   flex-direction: column;
@@ -104,9 +73,8 @@ a {
   padding: 10px;
 }
 .tweetCard {
-  height: 300px;
-  width: 25%;
-  margin: 30px;
+  height: auto;
+      max-width: 350px;
   /*   below is a google font */
   font-family: "Quicksand", sans-serif;
 }
@@ -221,65 +189,178 @@ label img {
 }
 </style>
 
-      {% if post.image != null %}
-
-<div class="instagram-card">
-    <div class="instagram-card-header mb-2">
-      <img src="http://placehold.it/40x40" class="instagram-card-user-image"/>
-      <a class="instagram-card-user-name" href="https://www.instagram.com/followmeto/">User_name</a>
-      <div class="instagram-card-time">{{ post.date | date('d/m/Y') }}</div>
-    </div>
-      <br>
-
-    <div class="intagram-card-image">
-
-      <img src="{{ post.image }}" width=100%/>
-    </div>
-
-    <div class="instagram-card-content">
-
-      <p><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
-    </div>
-
-</div>
-
-{% endif %}
-
-
-<article class="tweetCard">
-  <div class="tweetCardBody">
-    <div class="cardContent">
-      <div class="headerContent mb-2">
-        <div class="headerImgHolder">
-          <img class="tweetCard-img" src="http://placehold.it/40x40">
-        </div>
-        <div class="headerContentText">
-          <h3>User_name</h3>
-          <p>@user_name</p>
-        </div>
-      </div>
-
-      <p>
-        {{ post.description }}
-      </p>
-            {% if post.image != null %}
-    <div class="intagram-card-image">
-      <img src="{{ post.image }}" width=100%/>
-
-    </div>
+{{ parent() }}
+<article class="align-items-center justify-content-around mx-auto row">
+  <div class="card my-5 col-md-4 col-sm-12 col-lg-3">
+  <div class='card-header' >Retour API</div><div class="card-content" id='MessAPIRetour'>
+    {% if sendingMsg.facebook %}
+        {% for message in sendingMsg.facebook %}
+            <li>{{message}}<li>
+        {% endfor %}
     {% endif %}
-      <p class="tweetDate">{{ post.date | date('d/m/Y') }}
-      </p>
+    {% if sendingMsg.instagram %}
+        {% for message in sendingMsg.instagram %}
+            <li>{{message}}<li>
+        {% endfor %}
+    {% endif %}
+    {% if sendingMsg.twitter %}
+        {% for message in sendingMsg.twitter %}
+            <li>{{message}}<li>
+        {% endfor %}
+     {% endif %}
+     </div>
+</div>
+</article>
+
+<article class="align-items-center justify-content-around mx-auto row">
+  <div class="f-card mt-5 col-md-4 col-sm-12 col-lg-3">
+    <div class="header">
+      <div class="options"><i class="fa fa-chevron-down"></i></div>
+      <img class="co-logo" src="http://placehold.it/40x40" />
+      <div class="co-name"><a href="#">User_name</a></div>
+      <div class="time"><a href="#">{{ post.date | date('d/m/Y') }}</a> · <i class="fa fa-globe"></i></div>
+    </div>
+    <div class="content">
+      <p>{{ post.description }}</p>
+    </div>
+        {% if post.image != null %}
+    <div class="reference">
+    <div id="carouselExampleControls1" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+
+  {% for image in post.image %}
+     {% if loop.first %}
+            <div class="carousel-item active">
+            <img class="reference-thumb d-block w-100" src="{{ asset('post_images/' ~ image) }}"  alt="..."/>
+            </div>
+        {% else %}
+            <div class="carousel-item">
+            <img class="reference-thumb d-block w-100" src="{{ asset('post_images/' ~ image) }}"  alt="..."/>
+            </div>
+        {% endif %}     
+    {% endfor %}
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls1" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls1" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+    
+    {% endif %}
+    </div>
+    
+    <div class="social">
+      <div class="social-content"></div>
+      <div class="social-buttons">
+        <span><i class="fa fa-thumbs-up"></i>Like</span>
+        <span><i class="fa fa-comment"></i>Comment</span>
+        <span><i class="fa fa-share"></i>Share</span></div>
     </div>
   </div>
-</article>
+
+
+        {% if post.image != null %}
+  <div class="instagram-card col-md-4 col-sm-12 col-lg-3">
+      <div class="instagram-card-header mb-2">
+        <img src="http://placehold.it/40x40" class="instagram-card-user-image"/>
+        <a class="instagram-card-user-name" href="https://www.instagram.com/followmeto/">User_name</a>
+        <div class="instagram-card-time">{{ post.date | date('d/m/Y') }}</div>
+      </div>
+        <br>
+
+      <div class="intagram-card-image">
+      
+          <div id="carouselExampleControls2" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+
+  {% for image in post.image %}
+     {% if loop.first %}
+            <div class="carousel-item active">
+            <img class="reference-thumb d-block w-100" src="{{ asset('post_images/' ~ image) }}"  alt="..." width=100%/>
+            </div>
+        {% else %}
+            <div class="carousel-item">
+            <img class="reference-thumb d-block w-100" src="{{ asset('post_images/' ~ image) }}"  alt="..." width=100%/>
+            </div>
+        {% endif %}     
+    {% endfor %}
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls2" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls2" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+        
+      </div>
+
+      <div class="instagram-card-content">
+        <p><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
+      </div>
+
+  </div>
+  {% endif %}
+
+  <div class="tweetCard col-md-4 col-sm-12 col-lg-3">
+    <div class="tweetCardBody">
+      <div class="cardContent">
+        <div class="headerContent mb-2">
+          <div class="headerImgHolder">
+            <img class="tweetCard-img" src="http://placehold.it/40x40">
+          </div>
+          <div class="headerContentText">
+            <h3>User_name</h3>
+            <p>@user_name</p>
+          </div>
+        </div>
+        <p>
+          {{ post.description }}
+        </p>
+              {% if post.image != null %}
+      <div class="intagram-card-image" style="width: 100%;">
+      <div id="carouselExampleControls3" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+
+  {% for image in post.image %}
+     {% if loop.first %}
+            <div class="carousel-item active">
+            <img class="reference-thumb d-block w-100" src="{{ asset('post_images/' ~ image) }}"  alt="..." width=100%/>
+            </div>
+        {% else %}
+            <div class="carousel-item">
+            <img class="reference-thumb d-block w-100" src="{{ asset('post_images/' ~ image) }}"  alt="..." width=100%/>
+            </div>
+        {% endif %}     
+    {% endfor %}
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls3" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls3" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+      </div>
+      {% endif %}
+        <p class="tweetDate">{{ post.date | date('d/m/Y') }}
+        </p>
+      </div>
+    </div>
+  </div>
 
 </article>
 <form method="post">
-
 <input type="hidden" name="_method" value="delete">
 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
-
 <article class="w-100 text-center">
 
 <ul class="w-100 d-flex justify-content-around">
@@ -296,15 +377,7 @@ label img {
   </li>
 </ul>
 
-
-    <input class="btn btn-primary mb-5" type="submit" value="
-    {% if post.date > day %}
-    Enregistrer le post pour une prépublication
-    {% else %}
-    Valider l'envoie du post
-    {% endif %}
-    ">
-
+    <input class="btn btn-primary mb-5" type="submit" value="Valider l'envoie du post">
 
 
 </article>
@@ -402,13 +475,13 @@ label img {
 							<th scope="col">Sélection</th>
 					</thead>
           
-					 {% for socialMediaAccountFacebook in socialMediaAccountsFacebook %}
+					{# {% for socialMediaAccountFacebook in socialMediaAccountsFacebook %}
 						<tr>
 							<td>{{socialMediaAccountFacebook.name}}</td>
               <td>{{socialMediaAccountFacebook.socialMedia}}</td>	
              <td><input type="checkbox" name="checkbox{{socialMediaAccountFacebook.id}}" class='facebook' value='1'></input></td>	
 			      </tr>
-          {% endfor %}
+          {% endfor %}#}
           {% for socialMediaPageFacebook in socialMediaPagesFacebook %}
 						<tr>
 							<td>{{socialMediaPageFacebook.name}}</td>
@@ -428,8 +501,9 @@ label img {
 </div>
 </form>
 {% endblock %}
-
-{% block javascripts %}{{ encore_entry_script_tags('manageWatchPost') }}
-{{ encore_entry_script_tags('manageCreatePost') }}{% endblock %}
-
-
+{% block javascripts %}
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+{{ encore_entry_script_tags('manageWatchPost') }}
+{{ encore_entry_script_tags('countPost') }}
+{% endblock %}

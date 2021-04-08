@@ -31,6 +31,8 @@ Encore
     .addEntry('manageTemplatePost', './assets/js/manageTemplatePost.js')
     .addEntry('postVerificator', './assets/js/postVerificator')
     .addEntry('hiddenBlock', './assets/js/hiddenBlock')
+    .addEntry('countPost', './assets/js/countPost')
+    .addEntry('manageArtiste', './assets/js/manageArtiste')
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
 

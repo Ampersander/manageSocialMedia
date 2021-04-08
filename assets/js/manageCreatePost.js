@@ -4,7 +4,6 @@ const autocomplete = require('autocompleter');
 
 $(function () {
 
-
     $(document).on("click", ".btn-close", function (e) {
         $('#artisteModal').hide();
     });
@@ -46,7 +45,7 @@ document
             
             var items = artistes.map(function (n) { return { label: n, group: "Artistes" }});
             var allowedChars = new RegExp(/^[a-zA-Z\s]+$/)
-        
+            console.log(items);
             function charsAllowed(value) {
                 return allowedChars.test(value);
             }
@@ -105,13 +104,21 @@ document
                 dataType : 'json',
                 success : function(resultat, statut){ 
                     console.log(resultat);
-                    for(var i = 0 ; i< resultat.length ;i++){
-                       if(document.getElementById("form_templatePost").value == resultat[i].id ) {
+                    console.log(document.getElementById("form_templatePost").value);
+                    if(document.getElementById("form_templatePost").value == 0){
                         var desc = document.getElementById('form_description');
-                        var descArray = desc.value.split(' ');
-                        desc.value = descArray[0]+'\n '+resultat[i].description;
-                       }
-                    }   
+                        var descArray = desc.value.split('\n '); 
+                        console.log(descArray);                 
+                        desc.value = descArray[0]; 
+                    }else{
+                        for(var i = 0 ; i< resultat.length ;i++){
+                        if(document.getElementById("form_templatePost").value == resultat[i].id) {
+                            var desc = document.getElementById('form_description');
+                            var descArray = desc.value.split('\n ');                    
+                            desc.value = descArray[0]+'\n '+resultat[i].description;                         
+                            }                        
+                        } 
+                }  
         },
             
         error : function(resultat, statut, erreur){
