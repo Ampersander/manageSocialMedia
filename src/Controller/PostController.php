@@ -346,4 +346,26 @@ public function getPost()
     // In case our GET was a success we need to return a 200 HTTP OK response with the collection of article object
     return $post;
 }
+
+ /**
+     *@Route("/post/delete/{id}", name= "post.delete", methods="DELETE")
+     */
+    public function deletePost(Post $Post, Request $request)
+    {
+        
+           
+        if ($this->isCsrfTokenValid('delete' . $Post->getId(), $request->get('_token'))) {
+            $this->getDoctrine()->getManager()->remove($Post);
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('success', 'Le post a bien été supprimé!');
+        }
+ 
+       
+            return $this->redirectToRoute('posts');
+       
+    }
+
 }
+
+
+

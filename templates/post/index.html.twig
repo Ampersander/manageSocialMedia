@@ -14,6 +14,7 @@
         {% else %}
         <span class="badge bg-danger">En retard</span>
         {% endif %}
+       
         {% if post.image != null %}
         {% if post.image|length > 1 %}
          <div id="carouselExampleControls{{post.id}}" class="carousel slide" data-bs-ride="carousel">
@@ -51,6 +52,18 @@
             alt="Card image cap" />
         {% endif %}
         <div class="card-body">
+        {% for socialMediaAccount in post.socialMediaAccounts %}
+        {% if socialMediaAccount.twitterAccount != null %}
+        <i class="fab fa-twitter-square"></i>
+        {{socialMediaAccount.name}}<br>
+        {% elseif socialMediaAccount.instaAccount != null %}
+         <i class="fab fa-instagram"></i>
+        {{socialMediaAccount.name}}<br>
+        {% elseif socialMediaAccount.fbPage != null %}
+         <i class="fab fa-facebook-square"></i>
+        {{socialMediaAccount.name}}<br>
+        {% endif %}
+        {% endfor %}
           {# <h5 class="card-title">{{post.socialMediaAccounts}}</h5> #}
           <p class="card-text">
             {{ post.description }}
@@ -65,10 +78,18 @@
                 }
               )
               }}"
-              class="btn btn-primary col-5">
+              class="btn btn-primary col-3">
               <i class="fas fa-envelope fa-2x"></i>
             </a>
-            <a href="{{ path('post_edit', {id: post.id}) }}" class="btn btn-success col-5"><i class="fas fa-pen fa-2x"></i></a>
+            <a href="{{ path('post_edit', {id: post.id}) }}" class="btn btn-success col-3"><i class="fas fa-pen fa-2x"></i></a>
+             <form method="post" class="col-3" action="{{ path('post.delete', {id: post.id}) }}"
+                    onsubmit="return confirm('Êtes-vous vraiment sûr(e)?')">
+                   <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash fa-2x"></i>
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}"></button>
+                    
+                </form>
           </div>
         </div>
       </div>

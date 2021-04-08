@@ -3,6 +3,14 @@ const $ = require('jquery');
 import '../bootstrap';
 $(function () {
 
+
+var contentLink = $('.linkJS');
+for(var i=0;i< contentLink.length();i++){
+   regexlink = contentLink[i].split(new RegExp(/#([a-zA-Z]*)/gm));
+
+
+}
+
     $(document).on("click", "#cb1", function () {
         //alert('yes');
         if ($("#cb1").prop('checked'))
@@ -71,10 +79,10 @@ $(function () {
     });
 
 
+
+
     $(document).on("click", ".btn-close", function () {
         
-
-       
         for (var i = 0; i < $('input[type=checkbox]:visible').length; i++) {
             var checkbox = $('input[type=checkbox]:visible')[i];
             checkbox.checked = false;

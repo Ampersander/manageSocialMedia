@@ -190,10 +190,11 @@ label img {
 </style>
 
 {{ parent() }}
+ {% if (sendingMsg.facebook != null) or  (sendingMsg.instagram != null) or (sendingMsg.twitter != null)%}
 <article class="align-items-center justify-content-around mx-auto row">
   <div class="card my-5 col-md-4 col-sm-12 col-lg-3">
   <div class='card-header' >Retour API</div><div class="card-content" id='MessAPIRetour'>
-    {% if sendingMsg.facebook %}
+    {% if sendingMsg.instagram  %}
         {% for message in sendingMsg.facebook %}
             <li>{{message}}<li>
         {% endfor %}
@@ -208,9 +209,11 @@ label img {
             <li>{{message}}<li>
         {% endfor %}
      {% endif %}
+     
      </div>
 </div>
 </article>
+{% endif %}
 
 <article class="align-items-center justify-content-around mx-auto row">
   <div class="f-card mt-5 col-md-4 col-sm-12 col-lg-3">
@@ -220,7 +223,7 @@ label img {
       <div class="co-name"><a href="#">User_name</a></div>
       <div class="time"><a href="#">{{ post.date | date('d/m/Y') }}</a> · <i class="fa fa-globe"></i></div>
     </div>
-    <div class="content">
+    <div class="content linkJS">
       <p>{{ post.description }}</p>
     </div>
         {% if post.image != null %}
@@ -251,7 +254,7 @@ label img {
 </div>
     
     {% endif %}
-    </div>
+   
     
     <div class="social">
       <div class="social-content"></div>
@@ -261,7 +264,7 @@ label img {
         <span><i class="fa fa-share"></i>Share</span></div>
     </div>
   </div>
-
+ </div>
 
         {% if post.image != null %}
   <div class="instagram-card col-md-4 col-sm-12 col-lg-3">
@@ -302,7 +305,7 @@ label img {
       </div>
 
       <div class="instagram-card-content">
-        <p><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
+        <p class="linkJS"><a class="instagram-card-content-user mr-2" href="https://www.instagram.com/followmeto/">User_name</a>{{ post.description }}</p>
       </div>
 
   </div>
@@ -320,7 +323,7 @@ label img {
             <p>@user_name</p>
           </div>
         </div>
-        <p>
+        <p class="linkJS">
           {{ post.description }}
         </p>
               {% if post.image != null %}
