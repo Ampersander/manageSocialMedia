@@ -1,14 +1,15 @@
 const $ = require('jquery');
-console.log('test');
 $.ajax({
     url: 'http://localhost:8000/api/post',
     type: 'GET',
     dataType: 'json',
     success: function(resultat, statut) {
+        console.log(resultat);
         console.log(resultat[0].date);
         var attente = 0;
         var retard = 0;
-        var todayDate = new Date().toISOString().slice(0, 10);
+        //var todayDate = new Date().toISOString().slice(0, 10);
+        var todayDate = new Date().toISOString();
         console.log(todayDate);
         if (resultat.length != 0) {
             for (var i = 0; i < resultat.length; i++) {

@@ -47,11 +47,11 @@ class PostController extends AbstractController
         $user = $this->get('security.token_storage')->getToken()->getUser();
         $repository = $this->getDoctrine()->getRepository(Post::class);
         $posts = $repository->findByUser($user);
- 
         return $this->render('post/index.html.twig', [
             'controller_name' => 'PostController',
             'posts' => $posts,
-            'day' => date_format(new \DateTime(), 'Y-m-d'),
+            //'day' => date_format(new \DateTime(), 'Y-m-d'),
+            'day' => new \DateTime()
         ]);
     }
 
