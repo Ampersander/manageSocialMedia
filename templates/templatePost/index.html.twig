@@ -4,22 +4,22 @@
 
 {% block body %}
 {{ parent() }}
-<div class="row m-5">
-    <div class="col-6 offset-3">
-        <div class="card">
+<div class="row m-5 mx-auto">
+    <div>
+        <div class="card  w-75 text-white bg-dark mx-auto">
         {{ form_start(templatePostFormType) }}
                 
-            <div class='card-header'>
+            <div class='card-header bg-secondary'>
                 <h1 class="h3 mb-3 font-weight-normal text-center"><div class="form-group">
-                    {{ form_row(templatePostFormType.title, {
+                    {{ form_row(templatePostFormType.title,{
                     label: 'Titre template',
                     }) }}
                 </div></h1>
             </div>
-            <div class="card-body bg-light d-flex flex-column ">
+            <div class="card-body bg-dark d-flex flex-column ">
             
                  <div class="form-group d-flex justify-content-center">
-                    {{ form_row(templatePostFormType.description, {
+                    {{ form_row(templatePostFormType.description, {'attr': {'class': 'mb-3 form-control w-100 mt-3'},
                     label: 'Tags',
                     }) }}
                 </div>

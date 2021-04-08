@@ -14,7 +14,7 @@
 
                 {{ form_start(formPost) }}
                 <div class="form-group ">
-                    {{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article" }}) }}
+                    {{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'} }) }}
 
                     <div id="desc-warns"></div>
                 </div>
@@ -24,7 +24,7 @@
                     <label>Prévoir la plannification</label>
                     <input type="checkbox" name="planif" value="planif" id="planif" checked>
                         <div id="date">
-                            {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie" }}) }}
+                            {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
                         </div>
                     </div>
                         {% else %}
@@ -33,19 +33,20 @@
                             <label>Prévoir la plannification</label>
                             <input type="checkbox" name="planif" value="planif" id="planif">
                                 <div style="display: none;" id="date">
-                                    {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie" }}) }}
+                                    {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
                                 </div>
                             </div>
                         {% endif %}
                 
                     <div class="form-group ">
-                        {{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image" }}) }}
+                        {{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
                     </div>
                     <div class="form-group ">
-                        {{ form_row(formPost.templatePost) }}
+                        {{ form_row(formPost.templatePost, {'attr': {'class': 'form-select w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
                     </div>
 
                     <button id="trash" type="button">Retirer les photos</button>
+
                     <div id="image-list"></div>
                     <button type="submit" class="btn btn-primary mt-3">
                         {% if editMode %}
@@ -73,7 +74,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <input type="text" id="testinput" placeholder="Type 'a'" autocomplete="off">
+        <input autocomplete="off" type="text" id="testinput" placeholder="Type 'a'">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary save">Save changes</button>

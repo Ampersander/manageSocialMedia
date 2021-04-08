@@ -45,7 +45,7 @@ document
             
             var items = artistes.map(function (n) { return { label: n, group: "Artistes" }});
             var allowedChars = new RegExp(/^[a-zA-Z\s]+$/)
-            console.log(items);
+        
             function charsAllowed(value) {
                 return allowedChars.test(value);
             }
