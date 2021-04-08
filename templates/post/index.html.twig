@@ -15,9 +15,12 @@
         <span class="badge bg-danger">En retard</span>
         {% endif %}
         {% if post.image != null %}
-          <img class="card-img-top"
-            src="{{ post.image }}"
+        {% for image in post.image %}
+         <img class="card-img-top"
+            src="{{ asset('post_images/' ~ image) }}" 
             alt="Card image cap" />
+        {% endfor %}
+         
         {% else %}
           <img class="card-img-top"
             src="https://www.lyoncapitale.fr/wp-content/themes/siteorigin-fidumedias/images/lyoncap/actularge.jpg"

@@ -1,0 +1,6 @@
+index.php		La page ou se trouve le quizz
+Question.php		Classe php représantant une question
+QuestionDisplay.php	Contient le nécéssaire pour afficher les questions dans index.php
+Correction.php		La page ou se trouve la correction du quizz
+QuestionCorrect		Contient le nécéssaire pour afficher la correction des questions dans Correction.php
+style.css		Un tout petit peu de mise en forme

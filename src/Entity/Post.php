@@ -20,14 +20,16 @@ class Post
     private $id;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="array", nullable=true)
      */
     private $image;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
+
     public $date;
+
 
     /**
      * @ORM\Column(type="string", length=500)
@@ -51,6 +53,12 @@ class Post
     private $artistes;
 
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TemplatePost::class, inversedBy="post")
+     */
+    private $templatePost;
+
+
     public function __construct()
     {
         $this->socialMediaAccounts = new ArrayCollection();
@@ -64,12 +72,12 @@ class Post
         return $this->id;
     }
 
-    public function getImage(): ?string
+    public function getImage(): ?array
     {
         return $this->image;
     }
 
-    public function setImage(?string $image): self
+    public function setImage(?array $image): self
     {
         $this->image = $image;
 
@@ -144,7 +152,7 @@ class Post
     {
         return $this->artistes;
     }
-
+    
     public function addArtiste(Artiste $artiste): self
     {
         if (!$this->artistes->contains($artiste)) {
@@ -163,6 +171,20 @@ class Post
 
         return $this;
     }
+
+
+    public function getTemplatePost(): ?TemplatePost
+    {
+        return $this->templatePost;
+    }
+
+    public function setTemplatePost(?TemplatePost $templatePost): self
+    {
+        $this->templatePost = $templatePost;
+
+        return $this;
+    }
+
 
    
 

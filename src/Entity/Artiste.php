@@ -17,32 +17,44 @@ class Artiste
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    public $id;
+
+    private $id;
+
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    public $nom;
+
+    private $nom;
+
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    public $nameFacebook;
+
+    private $nameFacebook;
+
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    public $nameTwitter;
+
+    private $nameTwitter;
+
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    public $nameInsta;
+
+    private $nameInsta;
+
 
     /**
      * @ORM\ManyToMany(targetEntity=Post::class, inversedBy="artistes")
      */
-    public $post;
+
+    private $post;
+
 
     public function __construct()
     {

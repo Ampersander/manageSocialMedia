@@ -1,29 +1,46 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-{{ parent() }}
-<div class="d-flex justify-content-center align-items-center w-75 mx-auto">
-<div class="card m-3 text-white bg-dark w-100">
-<div class='card-header bg-secondary'> <h1>Création d'un post</h1></div>
-  <div class="card-body d-flex justify-content-center ">
+    {{ parent() }}
+    <div class="d-flex justify-content-center">
+        <div class="card m-3 w-75 bg-dark text-white">
+            <div class='card-header bg-secondary'>
+                <h1>Création d'un post</h1>
+            </div>
+            <div class="card-body d-flex justify-content-center">
 
-{{ form_start(formPost, {'attr': {'class': 'w-75'}}) }}
-<div class="form-group w-100">
-{{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article", 'class': 'form-control w-100 height mt-3'}, 'label_attr': {'class':'font-weight'} }) }}
-</div>
-<div class="form-group mt-4">
-<label class="font-weight">Prévoir la plannification</label>
-<input type="checkbox" name="planif" value="planif" id="planif" class="mb-3">
-<div style="display: none;" id="date">
-{{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie", 'class': 'form-control w-100 mt-3 mb-3'}, 'label_attr': {'class':'font-weight'}}) }}
-</div>
-</div>
-<div class="form-group">
-{{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
-</div>
-<button type="submit" class="btn btn-primary mt-4">
-Voir la prévisualisation
-</button>
-{{ form_end(formPost) }}
+                {{ form_start(formPost, {'attr': {'class': 'w-75 mx-auto'}}) }}
+                <div class="form-group ">
+                    {{ form_row(formPost.description, {'attr': {'placeholder': "Contenu du l'article", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'} }) }}
+
+                    <div id="desc-warns"></div>
+                </div>
+                <div class="form-group">
+                    <label class="mt-3 mb-2 font-weight">Prévoir la plannification</label>
+                    <input type="checkbox" name="planif" value="planif" id="planif">
+                        <div style="display: none;" id="date" class="mb-3">
+                            {{ form_row(formPost.date, {'attr': {'placeholder': "Date d'envoie", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        {{ form_row(formPost.image, {'attr': {'placeholder': "Lien de l'image", 'class': 'form-control w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        {{ form_row(formPost.templatePost, {'attr': {'class': 'form-select w-100 mt-3'}, 'label_attr': {'class':'font-weight'}}) }}
+                    </div>
+
+                    <button id="trash" type="button" class="btn btn-danger">Retirer les photos</button>
+                    <div id="image-list"></div>
+                    <button type="submit" class="btn btn-primary mt-3">
+                        {% if editMode %}
+                            Enregistrer
+                        {% else %}
+                            Créer le post
+                        {% endif %}
+                    </button>
+                    {{ form_end(formPost) }}
+                </div>
+            </div>
+        </div>
     </div>
   </div>
 </div>
@@ -39,7 +56,7 @@ Voir la prévisualisation
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <input type="text" id="testinput" placeholder="Type 'a'">
+        <input autocomplete="off" type="text" id="testinput" placeholder="Type 'a'">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary save">Save changes</button>
@@ -50,8 +67,9 @@ Voir la prévisualisation
 </div>
 
 {% block javascripts %}
-{{ encore_entry_script_tags('manageArtiste') }}
 {{ encore_entry_script_tags('hiddenBlock') }}
 {{ encore_entry_script_tags('countPost') }}
+{{ encore_entry_script_tags('manageCreatePost') }}
+{{ encore_entry_script_tags('postVerificator') }}
 {% endblock %}
 {% endblock %}

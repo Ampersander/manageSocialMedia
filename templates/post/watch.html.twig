@@ -191,6 +191,21 @@ label img {
 
 {{ parent() }}
 
+{% if sendingMsg.facebook %}
+        {% for message in sendingMsg.facebook %}
+            <li>{{message}}<li>
+        {% endfor %}
+    {% endif %}
+    {% if sendingMsg.instagram %}
+        {% for message in sendingMsg.instagram %}
+            <li>{{message}}<li>
+        {% endfor %}
+    {% endif %}
+    {% if sendingMsg.twitter %}
+        {% for message in sendingMsg.twitter %}
+            <li>{{message}}<li>
+        {% endfor %}
+     {% endif %}
 <article class="align-items-center justify-content-around mx-auto row">
   <div class="f-card mt-5 col-md-4 col-sm-12 col-lg-3">
     <div class="header">
@@ -204,9 +219,12 @@ label img {
     </div>
         {% if post.image != null %}
     <div class="reference">
-      <img class="reference-thumb" src="{{ post.image }}" />
-    </div>
+    {% for image in post.image %}
+               <img class="reference-thumb" src="{{ asset('post_images/' ~ image) }}"  />
+    {% endfor %}
     {% endif %}
+    </div>
+    
     <div class="social">
       <div class="social-content"></div>
       <div class="social-buttons">
@@ -227,7 +245,11 @@ label img {
         <br>
 
       <div class="intagram-card-image">
-        <img src="{{ post.image }}" width=100%/>
+      
+        {% for image in post.image %}
+              <img src="{{ asset('post_images/' ~ image) }}"  width=100%/>
+        {% endfor %}
+        
       </div>
 
       <div class="instagram-card-content">
@@ -254,7 +276,9 @@ label img {
         </p>
               {% if post.image != null %}
       <div class="intagram-card-image">
-        <img src="{{ post.image }}" width=100%/>
+      {% for image in post.image %}
+              <img src="{{ asset('post_images/' ~ image) }}" width=100%/>
+        {% endfor %}
       </div>
       {% endif %}
         <p class="tweetDate">{{ post.date | date('d/m/Y') }}
@@ -407,6 +431,7 @@ label img {
 </div>
 </form>
 {% endblock %}
-{% block javascripts %}{{ encore_entry_script_tags('manageCreatePost') }}
+{% block javascripts %}
+{{ encore_entry_script_tags('manageWatchPost') }}
 {{ encore_entry_script_tags('countPost') }}
 {% endblock %}
