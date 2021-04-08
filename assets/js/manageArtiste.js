@@ -1,8 +1,4 @@
-<<<<<<< HEAD
   /*const $ = require('jquery');
-=======
-  const $ = require('jquery');
->>>>>>> raph
   const autocomplete = require('autocompleter');
 
 
@@ -114,8 +110,4 @@
 
               });
           }
-<<<<<<< HEAD
       });*/
-=======
-      });
->>>>>>> raph
