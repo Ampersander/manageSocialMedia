@@ -36,8 +36,11 @@ function getImageWarns(imageInfos) {
     let size = imageInfos.size;
     let warnMessages = [];
     // Extension
-    if (!['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
+    if (!['png', 'jpg', 'jpeg', 'webp'].includes(ext.toLowerCase())) {
         warnMessages.push('Format de l\'image incompatible avec les réseaux sociaux');
+    }
+    if(!['jpg', 'jpeg'].includes(ext.toLowerCase())){
+        warnMessages.push('Format de l\'image incompatible avec Instagram');
     }
     // Ratio
     if (ratio < 4 / 5) {
