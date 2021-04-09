@@ -194,16 +194,16 @@ class PostController extends AbstractController
                         if (strpos($mot[$i], "@") === false) {
                            $at++;
                         } else {
-                            //echo $mot[$i];
+                            
                             $other = $this->getDoctrine()->getRepository(Artiste::class);
                             $artiste = $other->findByName(substr($mot[$i], 1));
 
-                            //var_dump(count($artiste));
+                            
                             $nF = $artiste[0]->getNameFacebook();
                             $nT = $artiste[0]->getNameTwitter();
                             $nI = $artiste[0]->getNameInsta();
                             
-                            //var_dump($artiste);
+                           
                             $descriptionF = str_replace($mot[$i], "@" . $nF, $description);
                             $descriptionT = str_replace($mot[$i], "@" . $nT, $description);
                             $descriptionI = str_replace($mot[$i], "@" . $nI, $description);
@@ -238,7 +238,7 @@ class PostController extends AbstractController
                                     // Check et host images
                                     $hostedImages = $this->FbAPI->checkAndHostImages($images);
                                     foreach ($hostedImages as $imageResult) {
-                                        // var_dump($imageResult);
+                                        
                                         if ($imageResult['isValid']) {
                                             $imageUrls[] = $imageResult['url'];
                                         } else {
