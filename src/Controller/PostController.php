@@ -187,27 +187,36 @@ class PostController extends AbstractController
 
                     $case = $social_media->getSocialMedia();
                     $mot = explode(" ", $description);
-
+                    $at = 0;
+                    $nbat = 1;
                     for ($i = 0; $i < count($mot); $i++) {
                         //$mot = substr($description, strpos($description, "@"), strpos($description, " ")-strlen($description));
                         if (strpos($mot[$i], "@") === false) {
-                            //echo 'yes';
-                            $descriptionF = $description;
-                            $descriptionI = $description;
-                            $descriptionT = $description;
+                           $at++;
                         } else {
                             //echo $mot[$i];
                             $other = $this->getDoctrine()->getRepository(Artiste::class);
                             $artiste = $other->findByName(substr($mot[$i], 1));
+
                             //var_dump(count($artiste));
-                            $nF = $artiste[0]->nameFacebook;
-                            $nT = $artiste[0]->nameTwitter;
-                            $nI = $artiste[0]->nameInsta;
+                            $nF = $artiste[0]->getNameFacebook();
+                            $nT = $artiste[0]->getNameTwitter();
+                            $nI = $artiste[0]->getNameInsta();
+                            
                             //var_dump($artiste);
                             $descriptionF = str_replace($mot[$i], "@" . $nF, $description);
                             $descriptionT = str_replace($mot[$i], "@" . $nT, $description);
                             $descriptionI = str_replace($mot[$i], "@" . $nI, $description);
+
+                            $nbat++;
                         }
+
+
+                    }
+                    if($at === count($mot)-$nbat){
+                        $descriptionF = $description;
+                        $descriptionI = $description;
+                        $descriptionT = $description;
                     }
 
                     switch ($case) {
@@ -292,27 +301,39 @@ class PostController extends AbstractController
                                         $sendingMsg['twitter'] = $imageResult['errors'];
                                     }
                                 }
-                            }
-                            // Post
-                            if ($isValid) {
+                                if ($isValid) {
+                                    $postId = $this->TwitterAPI->postStatusOnPage(
+                                        $consumer_key,
+                                        $consumer_secret,
+                                        $access_token,
+                                        $access_token_secret,
+                                        $descriptionT,
+                                        $images ? array_slice($images, 0, 4) : false
+                                    );
+                                    $sendingMsg['twitter'][] = 'Le post a été effectué avec succès sur la page ' . $social_media->getName() . ' sur Twitter !';
+                                }
+                            }else{
                                 $postId = $this->TwitterAPI->postStatusOnPage(
                                     $consumer_key,
                                     $consumer_secret,
                                     $access_token,
                                     $access_token_secret,
                                     $descriptionT,
-                                    $images ? array_slice($images, 0, 4) : false
+                                    false
                                 );
                                 $sendingMsg['twitter'][] = 'Le post a été effectué avec succès sur la page ' . $social_media->getName() . ' sur Twitter !';
                             }
+                            // Post
+                           
                             break;
                     }
                 }
             }
 
             if ($date < $day) {
-                // $this->getDoctrine()->getManager()->remove($post);
-                // $this->getDoctrine()->getManager()->flush();
+                sleep(20);
+                 $this->getDoctrine()->getManager()->remove($post);
+                 $this->getDoctrine()->getManager()->flush();
             }
         }
 
@@ -341,10 +362,12 @@ class PostController extends AbstractController
  */
 public function getPost()
 {
-    
-    $post = $this->getDoctrine()->getRepository(Post::class)->findAll();
+    $user = $this->get('security.token_storage')->getToken()->getUser();
+    $repository = $this->getDoctrine()->getRepository(Post::class);
+    $posts = $repository->findByUser($user);
+
     // In case our GET was a success we need to return a 200 HTTP OK response with the collection of article object
-    return $post;
+    return $posts;
 }
 
  /**

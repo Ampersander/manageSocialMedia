@@ -6,7 +6,7 @@ $.ajax({
     dataType: 'json',
     success: function(resultat, statut) {
         console.log(resultat);
-        console.log(resultat[0].date);
+        //console.log(resultat[0].date);
         var attente = 0;
         var retard = 0;
         //var todayDate = new Date().toISOString().slice(0, 10);
@@ -21,7 +21,6 @@ $.ajax({
                 }
             }
         }
-        console.log(attente);
         $('#post_attente').append(attente);
         $('#post_retard').append(retard);
     },

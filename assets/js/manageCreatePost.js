@@ -115,7 +115,7 @@ document
                         if(document.getElementById("form_templatePost").value == resultat[i].id) {
                             var desc = document.getElementById('form_description');
                             var descArray = desc.value.split('\n ');                    
-                            desc.value = descArray[0]+'\n '+resultat[i].description;                         
+                            desc.value = descArray[0]+' \n '+resultat[i].description;                         
                             }                        
                         } 
                 }  
