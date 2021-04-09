@@ -4,12 +4,15 @@ import '../bootstrap';
 $(function () {
 
 
-var contentLink = $('.linkJS');
+/*var contentLink = $('.linkJS');
 for(var i=0;i< contentLink.length();i++){
    regexlink = contentLink[i].split(new RegExp(/#([a-zA-Z]*)/gm));
 
+    const regex = /Dog/i;
+    console.log(p.replace(regex, 'ferret'));
 
-}
+}*/
+
 
     $(document).on("click", "#cb1", function () {
         //alert('yes');

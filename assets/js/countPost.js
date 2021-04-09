@@ -1,4 +1,5 @@
 const $ = require('jquery');
+console.log('test');
 $.ajax({
     url: 'http://localhost:8000/api/post',
     type: 'GET',
